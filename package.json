@@ -1,11 +1,12 @@
 {
   "name": "qodalis-angular-workspace",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start demo": "ng serve demo",
+    "build demo": "ng build demo",
+    "build cli": "ng build cli",
+    "watch cli": "ng build cli --watch --configuration development",
     "test": "ng test"
   },
   "private": true,
@@ -18,11 +19,15 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
+    "@microsoft/signalr": "^8.0.7",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "^16.2.16",
     "@angular/cli": "^16.2.8",
     "@angular/compiler-cli": "^16.2.0",
     "@types/jasmine": "~4.3.0",
@@ -32,6 +37,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "ng-packagr": "^16.2.0",
     "typescript": "~5.1.3"
   }
 }

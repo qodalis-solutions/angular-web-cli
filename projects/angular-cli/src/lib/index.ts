@@ -9,6 +9,7 @@ import {
 } from './cli/tokens';
 import {
     CliProcessorsRegistry_TOKEN as CliProcessorsRegistryStringToken,
+    CliStateStoreManager_TOKEN as CliStateStoreManagerStringToken,
 } from '@qodalis/cli';
 import { CliUserSessionService } from './cli/services/cli-user-session.service';
 import { CliUsersStoreService } from './cli/services/cli-users-store.service';
@@ -55,6 +56,10 @@ export const resolveCliProviders = (): Provider[] => {
         {
             provide: CliProcessorsRegistryStringToken,
             useExisting: CliProcessorsRegistry_TOKEN,
+        },
+        {
+            provide: CliStateStoreManagerStringToken,
+            useExisting: CliStateStoreManager,
         },
         {
             useClass: CliServiceProvider,

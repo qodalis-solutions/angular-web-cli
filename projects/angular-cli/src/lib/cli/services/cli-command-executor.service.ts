@@ -40,7 +40,7 @@ export class CliCommandExecutorService implements ICliCommandExecutorService {
 
         let rootContext: CliExecutionContext;
         if (context instanceof CliCommandExecutionContext) {
-            rootContext = context.context;
+            rootContext = context.context as CliExecutionContext;
         } else {
             rootContext = context as CliExecutionContext;
         }

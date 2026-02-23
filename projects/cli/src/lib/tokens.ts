@@ -3,3 +3,9 @@
  * Used as a key in the service provider to retrieve the registry.
  */
 export const CliProcessorsRegistry_TOKEN = 'cli-processors-registry';
+
+/**
+ * Framework-agnostic token for the CLI state store manager.
+ * Used as a key in the service provider to retrieve the state store manager.
+ */
+export const CliStateStoreManager_TOKEN = 'cli-state-store-manager';

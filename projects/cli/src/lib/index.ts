@@ -6,3 +6,4 @@ export * from './tokens';
 export * from './version';
 export * from './processors';
 export * from './context';
+export * from './executor';

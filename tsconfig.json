@@ -25,6 +25,9 @@
       ],
       "@qodalis/cli-qr": [
         "dist/qr"
+      ],
+      "@qodalis/cli-yesno": [
+        "dist/yesno"
       ]
     },
     "outDir": "./dist/out-tsc",

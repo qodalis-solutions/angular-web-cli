@@ -22,6 +22,7 @@ import { CliTodoModule } from '@qodalis/cli-todo';
 import { CliCurlModule } from '@qodalis/cli-curl';
 import { CliPasswordGeneratorModule } from '@qodalis/cli-password-generator';
 import { CliQrModule } from '@qodalis/cli-qr';
+import { CliYesnoModule } from '@qodalis/cli-yesno';
 
 @NgModule({
     declarations: [AppComponent],
@@ -40,6 +41,7 @@ import { CliQrModule } from '@qodalis/cli-qr';
         CliCurlModule,
         CliPasswordGeneratorModule,
         CliQrModule,
+        CliYesnoModule,
     ],
     providers: [
         {

@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "paths": {
       "@qodalis/cli-core": ["dist/core"],
-      "@qodalis/angular-cli": ["dist/cli"],
+      "@qodalis/angular-cli": ["dist/angular-cli"],
       "@qodalis/cli-server-logs": ["dist/server-logs"],
       "@qodalis/cli-guid": ["dist/guid"],
       "@qodalis/cli-text-to-image": ["dist/text-to-image"],

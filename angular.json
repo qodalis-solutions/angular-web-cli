@@ -8,23 +8,23 @@
     }
   },
   "projects": {
-    "cli": {
+    "angular-cli": {
       "projectType": "library",
-      "root": "projects/cli",
-      "sourceRoot": "projects/cli/src",
+      "root": "projects/angular-cli",
+      "sourceRoot": "projects/angular-cli/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/cli/ng-package.json"
+            "project": "projects/angular-cli/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/cli/tsconfig.lib.prod.json"
+              "tsConfig": "projects/angular-cli/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/cli/tsconfig.lib.json"
+              "tsConfig": "projects/angular-cli/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -32,7 +32,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "tsConfig": "projects/cli/tsconfig.spec.json",
+            "tsConfig": "projects/angular-cli/tsconfig.spec.json",
             "polyfills": ["zone.js", "zone.js/testing"]
           }
         },
@@ -40,8 +40,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/cli/**/*.ts",
-              "projects/cli/**/*.html"
+              "projects/angular-cli/**/*.ts",
+              "projects/angular-cli/**/*.html"
             ]
           }
         }
@@ -73,7 +73,7 @@
             ],
             "styles": [
               "projects/demo/src/styles.sass",
-              "projects/cli/src/assets/styles.sass"
+              "projects/angular-cli/src/assets/styles.sass"
             ],
             "scripts": []
           },

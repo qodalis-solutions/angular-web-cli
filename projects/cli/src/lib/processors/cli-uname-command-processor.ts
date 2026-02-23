@@ -8,7 +8,7 @@ import {
     ICliExecutionContext,
 } from '@qodalis/cli-core';
 import { LIBRARY_VERSION as Core_Version } from '@qodalis/cli-core';
-import { LIBRARY_VERSION as CLI_Version } from '../../../version';
+import { LIBRARY_VERSION as CLI_Version } from '../version';
 
 export class CliUnameCommandProcessor implements ICliCommandProcessor {
     command = 'uname';

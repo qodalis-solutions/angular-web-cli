@@ -7,7 +7,7 @@ import {
     ICliCommandProcessor,
     ICliExecutionContext,
 } from '@qodalis/cli-core';
-import { LIBRARY_VERSION } from '../../../version';
+import { LIBRARY_VERSION } from '../version';
 
 export class CliTimeCommandProcessor implements ICliCommandProcessor {
     command = 'time';

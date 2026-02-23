@@ -9,7 +9,7 @@ import {
     ICliExecutionContext,
 } from '@qodalis/cli-core';
 import { Subscription } from 'rxjs';
-import { CliProcessorsRegistry_TOKEN } from '../../tokens';
+import { CliProcessorsRegistry_TOKEN } from '../tokens';
 
 export class CliAliasCommandProcessor implements ICliCommandProcessor {
     command = 'alias';

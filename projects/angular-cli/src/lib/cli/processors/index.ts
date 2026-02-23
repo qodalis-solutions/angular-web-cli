@@ -1,6 +1,6 @@
 export { CliPingCommandProcessor } from './cli-ping-command-processor';
 
-export { CliEvalCommandProcessor } from './cli-eval-command-processor';
+export { CliEvalCommandProcessor } from '@qodalis/cli';
 
 export * from './system';
 

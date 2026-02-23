@@ -1,0 +1,23 @@
+{
+  "name": "@qodalis/cli",
+  "version": "0.1.0",
+  "description": "Framework-agnostic CLI engine for @qodalis terminal applications.",
+  "author": "Nicolae Lupei, Qodalis Solutions",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qodalis-solutions/angular-web-cli"
+  },
+  "homepage": "https://qodalis.com",
+  "keywords": ["cli", "qodalis", "terminal", "command-line"],
+  "peerDependencies": {
+    "@angular/common": "^16.2.0",
+    "@angular/core": "^16.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "@qodalis/cli-core": "^0.0.16",
+    "@xterm/xterm": "^5.5.0"
+  },
+  "sideEffects": false
+}

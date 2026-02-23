@@ -28,7 +28,7 @@ async function buildProjects() {
   try {
     // Read all subfolders
     const entries = fs.readdirSync(projectsFolder, { withFileTypes: true });
-    const mainFolders = ["core", "angular-cli"];
+    const mainFolders = ["core", "cli", "angular-cli"];
 
     // Filter and sort directories
     const subfolders = mainFolders

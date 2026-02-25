@@ -1,5 +1,4 @@
 import { Cli } from '@qodalis/react-cli';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
 import { CliGuidCommandProcessor } from '@qodalis/cli-guid';
 import { CliRegexCommandProcessor } from '@qodalis/cli-regex';
 import { CliTextToImageCommandProcessor } from '@qodalis/cli-text-to-image';
@@ -13,7 +12,7 @@ import { CliQrCommandProcessor } from '@qodalis/cli-qr';
 import { CliYesnoCommandProcessor } from '@qodalis/cli-yesno';
 import { CliLogsCommandProcessor } from '@qodalis/cli-server-logs';
 
-const processors: ICliCommandProcessor[] = [
+const processors = [
     new CliGuidCommandProcessor(),
     new CliRegexCommandProcessor(),
     new CliTextToImageCommandProcessor(),

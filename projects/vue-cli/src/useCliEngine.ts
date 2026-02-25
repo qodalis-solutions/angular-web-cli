@@ -18,6 +18,8 @@ export function useCliEngine(
 
         const e = new CliEngine(containerRef.value, config?.options);
 
+        e.registerService('cli-framework', 'Vue');
+
         if (config?.processors) {
             e.registerProcessors(config.processors);
         }

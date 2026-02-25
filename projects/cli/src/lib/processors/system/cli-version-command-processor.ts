@@ -44,6 +44,16 @@ export class CliVersionCommandProcessor implements ICliCommandProcessor {
             `📦  Core ${writer.wrapInColor(`v${CORE_VERSION}`, CliForegroundColor.Green)}`,
         );
 
+        let framework = 'vanilla';
+        try {
+            framework = context.services.get<string>('cli-framework');
+        } catch {
+            // no framework registered — standalone usage
+        }
+        writer.writeln(
+            `🖥️  Framework: ${writer.wrapInColor(framework, CliForegroundColor.Cyan)}`,
+        );
+
         writer.writeln(getCliNameArt(context.terminal.cols));
 
         writer.writeln(

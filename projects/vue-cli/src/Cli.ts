@@ -39,6 +39,8 @@ export const Cli = defineComponent({
 
             engine = new CliEngine(containerRef.value, props.options);
 
+            engine.registerService('cli-framework', 'Vue');
+
             if (props.processors) {
                 engine.registerProcessors(props.processors);
             }

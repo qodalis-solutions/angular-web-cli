@@ -19,6 +19,8 @@ export function useCliEngine(
 
         const e = new CliEngine(containerRef.current, config?.options);
 
+        e.registerService('cli-framework', 'React');
+
         if (config?.processors) {
             e.registerProcessors(config.processors);
         }

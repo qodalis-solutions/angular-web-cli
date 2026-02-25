@@ -67,6 +67,9 @@ export class CliComponent implements AfterViewInit, OnDestroy {
             engineOptions,
         );
 
+        // Identify the serving framework
+        this.engine.registerService('cli-framework', 'Angular');
+
         // Bridge Angular DI services into the engine's service container
         if (this.userSessionService) {
             this.engine.registerService('cli-user-session-service', this.userSessionService);

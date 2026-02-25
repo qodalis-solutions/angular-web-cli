@@ -5,7 +5,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import {
-    CliOptions, ICliCommandProcessor, DefaultThemes,
+    CliOptions, CliProvider, ICliCommandProcessor, DefaultThemes,
 } from '@qodalis/cli-core';
 import { CliCommandExecutor } from '../executor/cli-command-executor';
 import { CliCommandProcessorRegistry } from '../registry/cli-command-processor-registry';
@@ -18,7 +18,7 @@ import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
 import { CliWelcomeMessage } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
-import { miscProcessors } from '../processors';
+import { builtinProcessors } from '../processors';
 import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN } from '../tokens';
 
 export interface CliEngineOptions extends CliOptions {
@@ -31,6 +31,7 @@ export class CliEngine {
     private executionContext!: CliExecutionContext;
     private registry: CliCommandProcessorRegistry;
     private userProcessors: ICliCommandProcessor[] = [];
+    private pendingServices: CliProvider[] = [];
     private resizeObserver?: ResizeObserver;
     private resizeListener?: () => void;
     private wheelListener?: (e: WheelEvent) => void;
@@ -40,7 +41,7 @@ export class CliEngine {
         private readonly container: HTMLElement,
         private readonly options?: CliEngineOptions,
     ) {
-        this.registry = new CliCommandProcessorRegistry([...miscProcessors]);
+        this.registry = new CliCommandProcessorRegistry([...builtinProcessors]);
         this.bootService = new CliBoot(this.registry);
     }
 
@@ -56,6 +57,14 @@ export class CliEngine {
      */
     registerProcessors(processors: ICliCommandProcessor[]): void {
         this.userProcessors.push(...processors);
+    }
+
+    /**
+     * Register a service to be available in the service container.
+     * Must be called before start().
+     */
+    registerService(token: string, value: any): void {
+        this.pendingServices.push({ provide: token, useValue: value });
     }
 
     /**
@@ -86,6 +95,11 @@ export class CliEngine {
             { provide: CliProcessorsRegistry_TOKEN, useValue: this.registry },
             { provide: CliCommandHistory_TOKEN, useValue: commandHistory },
         ]);
+
+        // Apply pending services registered before start()
+        if (this.pendingServices.length > 0) {
+            services.set(this.pendingServices);
+        }
 
         // 4. Create executor and execution context
         const executor = new CliCommandExecutor(this.registry);

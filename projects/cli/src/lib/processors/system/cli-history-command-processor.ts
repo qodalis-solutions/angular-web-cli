@@ -9,7 +9,8 @@ import {
 } from '@qodalis/cli-core';
 
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { CliCommandHistory, CliCommandHistory_TOKEN } from '@qodalis/cli';
+import { CliCommandHistory } from '../../services/cli-command-history';
+import { CliCommandHistory_TOKEN } from '../../tokens';
 
 export class CliHistoryCommandProcessor implements ICliCommandProcessor {
     command = 'history';

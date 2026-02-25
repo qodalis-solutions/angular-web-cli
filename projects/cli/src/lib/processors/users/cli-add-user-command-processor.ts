@@ -1,4 +1,3 @@
-import { Inject, Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliIcon,
@@ -13,9 +12,6 @@ import {
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { ICliUsersStoreService_TOKEN } from '../../tokens';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliAddUserCommandProcessor implements ICliCommandProcessor {
     command = 'adduser';
 
@@ -47,7 +43,6 @@ export class CliAddUserCommandProcessor implements ICliCommandProcessor {
             required: true,
             type: 'email',
             validator: (value: string) => {
-                //validate email format
                 const emailRegex =
                     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(value)) {
@@ -70,10 +65,13 @@ export class CliAddUserCommandProcessor implements ICliCommandProcessor {
         },
     ];
 
-    constructor(
-        @Inject(ICliUsersStoreService_TOKEN)
-        private readonly usersStore: ICliUsersStoreService,
-    ) {}
+    private usersStore!: ICliUsersStoreService;
+
+    async initialize(context: ICliExecutionContext): Promise<void> {
+        this.usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
+    }
 
     async processCommand(
         command: CliProcessCommand,

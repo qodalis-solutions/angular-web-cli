@@ -1,4 +1,3 @@
-import { Inject, Injectable } from '@angular/core';
 import {
     ICliExecutionContext,
     CliProcessCommand,
@@ -13,15 +12,9 @@ import {
 } from '@qodalis/cli-core';
 
 import { firstValueFrom } from 'rxjs';
-import {
-    ICliUserSessionService_TOKEN,
-    ICliUsersStoreService_TOKEN,
-} from '../../tokens';
+import { ICliUserSessionService_TOKEN, ICliUsersStoreService_TOKEN } from '../../tokens';
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
     command = 'su';
 
@@ -56,12 +49,17 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
 
     valueRequired = true;
 
-    constructor(
-        @Inject(ICliUserSessionService_TOKEN)
-        private readonly userSessionService: ICliUserSessionService,
-        @Inject(ICliUsersStoreService_TOKEN)
-        private readonly usersStore: ICliUsersStoreService,
-    ) {}
+    private userSessionService!: ICliUserSessionService;
+    private usersStore!: ICliUsersStoreService;
+
+    async initialize(context: ICliExecutionContext): Promise<void> {
+        this.userSessionService = context.services.get<ICliUserSessionService>(
+            ICliUserSessionService_TOKEN,
+        );
+        this.usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
+    }
 
     async processCommand(
         command: CliProcessCommand,

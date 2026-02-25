@@ -1,4 +1,3 @@
-import { Inject, Injectable } from '@angular/core';
 import { CliProcessorMetadata, DefaultLibraryAuthor } from '@qodalis/cli-core';
 import {
     CliProcessCommand,
@@ -9,7 +8,6 @@ import {
 } from '@qodalis/cli-core';
 import { ICliPingServerService_TOKEN } from '../tokens';
 
-@Injectable()
 export class CliPingCommandProcessor implements ICliCommandProcessor {
     command = 'ping';
 
@@ -23,10 +21,13 @@ export class CliPingCommandProcessor implements ICliCommandProcessor {
         icon: '🏓',
     };
 
-    constructor(
-        @Inject(ICliPingServerService_TOKEN)
-        private pingServerService: ICliPingServerService,
-    ) {}
+    private pingServerService!: ICliPingServerService;
+
+    async initialize(context: ICliExecutionContext): Promise<void> {
+        this.pingServerService = context.services.get<ICliPingServerService>(
+            ICliPingServerService_TOKEN,
+        );
+    }
 
     writeDescription(context: ICliExecutionContext): void {
         context.writer.writeln('Pings the server to check connectivity');

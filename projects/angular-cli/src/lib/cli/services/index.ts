@@ -8,4 +8,5 @@ export * from './cli-command-executor.service';
 
 export * from './cli-default-ping-server.service';
 
-export * from './script-loader.service';
+// ScriptLoaderService and CliPackageManagerService moved to @qodalis/cli
+export { ScriptLoaderService, CdnSourceName, CliPackageManagerService } from '@qodalis/cli';

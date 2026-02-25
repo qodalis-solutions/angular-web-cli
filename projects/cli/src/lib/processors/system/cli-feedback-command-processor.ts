@@ -10,7 +10,7 @@ import {
 } from '@qodalis/cli-core';
 
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { openLink } from '../../../utils';
+import { openLink } from '../../utils';
 
 const githubUrl = 'https://github.com/qodalis-solutions/angular-web-cli';
 

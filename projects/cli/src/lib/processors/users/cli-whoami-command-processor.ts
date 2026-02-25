@@ -1,4 +1,3 @@
-import { Inject, Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliIcon,
@@ -15,9 +14,6 @@ import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { ICliUserSessionService_TOKEN } from '../../tokens';
 import { firstValueFrom } from 'rxjs';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
     command = 'whoami';
 
@@ -48,10 +44,13 @@ export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
         },
     ];
 
-    constructor(
-        @Inject(ICliUserSessionService_TOKEN)
-        private readonly userSessionService: ICliUserSessionService,
-    ) {}
+    private userSessionService!: ICliUserSessionService;
+
+    async initialize(context: ICliExecutionContext): Promise<void> {
+        this.userSessionService = context.services.get<ICliUserSessionService>(
+            ICliUserSessionService_TOKEN,
+        );
+    }
 
     async processCommand(
         command: CliProcessCommand,

@@ -13,9 +13,9 @@ import {
     ICliUmdModule,
     Package,
 } from '@qodalis/cli-core';
-import { CliProcessorsRegistry_TOKEN } from '@qodalis/cli';
-import { CdnSourceName, ScriptLoaderService } from '../../services/script-loader.service';
-import { CliPackageManagerService } from '../../services/cli-package-manager.service';
+import { CliProcessorsRegistry_TOKEN } from '../../tokens';
+import { CdnSourceName, ScriptLoaderService } from '../../services/script-loader';
+import { CliPackageManagerService } from '../../services/cli-package-manager';
 
 export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     readonly command = 'pkg';
@@ -845,16 +845,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     }
 
     async initialize(context: ICliExecutionContext): Promise<void> {
-        // Get the registry from the service container
         this.registry = context.services.get<ICliCommandProcessorRegistry>(
             CliProcessorsRegistry_TOKEN,
         );
 
-        // Initialize the packages manager with the key-value store
         const store = context.services.get<ICliKeyValueStore>('cli-key-value-store');
         this.packagesManager.setStore(store);
 
-        // Restore persisted CDN source preference
         context.state
             .select<CdnSourceName>((s) => s['cdnSource'])
             .subscribe((cdnSource) => {
@@ -1080,7 +1077,6 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     }
 
     private async injectScriptWithCdnFallback(url: string): Promise<void> {
-        // Extract the package path from the stored URL and use CDN fallback
         const packagePath = url
             .replace('https://unpkg.com/', '')
             .replace('https://cdn.jsdelivr.net/npm/', '');
@@ -1131,11 +1127,6 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         }
     }
 
-    /**
-     * Resolves the CDN-compatible package path from package.json metadata.
-     * unpkg auto-resolves via the "unpkg" field, but jsDelivr needs an explicit file path.
-     * Returns e.g. "@qodalis/cli-todo/umd/index.js" instead of just "@qodalis/cli-todo".
-     */
     private resolvePackageCdnPath(packageInfo: any, versionSuffix = ''): string {
         const entryPoint = packageInfo.unpkg || packageInfo.umd || packageInfo.main;
         const basePath = `${packageInfo.name}${versionSuffix}`;
@@ -1148,9 +1139,6 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         return basePath;
     }
 
-    /**
-     * Waits until a global variable is available on the `window` object.
-     */
     private waitForGlobal(
         globalName: string,
         timeout: number,

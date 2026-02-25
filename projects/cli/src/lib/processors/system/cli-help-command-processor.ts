@@ -9,8 +9,8 @@ import {
     ICliCommandProcessorRegistry,
 } from '@qodalis/cli-core';
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { CliProcessorsRegistry_TOKEN } from '@qodalis/cli';
-import { groupBy } from '../../../utils/arrays';
+import { CliProcessorsRegistry_TOKEN } from '../../tokens';
+import { groupBy } from '../../utils';
 
 export class CliHelpCommandProcessor implements ICliCommandProcessor {
     command = 'help';

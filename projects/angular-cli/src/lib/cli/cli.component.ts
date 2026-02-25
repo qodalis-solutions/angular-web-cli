@@ -9,10 +9,20 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { ICliCommandProcessor, CliOptions } from '@qodalis/cli-core';
+import {
+    ICliCommandProcessor,
+    ICliPingServerService,
+    ICliUserSessionService,
+    ICliUsersStoreService,
+    CliOptions,
+} from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
-import { CliCommandProcessor_TOKEN } from './tokens';
-import { builtinProcessors } from '../index';
+import {
+    CliCommandProcessor_TOKEN,
+    ICliPingServerService_TOKEN,
+    ICliUserSessionService_TOKEN,
+    ICliUsersStoreService_TOKEN,
+} from './tokens';
 
 @Component({
     selector: 'cli',
@@ -36,6 +46,15 @@ export class CliComponent implements AfterViewInit, OnDestroy {
         @Optional()
         @Inject(CliCommandProcessor_TOKEN)
         private readonly diProcessors: ICliCommandProcessor[],
+        @Optional()
+        @Inject(ICliUserSessionService_TOKEN)
+        private readonly userSessionService: ICliUserSessionService,
+        @Optional()
+        @Inject(ICliUsersStoreService_TOKEN)
+        private readonly usersStoreService: ICliUsersStoreService,
+        @Optional()
+        @Inject(ICliPingServerService_TOKEN)
+        private readonly pingServerService: ICliPingServerService,
     ) {}
 
     ngAfterViewInit(): void {
@@ -48,8 +67,16 @@ export class CliComponent implements AfterViewInit, OnDestroy {
             engineOptions,
         );
 
-        // Register built-in system processors (plain class instances, no Angular DI)
-        this.engine.registerProcessors(builtinProcessors);
+        // Bridge Angular DI services into the engine's service container
+        if (this.userSessionService) {
+            this.engine.registerService('cli-user-session-service', this.userSessionService);
+        }
+        if (this.usersStoreService) {
+            this.engine.registerService('cli-users-store-service', this.usersStoreService);
+        }
+        if (this.pingServerService) {
+            this.engine.registerService('cli-ping-server-service', this.pingServerService);
+        }
 
         // Register processors provided via Angular DI (from resolveCommandProcessorProvider)
         if (this.diProcessors && this.diProcessors.length > 0) {

@@ -1,49 +1,31 @@
 import { Provider } from '@angular/core';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
-import { resolveCommandProcessorProvider } from './utils';
-import { CliPingCommandProcessor } from './cli/processors';
-import { systemProcessors } from './cli/processors/system';
-import { usersProviders } from './cli/processors/users';
-import { CliThemeCommandProcessor } from './cli/processors/theme/cli-theme-command-processor';
 import {
-    ICliPingServerService_TOKEN,
-    ICliUserSessionService_TOKEN,
-    ICliUsersStoreService_TOKEN,
+    ICliPingServerService_TOKEN as CLI_PING_TOKEN,
+    ICliUserSessionService_TOKEN as CLI_USER_SESSION_TOKEN,
+    ICliUsersStoreService_TOKEN as CLI_USERS_STORE_TOKEN,
 } from './cli/tokens';
 import { CliUserSessionService } from './cli/services/cli-user-session.service';
 import { CliUsersStoreService } from './cli/services/cli-users-store.service';
 import { CliDefaultPingServerService } from './cli/services';
 
 /**
- * Built-in system processors that are plain class instances (no Angular DI needed).
- * These are registered directly with the CliEngine.
- */
-export const builtinProcessors: ICliCommandProcessor[] = [
-    ...systemProcessors,
-    new CliThemeCommandProcessor(),
-];
-
-/**
- * Angular DI providers for processors that require Angular injection
- * and the services they depend on.
+ * Angular DI providers for services that the framework-agnostic
+ * processors in @qodalis/cli need. The CliComponent bridges these
+ * into the engine's service container automatically.
  */
 export const resolveCliProviders = (): Provider[] => {
     return [
-        // Services needed by the Angular DI processors
         {
             useClass: CliUserSessionService,
-            provide: ICliUserSessionService_TOKEN,
+            provide: CLI_USER_SESSION_TOKEN,
         },
         {
             useClass: CliUsersStoreService,
-            provide: ICliUsersStoreService_TOKEN,
+            provide: CLI_USERS_STORE_TOKEN,
         },
         {
             useClass: CliDefaultPingServerService,
-            provide: ICliPingServerService_TOKEN,
+            provide: CLI_PING_TOKEN,
         },
-        // Angular DI processors
-        ...usersProviders,
-        resolveCommandProcessorProvider(CliPingCommandProcessor),
     ];
 };

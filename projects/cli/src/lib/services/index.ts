@@ -8,3 +8,5 @@ export { CliTerminalTextAnimator } from './progress-bars/cli-terminal-text-anima
 export { CliCommandHistory } from './cli-command-history';
 export { CliWelcomeMessage } from './cli-welcome-message';
 export { CliBoot } from './cli-boot';
+export { ScriptLoaderService, CdnSourceName } from './script-loader';
+export { CliPackageManagerService } from './cli-package-manager';

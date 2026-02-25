@@ -1,4 +1,3 @@
-import { Inject, Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliIcon,
@@ -14,9 +13,6 @@ import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { ICliUsersStoreService_TOKEN } from '../../tokens';
 import { firstValueFrom } from 'rxjs';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliListUsersCommandProcessor implements ICliCommandProcessor {
     command = 'listusers';
 
@@ -58,10 +54,13 @@ export class CliListUsersCommandProcessor implements ICliCommandProcessor {
         },
     ];
 
-    constructor(
-        @Inject(ICliUsersStoreService_TOKEN)
-        private readonly usersStore: ICliUsersStoreService,
-    ) {}
+    private usersStore!: ICliUsersStoreService;
+
+    async initialize(context: ICliExecutionContext): Promise<void> {
+        this.usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
+    }
 
     async processCommand(
         command: CliProcessCommand,

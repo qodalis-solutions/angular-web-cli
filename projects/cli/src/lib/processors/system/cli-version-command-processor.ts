@@ -10,7 +10,7 @@ import {
 } from '@qodalis/cli-core';
 
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { LIBRARY_VERSION } from '../../../version';
+import { LIBRARY_VERSION } from '../../version';
 import { getCliNameArt } from '../../constants';
 
 export class CliVersionCommandProcessor implements ICliCommandProcessor {

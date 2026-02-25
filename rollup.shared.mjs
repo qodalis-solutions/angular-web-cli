@@ -5,6 +5,9 @@ export const baseConfig = {
     typescript({
       useTsconfigDeclarationDir: true, // Use the declaration folder specified in tsconfig
       clean: true, // Remove previous caches
+      tsconfigOverride: {
+        exclude: ["**/react-cli/**", "**/vue-cli/**", "**/demo-react/**", "**/demo-vue/**"],
+      },
     }),
   ],
   external: ["@qodalis/cli-core", "@angular/core"],

@@ -29,6 +29,13 @@ function updateLibrariesVersions() {
 export const LIBRARY_VERSION = '${version}';
   `;
 
+    // Skip projects that don't use the src/lib/version.ts pattern (e.g. react-cli, vue-cli)
+    const versionDir = path.dirname(versionFilePath);
+    if (!fs.existsSync(versionDir)) {
+      console.log(`Skipping ${lib} (no src/lib/ directory)`);
+      return;
+    }
+
     fs.writeFileSync(versionFilePath, versionFileContent, { encoding: "utf8" });
     console.log(`Version ${version} written to ${versionFilePath}`);
   });

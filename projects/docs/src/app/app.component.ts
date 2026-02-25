@@ -103,7 +103,7 @@ export class AppComponent {
         { name: 'Text to Image', command: 'text-to-image', description: 'Render text as images' },
     ];
 
-    installCommand = 'npm install @qodalis/angular-cli @qodalis/cli-core';
+    installCommand = 'npm install @qodalis/angular-cli';
     copied = false;
 
     scrollToTerminal(): void {

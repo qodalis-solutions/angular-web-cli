@@ -317,7 +317,7 @@ export type CliProcessorMetadata = Record<string, any> & {
     requiredCoreVersion?: string;
 
     /**
-     * The minimum required version of @qodalis/angular-cli for this processor.
+     * The minimum required version of @qodalis/cli for this processor.
      * If the installed CLI version is lower, the processor will be skipped during boot.
      */
     requiredCliVersion?: string;

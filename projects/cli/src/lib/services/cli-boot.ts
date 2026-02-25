@@ -12,7 +12,6 @@ import {
 import { LIBRARY_VERSION as CLI_VERSION } from '../version';
 import { CliExecutionContext } from '../context/cli-execution-context';
 import { CliCommandExecutionContext } from '../context/cli-command-execution-context';
-import { CliKeyValueStore } from '../storage/cli-key-value-store';
 
 export class CliBoot {
     private initialized = false;
@@ -35,8 +34,6 @@ export class CliBoot {
         }
 
         this.initializing = true;
-
-        await this.registerServices(context);
 
         initializeBrowserEnvironment({
             context,
@@ -130,17 +127,6 @@ export class CliBoot {
         } catch (e) {
             context.writer.writeError(`Error initializing processors: ${e}`);
         }
-    }
-
-    private async registerServices(
-        context: CliExecutionContext,
-    ): Promise<void> {
-        context.services.set([
-            {
-                provide: 'cli-key-value-store',
-                useValue: context.services.get(CliKeyValueStore),
-            },
-        ]);
     }
 
     private async registerUmdModule(

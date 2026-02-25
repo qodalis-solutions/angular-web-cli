@@ -1,7 +1,7 @@
 {
   "name": "@qodalis/cli-yesno",
   "version": "1.0.0",
-  "description": "An Angular CLI extension for generating random yes/no answers with animations.",
+  "description": "@qodalis/cli extension for generating random yes/no answers with animations.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
   "repository": {
@@ -10,11 +10,13 @@
   },
   "homepage": "https://qodalis.com",
   "keywords": [
-    "angular",
     "cli",
     "qodalis",
     "terminal",
-    "yesno"
+    "yesno",
+    "random",
+    "decision",
+    "fun"
   ],
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",

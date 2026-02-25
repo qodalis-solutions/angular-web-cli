@@ -1,7 +1,7 @@
 {
   "name": "@qodalis/cli-server-logs",
   "version": "1.0.8",
-  "description": "An Angular CLI extension for server logs.",
+  "description": "@qodalis/cli extension for streaming and viewing server logs via SignalR.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
   "repository": {
@@ -10,10 +10,13 @@
   },
   "homepage": "https://qodalis.com",
   "keywords": [
-    "angular",
     "cli",
     "qodalis",
-    "terminal"
+    "terminal",
+    "server-logs",
+    "logging",
+    "signalr",
+    "real-time"
   ],
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",

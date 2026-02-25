@@ -12,7 +12,19 @@
     "vue": "^3.5.25",
     "@qodalis/vue-cli": "file:../vue-cli",
     "@qodalis/cli": "file:../../dist/cli",
-    "@qodalis/cli-core": "file:../../dist/core"
+    "@qodalis/cli-core": "file:../../dist/core",
+    "@qodalis/cli-guid": "file:../../dist/guid",
+    "@qodalis/cli-regex": "file:../../dist/regex",
+    "@qodalis/cli-text-to-image": "file:../../dist/text-to-image",
+    "@qodalis/cli-speed-test": "file:../../dist/speed-test",
+    "@qodalis/cli-browser-storage": "file:../../dist/browser-storage",
+    "@qodalis/cli-string": "file:../../dist/string",
+    "@qodalis/cli-todo": "file:../../dist/todo",
+    "@qodalis/cli-curl": "file:../../dist/curl",
+    "@qodalis/cli-password-generator": "file:../../dist/password-generator",
+    "@qodalis/cli-qr": "file:../../dist/qr",
+    "@qodalis/cli-yesno": "file:../../dist/yesno",
+    "@qodalis/cli-server-logs": "file:../../dist/server-logs"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

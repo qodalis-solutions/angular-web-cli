@@ -1,7 +1,7 @@
 {
   "name": "@qodalis/cli-speed-test",
   "version": "0.0.4",
-  "description": "An Angular CLI extension that provides speed test utilities",
+  "description": "@qodalis/cli extension for running network speed tests.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
   "repository": {
@@ -10,11 +10,12 @@
   },
   "homepage": "https://qodalis.com",
   "keywords": [
-    "angular",
     "cli",
     "qodalis",
     "terminal",
-    "speed-test"
+    "speed-test",
+    "network",
+    "bandwidth"
   ],
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",

@@ -1,13 +1,13 @@
 import React, { useRef, useEffect } from 'react';
 import { ICliCommandProcessor } from '@qodalis/cli-core';
-import { CliEngineOptions } from '@qodalis/cli';
+import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { useCli } from './CliContext';
 import { useCliEngine } from './useCliEngine';
 
 export interface CliProps {
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
-    onReady?: (engine: any) => void;
+    onReady?: (engine: CliEngine) => void;
     style?: React.CSSProperties;
     className?: string;
 }

@@ -1,7 +1,7 @@
 {
   "name": "@qodalis/cli-curl",
   "version": "0.0.4",
-  "description": "Provide utility functions for the library curl",
+  "description": "@qodalis/cli extension for making HTTP requests via a curl-like interface.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
   "repository": {
@@ -10,11 +10,13 @@
   },
   "homepage": "https://qodalis.com",
   "keywords": [
-    "angular",
     "cli",
     "qodalis",
     "terminal",
-    "curl"
+    "curl",
+    "http",
+    "requests",
+    "fetch"
   ],
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",

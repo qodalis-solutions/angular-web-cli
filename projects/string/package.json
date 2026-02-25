@@ -1,7 +1,7 @@
 {
   "name": "@qodalis/cli-string",
   "version": "0.0.3",
-  "description": "An Angular CLI extension that provides speed test utilities",
+  "description": "@qodalis/cli extension for string manipulation and transformation utilities.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
   "repository": {
@@ -10,11 +10,13 @@
   },
   "homepage": "https://qodalis.com",
   "keywords": [
-    "angular",
     "cli",
     "qodalis",
     "terminal",
-    "string"
+    "string",
+    "text",
+    "transformation",
+    "lodash"
   ],
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",

@@ -9,7 +9,7 @@
     "url": "https://github.com/qodalis-solutions/angular-web-cli"
   },
   "homepage": "https://qodalis.com",
-  "keywords": ["cli", "qodalis", "terminal", "command-line"],
+  "keywords": ["cli", "qodalis", "terminal", "command-line", "web-terminal", "xterm", "framework-agnostic"],
   "dependencies": {
     "tslib": "^2.3.0",
     "@qodalis/cli-core": "^0.0.16",

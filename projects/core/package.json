@@ -1,7 +1,7 @@
 {
   "name": "@qodalis/cli-core",
   "version": "0.0.16",
-  "description": "Core Angular CLI for @qodalis extensions.",
+  "description": "Core interfaces, types, and utilities for the @qodalis CLI ecosystem.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
   "repository": {
@@ -14,7 +14,8 @@
     "cli",
     "qodalis",
     "terminal",
-    "angular",
+    "interfaces",
+    "types",
     "extensions"
   ],
   "peerDependencies": {

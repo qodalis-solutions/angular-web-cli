@@ -1,10 +1,10 @@
-import { Inject, Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessorMetadata,
     CliStateConfiguration,
     DefaultLibraryAuthor,
     ICliCommandProcessorRegistry,
+    ICliKeyValueStore,
 } from '@qodalis/cli-core';
 import {
     CliProcessCommand,
@@ -13,11 +13,10 @@ import {
     ICliUmdModule,
     Package,
 } from '@qodalis/cli-core';
+import { CliProcessorsRegistry_TOKEN } from '@qodalis/cli';
 import { CdnSourceName, ScriptLoaderService } from '../../services/script-loader.service';
 import { CliPackageManagerService } from '../../services/cli-package-manager.service';
-import { CliProcessorsRegistry_TOKEN } from '../../tokens';
 
-@Injectable()
 export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     readonly command = 'pkg';
 
@@ -44,6 +43,9 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     };
 
     private registeredDependencies: string[] = [];
+    private scriptsLoader!: ScriptLoaderService;
+    private packagesManager!: CliPackageManagerService;
+    private registry!: ICliCommandProcessorRegistry;
 
     private createAbortSignal(context: ICliExecutionContext): {
         signal: AbortSignal;
@@ -60,13 +62,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         };
     }
 
-    constructor(
-        private readonly scriptsLoader: ScriptLoaderService,
-        private readonly packagesManager: CliPackageManagerService,
-        @Inject(CliProcessorsRegistry_TOKEN)
-        private readonly registry: ICliCommandProcessorRegistry,
-    ) {
+    constructor() {
+        this.scriptsLoader = new ScriptLoaderService();
+        this.packagesManager = new CliPackageManagerService();
+
         const scope = this;
+        const scriptsLoader = this.scriptsLoader;
+        const packagesManager = this.packagesManager;
 
         this.processors = [
             {
@@ -125,7 +127,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                     try {
                         const response =
-                            await scope.scriptsLoader.getScript(
+                            await scriptsLoader.getScript(
                                 `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(prefix)}&size=250`,
                                 { signal },
                             );
@@ -191,7 +193,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                             try {
                                 const packageInfo =
-                                    await scope.scriptsLoader
+                                    await scriptsLoader
                                         .getScriptWithFallback(
                                             `${fullName}/package.json`,
                                             { signal },
@@ -392,7 +394,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                     try {
                         const response =
-                            await scope.scriptsLoader.getScript(
+                            await scriptsLoader.getScript(
                                 `https://registry.npmjs.org/${encodeURIComponent(fullName)}`,
                                 { signal },
                             );
@@ -548,7 +550,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         );
 
                         try {
-                            const packageInfo = await scope.scriptsLoader
+                            const packageInfo = await scriptsLoader
                                 .getScriptWithFallback(
                                     `${pkg.name}/package.json`,
                                     { signal },
@@ -733,7 +735,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         command: 'get',
                         description: 'Show the current CDN source',
                         async processCommand(_, context) {
-                            const current = scope.scriptsLoader.getCdnSource();
+                            const current = scriptsLoader.getCdnSource();
                             context.writer.writeln(
                                 `🌐 Current CDN source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
                             );
@@ -758,7 +760,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                                 return;
                             }
 
-                            scope.scriptsLoader.setCdnSource(value as CdnSourceName);
+                            scriptsLoader.setCdnSource(value as CdnSourceName);
                             context.state.updateState({ cdnSource: value });
                             await context.state.persist();
 
@@ -783,7 +785,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     },
                 ],
                 async processCommand(_, context) {
-                    const current = scope.scriptsLoader.getCdnSource();
+                    const current = scriptsLoader.getCdnSource();
                     context.writer.writeln(
                         `🌐 Current CDN source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
                     );
@@ -843,6 +845,15 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     }
 
     async initialize(context: ICliExecutionContext): Promise<void> {
+        // Get the registry from the service container
+        this.registry = context.services.get<ICliCommandProcessorRegistry>(
+            CliProcessorsRegistry_TOKEN,
+        );
+
+        // Initialize the packages manager with the key-value store
+        const store = context.services.get<ICliKeyValueStore>('cli-key-value-store');
+        this.packagesManager.setStore(store);
+
         // Restore persisted CDN source preference
         context.state
             .select<CdnSourceName>((s) => s['cdnSource'])
@@ -1139,16 +1150,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
     /**
      * Waits until a global variable is available on the `window` object.
-     * @param globalName {string} The name of the global variable to check.
-     * @param timeout {number} The maximum time to wait in milliseconds.
-     * @returns {Promise<boolean>} Resolves to `true` if the variable is found, `false` otherwise.
      */
     private waitForGlobal(
         globalName: string,
         timeout: number,
     ): Promise<boolean> {
         return new Promise((resolve) => {
-            const interval = 50; // Check every 50ms
+            const interval = 50;
             let elapsed = 0;
 
             const check = () => {

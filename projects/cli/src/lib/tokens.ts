@@ -9,3 +9,9 @@ export const CliProcessorsRegistry_TOKEN = 'cli-processors-registry';
  * Used as a key in the service provider to retrieve the state store manager.
  */
 export const CliStateStoreManager_TOKEN = 'cli-state-store-manager';
+
+/**
+ * Framework-agnostic token for the CLI command history service.
+ * Used as a key in the service provider to retrieve the command history.
+ */
+export const CliCommandHistory_TOKEN = 'cli-command-history';

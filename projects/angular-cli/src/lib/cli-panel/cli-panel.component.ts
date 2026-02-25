@@ -11,7 +11,6 @@ import {
 import { CliOptions } from '@qodalis/cli-core';
 import { CliCanViewService } from '../services';
 import { Subscription } from 'rxjs';
-import { ContainerSize } from '../cli-terminal/cli-terminal.component';
 import { CliComponent } from '../cli/cli.component';
 import { CollapsableContentComponent } from '../collapsable-content/collapsable-content.component';
 
@@ -82,7 +81,7 @@ export class CliPanelComponent implements OnDestroy {
 
     private static readonly MIN_PANE_WIDTH_PERCENT = 10;
 
-    protected terminalHeight: ContainerSize = `${600 - 60 - 38}px`;
+    protected terminalHeight: string = `${600 - 60 - 38}px`;
 
     protected initialized: boolean = false;
 

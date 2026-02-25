@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     ICliExecutionContext,
     CliProcessCommand,
@@ -10,11 +9,8 @@ import {
 } from '@qodalis/cli-core';
 
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { CliCommandHistoryService } from '../../services';
+import { CliCommandHistory, CliCommandHistory_TOKEN } from '@qodalis/cli';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliHistoryCommandProcessor implements ICliCommandProcessor {
     command = 'history';
 
@@ -33,9 +29,7 @@ export class CliHistoryCommandProcessor implements ICliCommandProcessor {
         module: 'system',
     };
 
-    constructor(
-        private readonly commandHistoryService: CliCommandHistoryService,
-    ) {
+    constructor() {
         this.processors?.push({
             command: 'list',
             description: this.description,
@@ -50,7 +44,10 @@ export class CliHistoryCommandProcessor implements ICliCommandProcessor {
                 _: CliProcessCommand,
                 context: ICliExecutionContext,
             ) => {
-                await this.commandHistoryService.clearHistory();
+                const commandHistory = context.services.get<CliCommandHistory>(
+                    CliCommandHistory_TOKEN,
+                );
+                await commandHistory.clearHistory();
                 context.writer.writeInfo('Command history cleared');
             },
             writeDescription: (context: ICliExecutionContext) => {
@@ -61,9 +58,13 @@ export class CliHistoryCommandProcessor implements ICliCommandProcessor {
 
     async processCommand(
         _: CliProcessCommand,
-        { writer }: ICliExecutionContext,
+        context: ICliExecutionContext,
     ): Promise<void> {
-        const history = this.commandHistoryService.getHistory();
+        const { writer } = context;
+        const commandHistory = context.services.get<CliCommandHistory>(
+            CliCommandHistory_TOKEN,
+        );
+        const history = commandHistory.getHistory();
 
         if (history.length === 0) {
             writer.writeInfo('📜 No command history yet');

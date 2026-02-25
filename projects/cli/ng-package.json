@@ -6,6 +6,10 @@
   },
   "allowedNonPeerDependencies": [
     "@qodalis/cli-core",
-    "@xterm/xterm"
+    "@xterm/xterm",
+    "@xterm/addon-fit",
+    "@xterm/addon-web-links",
+    "@xterm/addon-unicode11",
+    "rxjs"
   ]
 }

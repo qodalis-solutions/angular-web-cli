@@ -18,14 +18,7 @@ import {
 import { Terminal } from '@xterm/xterm';
 import { Subject } from 'rxjs';
 import { CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN } from '../tokens';
-
-/**
- * Interface for the state store manager, used to resolve processor-specific state stores.
- */
-export interface ICliStateStoreManager {
-    getProcessorStateStore(processor: ICliCommandProcessor): ICliStateStore;
-    getStateStore(name: string, defaultState?: Record<string, any>): ICliStateStore;
-}
+import { ICliStateStoreManager } from '../state/cli-state-store-manager';
 
 export class CliCommandExecutionContext implements ICliExecutionContext {
     userSession?: ICliUserSession | undefined;

@@ -1,4 +1,3 @@
-import { Injectable, Injector } from '@angular/core';
 import {
     ICliExecutionContext,
     CliProcessCommand,
@@ -10,12 +9,9 @@ import {
     ICliCommandProcessorRegistry,
 } from '@qodalis/cli-core';
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { CliProcessorsRegistry_TOKEN } from '../../tokens';
+import { CliProcessorsRegistry_TOKEN } from '@qodalis/cli';
 import { groupBy } from '../../../utils/arrays';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliHelpCommandProcessor implements ICliCommandProcessor {
     command = 'help';
 
@@ -33,19 +29,14 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
         module: 'system',
     };
 
-    private readonly registry: ICliCommandProcessorRegistry;
-
-    constructor(private readonly injector: Injector) {
-        this.registry = this.injector.get<ICliCommandProcessorRegistry>(
-            CliProcessorsRegistry_TOKEN,
-        );
-    }
-
     async processCommand(
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
         const { writer } = context;
+        const registry = context.services.get<ICliCommandProcessorRegistry>(
+            CliProcessorsRegistry_TOKEN,
+        );
 
         const [_, ...commandsToHelp] = command.command.split(' ');
 
@@ -63,7 +54,7 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
             writer.writeln();
 
             const groupedCommands = groupBy<ICliCommandProcessor, string>(
-                this.registry.processors,
+                registry.processors,
                 (x) => x.metadata?.module || 'uncategorized',
             );
 
@@ -96,7 +87,7 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
                 `\n💡 Type ${writer.wrapInColor('help <command>', CliForegroundColor.Cyan)} to get more information about a specific command`,
             );
         } else {
-            const processor = this.registry.findProcessor(
+            const processor = registry.findProcessor(
                 commandsToHelp[0],
                 commandsToHelp.slice(1),
             );

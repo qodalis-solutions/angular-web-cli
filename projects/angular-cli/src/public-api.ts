@@ -1,12 +1,10 @@
 /*
- * Public API Surface of cli
+ * Public API Surface of @qodalis/angular-cli
  */
 
 export * from './lib/cli.module';
 
 export * from './lib/cli/services';
-
-export * from './lib/cli/context';
 
 export * from './lib/utils';
 
@@ -20,3 +18,6 @@ export {
 } from './lib/cli-panel/cli-panel.component';
 
 export { CliComponent } from './lib/cli/cli.component';
+
+// Re-exports from @qodalis/cli for convenience
+export { CliEngine, CliEngineOptions } from '@qodalis/cli';

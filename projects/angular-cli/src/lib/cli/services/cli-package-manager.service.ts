@@ -1,16 +1,20 @@
-import { Injectable } from '@angular/core';
-import { Package } from '@qodalis/cli-core';
-import { CliKeyValueStore } from '../storage/cli-key-value-store';
+import { ICliKeyValueStore, Package } from '@qodalis/cli-core';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliPackageManagerService {
     private readonly storageKey = 'cli-packages';
 
     public QODALIS_COMMAND_PREFIX = '@qodalis/cli-';
 
-    constructor(private readonly store: CliKeyValueStore) {}
+    private store!: ICliKeyValueStore;
+
+    constructor() {}
+
+    /**
+     * Set the key-value store instance for persistence.
+     */
+    setStore(store: ICliKeyValueStore): void {
+        this.store = store;
+    }
 
     /**
      * Retrieves the list of packages
@@ -30,8 +34,6 @@ export class CliPackageManagerService {
 
     /**
      * Retrieves a package by name from the list.
-     * @param packageName {string} The name of the package to retrieve
-     * @returns {Package | undefined} The package if found, undefined otherwise
      */
     async getPackage(packageName: string): Promise<Package | undefined> {
         return (await this.getPackages()).find(
@@ -43,8 +45,6 @@ export class CliPackageManagerService {
 
     /**
      * Checks if a package with the given name exists in the list.
-     * @param packageName {string} The name of the package to check
-     * @returns {boolean} True if the package exists, false otherwise
      */
     async hasPackage(packageName: string): Promise<boolean> {
         return (await this.getPackage(packageName)) !== undefined;
@@ -52,7 +52,6 @@ export class CliPackageManagerService {
 
     /**
      * Adds a new package to the list and saves it in storage.
-     * @param pkg {Package} The package to add
      */
     async addPackage(pkg: Package): Promise<void> {
         const packages = await this.getPackages();
@@ -64,8 +63,7 @@ export class CliPackageManagerService {
     }
 
     /**
-     * Removes a package by name and saves the updated list in storage
-     * @param packageName {string} The name of the package to remove
+     * Removes a package by name and saves the updated list in storage.
      */
     async removePackage(packageName: string): Promise<Package> {
         const packages = await this.getPackages();
@@ -93,12 +91,7 @@ export class CliPackageManagerService {
     }
 
     /**
-     * Updates an existing package in the list and saves the updated list in storage.
-     * @param pkg {Package} The updated package
-     * @throws {Error} If the package to update is not found
-     * @returns {void}
-     * @throws {Error} If the package to update is not found
-     * @returns {void}
+     * Updates an existing package in the list.
      */
     async updatePackage(pkg: Package): Promise<void> {
         const packages = await this.getPackages();
@@ -110,10 +103,6 @@ export class CliPackageManagerService {
         await this.savePackages(packages);
     }
 
-    /**
-     * Saves the list of packages to storage.
-     * @param packages {Package[]} The list of packages to save
-     */
     private async savePackages(packages: Package[]): Promise<void> {
         await this.store.set(this.storageKey, packages);
     }

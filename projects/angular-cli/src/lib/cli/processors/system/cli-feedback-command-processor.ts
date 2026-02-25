@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     ICliExecutionContext,
     CliProcessCommand,
@@ -15,9 +14,6 @@ import { openLink } from '../../../utils';
 
 const githubUrl = 'https://github.com/qodalis-solutions/angular-web-cli';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
     command = 'feedback';
 

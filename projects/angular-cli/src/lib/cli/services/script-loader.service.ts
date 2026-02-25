@@ -1,5 +1,3 @@
-import { Injectable } from '@angular/core';
-
 export type CdnSourceName = 'unpkg' | 'jsdelivr';
 
 const CDN_BASE_URLS: Record<CdnSourceName, string> = {
@@ -9,9 +7,6 @@ const CDN_BASE_URLS: Record<CdnSourceName, string> = {
 
 const DEFAULT_CDN_ORDER: CdnSourceName[] = ['unpkg', 'jsdelivr'];
 
-@Injectable({
-    providedIn: 'root',
-})
 export class ScriptLoaderService {
     private cdnOrder: CdnSourceName[] = [...DEFAULT_CDN_ORDER];
 

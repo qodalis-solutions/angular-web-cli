@@ -1,138 +1,74 @@
 import {
+    AfterViewInit,
     Component,
+    ElementRef,
     Inject,
-    Injector,
     Input,
     OnDestroy,
-    OnInit,
+    Optional,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import {
-    CliOptions,
-    ICliUserSession,
-    ICliUserSessionService,
-} from '@qodalis/cli-core';
-import { CliCommandExecutorService } from './services';
-import { CliKeyValueStore } from './storage/cli-key-value-store';
-import {
-    ITerminalInitOnlyOptions,
-    ITerminalOptions,
-    Terminal,
-} from '@xterm/xterm';
-import { ICliUserSessionService_TOKEN } from './tokens';
-import { CliExecutionContext } from './context';
-import { CliBoot } from './services/system/cli-boot';
-import { CliWelcomeMessageService } from './services/system/cli-welcome-message.service';
-import { BehaviorSubject, combineLatest, filter, Subscription } from 'rxjs';
-import { themes } from './processors/theme/types';
-import { CliTerminalComponent, ContainerSize } from '../cli-terminal/cli-terminal.component';
+import { ICliCommandProcessor, CliOptions } from '@qodalis/cli-core';
+import { CliEngine, CliEngineOptions } from '@qodalis/cli';
+import { CliCommandProcessor_TOKEN } from './tokens';
+import { builtinProcessors } from '../index';
 
 @Component({
     selector: 'cli',
-    templateUrl: './cli.component.html',
-    styleUrls: ['./cli.component.sass'],
+    template: `<div #terminal
+        [style.height]="height || '100%'"
+        style="width: 100%;">
+    </div>`,
+    styles: [],
     encapsulation: ViewEncapsulation.None,
 })
-export class CliComponent implements OnInit, OnDestroy {
+export class CliComponent implements AfterViewInit, OnDestroy {
     @Input() options?: CliOptions;
+    @Input() processors?: ICliCommandProcessor[];
+    @Input() height?: string;
 
-    @Input() height?: ContainerSize;
+    @ViewChild('terminal', { static: true }) terminalDiv!: ElementRef;
 
-    @ViewChild(CliTerminalComponent) private terminalComponent!: CliTerminalComponent;
-
-    protected terminalOptions!: ITerminalOptions & ITerminalInitOnlyOptions;
-    private terminal!: Terminal;
-
-    private executionContext?: CliExecutionContext;
-    private currentUserSession: ICliUserSession | undefined;
-
-    protected minDepsInitialized = new BehaviorSubject<boolean>(false);
-    protected terminalInitialized = new BehaviorSubject<boolean>(false);
-
-    private subscriptions = new Subscription();
+    private engine?: CliEngine;
 
     constructor(
-        private injector: Injector,
-        @Inject(ICliUserSessionService_TOKEN)
-        private readonly userManagementService: ICliUserSessionService,
-        private commandExecutor: CliCommandExecutorService,
-        private readonly store: CliKeyValueStore,
-    ) {
-        this.subscriptions.add(
-            this.userManagementService
-                .getUserSession()
-                .subscribe((session) => {
-                    this.currentUserSession = session;
-                    this.executionContext?.setSession(session!);
+        @Optional()
+        @Inject(CliCommandProcessor_TOKEN)
+        private readonly diProcessors: ICliCommandProcessor[],
+    ) {}
 
-                    if (this.terminal) {
-                        this.executionContext?.showPrompt({
-                            reset: true,
-                        });
-                    }
-                }),
-        );
-    }
-
-    ngOnInit(): void {
-        this.subscriptions.add(
-            combineLatest([this.minDepsInitialized, this.terminalInitialized])
-                .pipe(filter(([x, y]) => x && y))
-                .subscribe(() => {
-                    this.initialize();
-                }),
-        );
-
-        this.terminalOptions = {
-            cursorBlink: true,
-            allowProposedApi: true,
-            fontSize: 20,
-            theme: themes.default,
-            convertEol: true,
-            ...(this.options?.terminalOptions ?? {}),
+    ngAfterViewInit(): void {
+        const engineOptions: CliEngineOptions = {
+            ...(this.options ?? {}),
         };
 
-        this.store.initialize().then(() => {
-            this.minDepsInitialized.next(true);
-        });
+        this.engine = new CliEngine(
+            this.terminalDiv.nativeElement,
+            engineOptions,
+        );
+
+        // Register built-in system processors (plain class instances, no Angular DI)
+        this.engine.registerProcessors(builtinProcessors);
+
+        // Register processors provided via Angular DI (from resolveCommandProcessorProvider)
+        if (this.diProcessors && this.diProcessors.length > 0) {
+            this.engine.registerProcessors(this.diProcessors);
+        }
+
+        // Register processors provided via @Input
+        if (this.processors && this.processors.length > 0) {
+            this.engine.registerProcessors(this.processors);
+        }
+
+        this.engine.start();
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.unsubscribe();
+        this.engine?.destroy();
     }
 
     public focus(): void {
-        this.terminalComponent?.fitTerminal();
-    }
-
-    protected onTerminalReady(terminal: Terminal): void {
-        this.terminal = terminal;
-
-        this.terminalInitialized.next(true);
-    }
-
-    private initialize() {
-        this.executionContext = new CliExecutionContext(
-            this.injector,
-            this.terminal,
-            this.commandExecutor,
-            {
-                ...(this.options ?? {}),
-                terminalOptions: this.terminalOptions,
-            },
-        );
-
-        this.executionContext.setSession(this.currentUserSession!);
-        this.executionContext.initializeTerminalListeners();
-
-        this.injector
-            .get(CliBoot)
-            .boot(this.executionContext)
-            .then(() => {
-                this.injector
-                    .get(CliWelcomeMessageService)
-                    .displayWelcomeMessage(this.executionContext!);
-            });
+        this.engine?.focus();
     }
 }

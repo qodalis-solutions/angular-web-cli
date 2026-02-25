@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessCommand,
@@ -13,9 +12,6 @@ import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { ITheme } from '@xterm/xterm';
 import { themes, ThemeState } from './types';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliThemeCommandProcessor implements ICliCommandProcessor {
     command = 'theme';
 

@@ -1,4 +1,4 @@
-import { resolveCommandProcessorProvider } from '../../../utils';
+import { ICliCommandProcessor } from '@qodalis/cli-core';
 import { CliFeedbackCommandProcessor } from './cli-feedback-command-processor';
 import { CliHelpCommandProcessor } from './cli-help-command-processor';
 import { CliHistoryCommandProcessor } from './cli-history-command-processor';
@@ -18,11 +18,19 @@ export { CliHistoryCommandProcessor } from './cli-history-command-processor';
 
 export { CliFeedbackCommandProcessor } from './cli-feedback-command-processor';
 
-export const systemProviders = [
-    resolveCommandProcessorProvider(CliHelpCommandProcessor),
-    resolveCommandProcessorProvider(CliVersionCommandProcessor),
-    resolveCommandProcessorProvider(CliFeedbackCommandProcessor),
-    resolveCommandProcessorProvider(CliHistoryCommandProcessor),
-    resolveCommandProcessorProvider(CliPackagesCommandProcessor),
-    resolveCommandProcessorProvider(CliHotKeysCommandProcessor),
+/**
+ * All built-in system command processors as plain class instances.
+ */
+export const systemProcessors: ICliCommandProcessor[] = [
+    new CliHelpCommandProcessor(),
+    new CliVersionCommandProcessor(),
+    new CliFeedbackCommandProcessor(),
+    new CliHistoryCommandProcessor(),
+    new CliPackagesCommandProcessor(),
+    new CliHotKeysCommandProcessor(),
 ];
+
+/**
+ * @deprecated Use systemProcessors instead. Kept for backward compatibility.
+ */
+export const systemProviders = systemProcessors;

@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     ICliExecutionContext,
     CliProcessCommand,
@@ -9,9 +8,6 @@ import {
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { hotkeysInfo } from '../../constants';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliHotKeysCommandProcessor implements ICliCommandProcessor {
     command = 'hotkeys';
 

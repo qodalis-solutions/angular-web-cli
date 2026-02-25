@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     ICliExecutionContext,
     CliProcessCommand,
@@ -14,9 +13,6 @@ import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { LIBRARY_VERSION } from '../../../version';
 import { getCliNameArt } from '../../constants';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliVersionCommandProcessor implements ICliCommandProcessor {
     command = 'version';
 

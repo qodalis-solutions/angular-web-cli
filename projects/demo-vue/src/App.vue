@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Cli } from '@qodalis/vue-cli';
+import { Cli, CliPanel } from '@qodalis/vue-cli';
+import '@qodalis/cli/src/assets/cli-panel.css';
 import { CliGuidCommandProcessor } from '@qodalis/cli-guid';
 import { CliRegexCommandProcessor } from '@qodalis/cli-regex';
 import { CliTextToImageCommandProcessor } from '@qodalis/cli-text-to-image';
@@ -32,4 +33,5 @@ const processors = [
 
 <template>
   <Cli :processors="processors" :style="{ width: '100vw', height: '100vh' }" />
+  <CliPanel :processors="processors" />
 </template>

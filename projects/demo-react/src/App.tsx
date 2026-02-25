@@ -1,4 +1,5 @@
-import { Cli } from '@qodalis/react-cli';
+import { Cli, CliPanel } from '@qodalis/react-cli';
+import '@qodalis/cli/src/assets/cli-panel.css';
 import { CliGuidCommandProcessor } from '@qodalis/cli-guid';
 import { CliRegexCommandProcessor } from '@qodalis/cli-regex';
 import { CliTextToImageCommandProcessor } from '@qodalis/cli-text-to-image';
@@ -30,9 +31,12 @@ const processors = [
 
 function App() {
     return (
-        <div style={{ width: '100vw', height: '100vh' }}>
-            <Cli processors={processors} />
-        </div>
+        <>
+            <div style={{ width: '100vw', height: '100vh' }}>
+                <Cli processors={processors} />
+            </div>
+            <CliPanel processors={processors} />
+        </>
     );
 }
 

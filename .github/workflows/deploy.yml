@@ -43,6 +43,8 @@ jobs:
           cp README.md dist/cli/
           cp README.md dist/core/
           cp README.md dist/angular-cli/
+          cp README.md dist/react-cli/
+          cp README.md dist/vue-cli/
 
       - name: Publish to NPM
         env:

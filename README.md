@@ -1,10 +1,13 @@
-<h1 align="center">Qodalis Angular Web CLI</h1>
+<h1 align="center">Qodalis Web CLI</h1>
 
-<p align="center">A web-based terminal for Angular applications — extensible, themeable, and packed with built-in developer tools.</p>
+<p align="center">A web-based terminal for Angular, React, and Vue — extensible, themeable, and packed with built-in developer tools.</p>
 
 <div align="center">
 
-[![npm version](https://img.shields.io/npm/v/@qodalis/angular-cli.svg)](https://www.npmjs.com/package/@qodalis/angular-cli)
+[![npm version](https://img.shields.io/npm/v/@qodalis/cli.svg?label=cli)](https://www.npmjs.com/package/@qodalis/cli)
+[![npm version](https://img.shields.io/npm/v/@qodalis/angular-cli.svg?label=angular)](https://www.npmjs.com/package/@qodalis/angular-cli)
+[![npm version](https://img.shields.io/npm/v/@qodalis/react-cli.svg?label=react)](https://www.npmjs.com/package/@qodalis/react-cli)
+[![npm version](https://img.shields.io/npm/v/@qodalis/vue-cli.svg?label=vue)](https://www.npmjs.com/package/@qodalis/vue-cli)
 [![Build Status](https://github.com/qodalis-solutions/angular-web-cli/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/qodalis-solutions/angular-web-cli/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -13,22 +16,30 @@
 <p align="center">
   <a href="https://cli.qodalis.com/">Live Demo</a> &middot;
   <a href="https://cli.qodalis.com/docs/">Documentation</a> &middot;
-  <a href="https://www.npmjs.com/package/@qodalis/angular-cli">npm</a>
+  <a href="https://www.npmjs.com/package/@qodalis/cli">npm</a>
 </p>
 
 ---
 
 ![Help command](assets/help_command.gif)
 
-## Installation
+## Packages
+
+| Package | Description |
+|---------|-------------|
+| [`@qodalis/cli-core`](https://www.npmjs.com/package/@qodalis/cli-core) | Shared interfaces, models, and types |
+| [`@qodalis/cli`](https://www.npmjs.com/package/@qodalis/cli) | Framework-agnostic terminal engine (50+ built-in commands) |
+| [`@qodalis/angular-cli`](https://www.npmjs.com/package/@qodalis/angular-cli) | Angular wrapper |
+| [`@qodalis/react-cli`](https://www.npmjs.com/package/@qodalis/react-cli) | React wrapper |
+| [`@qodalis/vue-cli`](https://www.npmjs.com/package/@qodalis/vue-cli) | Vue 3 wrapper |
+
+## Quick Start
+
+### Angular
 
 ```bash
 npm install @qodalis/angular-cli
 ```
-
-## Quick Start
-
-**1. Import the module:**
 
 ```typescript
 import { CliModule } from '@qodalis/angular-cli';
@@ -39,7 +50,7 @@ import { CliModule } from '@qodalis/angular-cli';
 export class AppModule {}
 ```
 
-**2. Add the styles to `angular.json`:**
+Add styles to `angular.json`:
 
 ```json
 {
@@ -49,20 +60,50 @@ export class AppModule {}
 }
 ```
 
-**3. Add the terminal to your template:**
-
 ```html
 <!-- Full terminal -->
 <cli [options]="cliOptions" />
 
-<!-- Collapsible panel at the bottom of the page -->
+<!-- Collapsible panel -->
 <cli-panel />
 ```
 
-**4. Configure (optional):**
+### React
+
+```bash
+npm install @qodalis/react-cli
+```
+
+```tsx
+import { Cli } from '@qodalis/react-cli';
+
+function App() {
+  return <Cli style={{ width: '100vw', height: '100vh' }} />;
+}
+```
+
+### Vue
+
+```bash
+npm install @qodalis/vue-cli
+```
+
+```vue
+<script setup lang="ts">
+import { Cli } from '@qodalis/vue-cli';
+</script>
+
+<template>
+  <Cli :style="{ width: '100vw', height: '100vh' }" />
+</template>
+```
+
+### Configuration (all frameworks)
+
+Pass options to customize the terminal:
 
 ```typescript
-cliOptions = {
+const options = {
   welcomeMessage: {
     message: '-- your custom welcome message --',
     show: 'daily', // 'never', 'once', 'daily', 'always'
@@ -196,7 +237,7 @@ export class GreetCommandProcessor implements ICliCommandProcessor {
 }
 ```
 
-Register it in your module:
+### Register in Angular
 
 ```typescript
 import { CliModule, resolveCommandProcessorProvider } from '@qodalis/angular-cli';
@@ -208,13 +249,53 @@ import { CliModule, resolveCommandProcessorProvider } from '@qodalis/angular-cli
 export class AppModule {}
 ```
 
+### Register in React
+
+```tsx
+import { Cli } from '@qodalis/react-cli';
+
+function App() {
+  return <Cli processors={[new GreetCommandProcessor()]} />;
+}
+```
+
+### Register in Vue
+
+```vue
+<script setup lang="ts">
+import { Cli } from '@qodalis/vue-cli';
+
+const processors = [new GreetCommandProcessor()];
+</script>
+
+<template>
+  <Cli :processors="processors" />
+</template>
+```
+
 ```bash
 ~$ greet World
 Hello, World!
 ```
 
+## Using the Engine Directly
+
+For advanced use cases or non-framework environments, use `CliEngine` directly:
+
+```typescript
+import { CliEngine } from '@qodalis/cli';
+
+const engine = new CliEngine(document.getElementById('terminal')!, {
+  welcomeMessage: { message: 'Welcome!', show: 'always' },
+});
+
+engine.registerProcessors([new GreetCommandProcessor()]);
+await engine.start();
+```
+
 ## Features
 
+- **Multi-framework** — Angular, React, Vue, or vanilla JS
 - **Command chaining** with `&&` and `||` operators
 - **Command history** with arrow key navigation
 - **Tab-like completions** and keyboard shortcuts (`Ctrl+C`, `Ctrl+L`, `Escape`)

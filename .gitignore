@@ -4,6 +4,8 @@
 /dist
 projects/react-cli/dist
 projects/vue-cli/dist
+projects/demo-react/dist
+projects/demo-vue/dist
 /tmp
 /out-tsc
 /bazel-out

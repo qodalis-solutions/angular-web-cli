@@ -1,0 +1,42 @@
+{
+    "name": "@qodalis/react-cli",
+    "version": "0.1.0",
+    "description": "React wrapper for the Qodalis CLI terminal engine.",
+    "author": "Nicolae Lupei, Qodalis Solutions",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/qodalis-solutions/angular-web-cli"
+    },
+    "homepage": "https://qodalis.com",
+    "keywords": ["react", "cli", "qodalis", "terminal"],
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "files": ["dist"],
+    "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+        "react-dom": "^18.0.0 || ^19.0.0"
+    },
+    "dependencies": {
+        "@qodalis/cli": "^0.2.0",
+        "@qodalis/cli-core": "^0.0.16"
+    },
+    "devDependencies": {
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "@types/react": "^18.0.0 || ^19.0.0"
+    },
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch"
+    },
+    "sideEffects": false
+}

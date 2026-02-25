@@ -29,8 +29,8 @@ jobs:
       - name: Build all libraries
         run: npm run "build all"
 
-      - name: Build demo application
-        run: npx ng build demo --configuration production
+      - name: Build docs application
+        run: npx ng build docs --configuration production
 
       - name: Generate TypeDoc documentation
         run: npx typedoc --out typedoc-output
@@ -38,7 +38,7 @@ jobs:
       - name: Assemble deployment directory
         run: |
           mkdir -p deploy/docs
-          cp -r dist/demo/* deploy/
+          cp -r dist/docs/* deploy/
           cp -r typedoc-output/* deploy/docs/
           cp deploy/index.html deploy/404.html
           cp assets/github/CNAME deploy/CNAME

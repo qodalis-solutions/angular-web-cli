@@ -43,11 +43,11 @@ async function buildProjects() {
             (entry) =>
               !mainFolders.includes(entry) &&
               !tsupFolders.includes(entry) &&
-              entry !== "demo" &&
+              entry !== "docs" &&
               !entry.startsWith("demo-"),
           ),
       )
-      .concat(["demo"]);
+      .concat(["docs"]);
 
     if (ngFolders.length === 0) {
       console.log("No subfolders found.");

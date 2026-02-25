@@ -6,7 +6,7 @@ export const baseConfig = {
       useTsconfigDeclarationDir: true, // Use the declaration folder specified in tsconfig
       clean: true, // Remove previous caches
       tsconfigOverride: {
-        exclude: ["**/react-cli/**", "**/vue-cli/**", "**/demo-react/**", "**/demo-vue/**"],
+        exclude: ["**/react-cli/**", "**/vue-cli/**", "**/demo-react/**", "**/demo-vue/**", "**/demo-angular/**"],
       },
     }),
   ],

@@ -4,6 +4,8 @@
 
 export * from './lib/cli.module';
 
+export { resolveCliProviders } from './lib/index';
+
 export * from './lib/cli/services';
 
 export * from './lib/utils';

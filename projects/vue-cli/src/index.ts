@@ -1,4 +1,5 @@
 export { Cli } from './Cli';
+export { CliPanel } from './CliPanel';
 export { CliProvider } from './CliProvider';
 export { useCli } from './useCli';
 export { useCliEngine } from './useCliEngine';

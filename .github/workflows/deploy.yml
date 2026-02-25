@@ -30,19 +30,26 @@ jobs:
       - name: Build all projects
         run: npm run "build all"
 
-      - name: Replace README.md in main libraries
+      - name: Copy tsup builds into dist for publishing
+        run: |
+          mkdir -p dist/react-cli dist/vue-cli
+          cp -r projects/react-cli/dist/* dist/react-cli/ 2>/dev/null || true
+          cp projects/react-cli/package.json dist/react-cli/
+          cp -r projects/vue-cli/dist/* dist/vue-cli/ 2>/dev/null || true
+          cp projects/vue-cli/package.json dist/vue-cli/
+
+      - name: Copy README.md into main libraries
         run: |
           cp README.md dist/cli/
           cp README.md dist/core/
+          cp README.md dist/angular-cli/
 
       - name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Define an exclusion list
           EXCLUDED=("demo")
 
-          # Dynamically build the array of library names, excluding the ones in EXCLUDED
           LIBRARIES=($(ls dist | grep -v -E "$(IFS=\|; echo "${EXCLUDED[*]}")"))
 
           echo "Libraries to publish: ${LIBRARIES[@]}"

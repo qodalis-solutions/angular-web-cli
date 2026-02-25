@@ -1,6 +1,6 @@
 {
   "name": "@qodalis/cli-string",
-  "version": "0.0.3",
+  "version": "2.0.1",
   "description": "@qodalis/cli extension for string manipulation and transformation utilities.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
@@ -21,7 +21,7 @@
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",
   "dependencies": {
-    "@qodalis/cli-core": "^0.0.16",
+    "@qodalis/cli-core": "^2.0.1",
     "lodash": "^4.17.21",
     "@types/lodash": "^4.17.14",
     "tslib": "^2.3.0"

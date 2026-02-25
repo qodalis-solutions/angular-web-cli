@@ -1,6 +1,6 @@
 {
   "name": "@qodalis/cli-qr",
-  "version": "0.0.3",
+  "version": "2.0.1",
   "description": "@qodalis/cli extension for generating and displaying QR codes.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
@@ -21,7 +21,7 @@
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",
   "dependencies": {
-    "@qodalis/cli-core": "^0.0.16",
+    "@qodalis/cli-core": "^2.0.1",
     "qr-code-styling": "^1.9.1",
     "tslib": "^2.3.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@qodalis/angular-cli",
-  "version": "1.0.39",
+  "version": "2.0.1",
   "description": "Angular wrapper for the @qodalis CLI terminal engine.",
   "author": "Nicolae Lupei, Qodalis Solutions",
   "license": "MIT",
@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "tslib": "^2.3.0",
-    "@qodalis/cli-core": "^0.0.16",
-    "@qodalis/cli": "^0.1.0"
+    "@qodalis/cli-core": "^2.0.1",
+    "@qodalis/cli": "^2.0.1"
   },
   "sideEffects": false
 }

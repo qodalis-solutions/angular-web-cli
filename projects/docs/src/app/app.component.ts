@@ -68,7 +68,7 @@ export class AppComponent {
             icon: '\u29C9',
             title: 'Plugin Ecosystem',
             description:
-                'Extend functionality with drop-in Angular modules. GUID, regex, QR codes, speed tests, and more.',
+                'Extend functionality with drop-in plugins. GUID, regex, QR codes, speed tests, and more.',
         },
         {
             icon: '\u2261',

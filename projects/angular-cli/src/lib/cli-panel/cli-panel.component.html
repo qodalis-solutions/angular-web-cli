@@ -59,7 +59,7 @@
               <button *ngIf="tab.panes.length > 1" class="pane-close-btn"
                       (click)="closePane(tab.id, pane.id); $event.stopPropagation()"
                       title="Close pane">&times;</button>
-              <cli [options]="options" [height]="terminalHeight" />
+              <cli [options]="options" [height]="terminalHeight" [processors]="processors" />
             </div>
           </ng-container>
         </div>

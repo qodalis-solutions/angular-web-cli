@@ -8,7 +8,7 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import { CliOptions } from '@qodalis/cli-core';
+import { CliOptions, ICliCommandProcessor } from '@qodalis/cli-core';
 import { CliCanViewService } from '../services';
 import { Subscription } from 'rxjs';
 import { CliComponent } from '../cli/cli.component';
@@ -53,6 +53,12 @@ export class CliPanelComponent implements OnDestroy {
      * The options for the CLI.
      */
     @Input() options?: CliPanelOptions;
+
+    /**
+     * Optional list of command processors to register with each terminal pane.
+     * This allows passing processors without Angular DI (framework-agnostic pattern).
+     */
+    @Input() processors?: ICliCommandProcessor[];
 
     @ViewChild(CollapsableContentComponent) collapsableContent!: CollapsableContentComponent;
     @ViewChildren(CliComponent) cliComponents!: QueryList<CliComponent>;

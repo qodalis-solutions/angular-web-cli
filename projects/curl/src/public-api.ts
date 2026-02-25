@@ -1,7 +1,5 @@
 /*
- * Public API Surface of string
+ * Public API Surface of curl
  */
-
-export * from './lib/cli-curl.module';
 
 export * from './lib/processors/cli-curl-command-processor';

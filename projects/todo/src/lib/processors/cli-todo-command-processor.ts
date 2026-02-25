@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliIcon,
@@ -13,7 +12,6 @@ import { LIBRARY_VERSION } from '../version';
 
 type TodoItem = { id: number; text: string; completed: boolean };
 
-@Injectable()
 export class CliTodoCommandProcessor implements ICliCommandProcessor {
     command = 'todo';
 

@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessCommand,
@@ -10,7 +9,6 @@ import {
 import QRCodeStyling from 'qr-code-styling';
 import { LIBRARY_VERSION } from '../version';
 
-@Injectable()
 export class CliQrCommandProcessor implements ICliCommandProcessor {
     command = 'qr';
 

@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessCommand,
@@ -9,7 +8,6 @@ import {
 } from '@qodalis/cli-core';
 import { LIBRARY_VERSION } from '../version';
 
-@Injectable()
 export class CliCurlCommandProcessor implements ICliCommandProcessor {
     command = 'curl';
 

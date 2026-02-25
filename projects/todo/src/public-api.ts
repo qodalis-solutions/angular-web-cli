@@ -1,7 +1,5 @@
 /*
- * Public API Surface of string
+ * Public API Surface of todo
  */
-
-export * from './lib/cli-todo.module';
 
 export * from './lib/processors/cli-todo-command-processor';

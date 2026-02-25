@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessCommand,
@@ -19,7 +18,6 @@ const BOLD = '\x1b[1m';
 const GREEN_BG = '\x1b[48;5;22m';
 const RED_BG = '\x1b[48;5;52m';
 
-@Injectable()
 export class CliYesnoCommandProcessor implements ICliCommandProcessor {
     command = 'yesno';
 

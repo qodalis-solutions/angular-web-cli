@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import {
     CliForegroundColor,
@@ -16,9 +15,6 @@ import { LIBRARY_VERSION } from '../version';
 
 const levels = ['verbose', 'debug', 'information', 'warning', 'error', 'fatal'];
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliLogsCommandProcessor implements ICliCommandProcessor {
     command = 'server-logs';
 

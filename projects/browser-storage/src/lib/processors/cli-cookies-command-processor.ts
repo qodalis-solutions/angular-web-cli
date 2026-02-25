@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessCommand,
@@ -11,9 +10,6 @@ import {
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { LIBRARY_VERSION } from '../version';
 
-@Injectable({
-    providedIn: 'root',
-})
 export class CliCookiesCommandProcessor implements ICliCommandProcessor {
     command = 'cookies';
 

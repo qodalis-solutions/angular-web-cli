@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import {
     CliForegroundColor,
     CliProcessCommand,
@@ -60,7 +59,6 @@ function stringTransform(
     };
 }
 
-@Injectable()
 export class CliStringCommandProcessor implements ICliCommandProcessor {
     command = 'string';
 

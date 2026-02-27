@@ -40,6 +40,15 @@ export class CliModuleRegistry {
     }
 
     /**
+     * Track a module without triggering boot handlers.
+     * Used by the boot service for statically-provided modules that are
+     * already being booted through the normal pipeline.
+     */
+    track(module: ICliModule): void {
+        this.modules.set(module.name, module);
+    }
+
+    /**
      * Check if a module is registered.
      */
     has(name: string): boolean {

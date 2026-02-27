@@ -125,6 +125,11 @@ export class CliBoot {
         }
 
         this.bootedModules.add(module.name);
+
+        // Track in module registry for introspection (without triggering boot handlers)
+        if (!this.moduleRegistry.has(module.name)) {
+            this.moduleRegistry.track(module);
+        }
     }
 
     private buildCoreModule(): ICliModule {

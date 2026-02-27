@@ -380,6 +380,9 @@ export interface ICliModule {
     /** Called after services are registered and before processors are initialized */
     onInit?(context: ICliExecutionContext): Promise<void>;
 
+    /** Called after all modules have booted and the terminal is interactive */
+    onAfterBoot?(context: ICliExecutionContext): Promise<void>;
+
     /** Called when the module is being torn down */
     onDestroy?(context: ICliExecutionContext): Promise<void>;
 }

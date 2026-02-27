@@ -158,6 +158,17 @@ export class CliEngine {
         // 7. Show welcome message
         const welcomeMessage = new CliWelcomeMessage();
         welcomeMessage.displayWelcomeMessage(this.executionContext);
+
+        // 8. Run onAfterBoot hooks (terminal is now interactive)
+        for (const module of this.userModules) {
+            if (module.onAfterBoot) {
+                try {
+                    await module.onAfterBoot(this.executionContext);
+                } catch (e) {
+                    console.error(`Error in onAfterBoot for module "${module.name}":`, e);
+                }
+            }
+        }
     }
 
     /**

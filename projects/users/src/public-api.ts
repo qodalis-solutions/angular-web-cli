@@ -120,16 +120,21 @@ export const usersModule: ICliUsersModule = {
             }
         }
 
-        // Restore session from IndexedDB, or auto-login as root (unless boot login required)
-        const restoredSession = await sessionService.restoreSession();
-        if (!restoredSession && !moduleConfig.requirePasswordOnBoot) {
-            const rootUser = await firstValueFrom(usersStore.getUser('root'));
-            if (rootUser) {
-                await sessionService.setUserSession({
-                    user: rootUser,
-                    loginTime: Date.now(),
-                    lastActivity: Date.now(),
-                });
+        // Restore or auto-login, unless boot login is required
+        if (moduleConfig.requirePasswordOnBoot) {
+            // Force fresh login — do not restore previous session
+            await sessionService.clearSession();
+        } else {
+            const restoredSession = await sessionService.restoreSession();
+            if (!restoredSession) {
+                const rootUser = await firstValueFrom(usersStore.getUser('root'));
+                if (rootUser) {
+                    await sessionService.setUserSession({
+                        user: rootUser,
+                        loginTime: Date.now(),
+                        lastActivity: Date.now(),
+                    });
+                }
             }
         }
 

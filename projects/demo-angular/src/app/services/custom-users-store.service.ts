@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { CliUsersStoreService } from '@qodalis/angular-cli';
+import { CliDefaultUsersStoreService } from '@qodalis/cli-users';
 
 @Injectable()
-export class CliCustomUsersStoreService extends CliUsersStoreService {
+export class CliCustomUsersStoreService extends CliDefaultUsersStoreService {
     constructor() {
         super();
     }

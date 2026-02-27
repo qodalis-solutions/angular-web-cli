@@ -38,7 +38,12 @@ export class AppComponent {
         qrModule,
         yesnoModule,
         serverLogsModule,
-        usersModule,
+        usersModule.configure!({
+            seedUsers: [
+                { name: 'root1', email: 'root1@root.com', groups: ['admin'] },
+            ],
+            defaultPassword: 'root',
+        }),
         {
             name: 'input-demo',
             processors: [new CliInputDemoCommandProcessor()],

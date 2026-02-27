@@ -18,7 +18,7 @@ import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
 import { CliWelcomeMessage } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
-import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN } from '../tokens';
+import { CliCommandHistory_TOKEN, CliModuleRegistry_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN } from '../tokens';
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
 
 export interface CliEngineOptions extends CliOptions {
@@ -133,6 +133,11 @@ export class CliEngine {
 
         // 4. Create boot service with registry and services
         this.bootService = new CliBoot(this.registry, services);
+
+        // Register the module registry so debug/introspection commands can access it
+        services.set([
+            { provide: CliModuleRegistry_TOKEN, useValue: this.bootService.getModuleRegistry() },
+        ]);
 
         // 5. Create executor and execution context
         const executor = new CliCommandExecutor(this.registry);

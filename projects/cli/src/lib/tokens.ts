@@ -22,5 +22,11 @@ export const CliCommandHistory_TOKEN = 'cli-command-history';
  */
 export const ICliPingServerService_TOKEN = 'cli-ping-server-service';
 
+/**
+ * Framework-agnostic token for the CLI module registry.
+ * Used as a key in the service provider to retrieve the module registry.
+ */
+export const CliModuleRegistry_TOKEN = 'cli-module-registry';
+
 // Re-exported from @qodalis/cli-core for backward compatibility
 export { ICliUserSessionService_TOKEN, ICliUsersStoreService_TOKEN } from '@qodalis/cli-core';

@@ -11,6 +11,8 @@ export interface CliUsersModuleConfig {
     requirePasswordOnSu?: boolean;
     /** Require password for login and su commands (default: false) */
     requirePassword?: boolean;
+    /** Require password on initial boot login (default: false — auto-login as root) */
+    requirePasswordOnBoot?: boolean;
     /** Session timeout in ms (0 = no timeout, default: 0) */
     sessionTimeout?: number;
     /**

@@ -227,17 +227,21 @@ describe('CliDefaultAuthService', () => {
             await authService.initialize(kvStore, usersStore, sessionService);
         });
 
-        it('should clear session', async () => {
-            await authService.login('root', 'root');
+        it('should fall back to root session after logout', async () => {
+            // Login as a non-root user
+            await usersStore.createUser({ name: 'testlogout', email: 'tl@test.com', groups: [] });
+            const user = await firstValueFrom(usersStore.getUser('testlogout'));
+            await authService.setPassword(user!.id, 'pass');
+            await authService.login('testlogout', 'pass');
 
-            // Verify session exists
             let current = await firstValueFrom(sessionService.getUserSession());
-            expect(current).toBeDefined();
+            expect(current?.user.name).toBe('testlogout');
 
             await authService.logout();
 
             current = await firstValueFrom(sessionService.getUserSession());
-            expect(current).toBeUndefined();
+            expect(current).toBeDefined();
+            expect(current?.user.name).toBe('root');
         });
     });
 });

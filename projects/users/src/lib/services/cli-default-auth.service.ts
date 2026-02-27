@@ -66,6 +66,16 @@ export class CliDefaultAuthService implements ICliAuthService {
 
     async logout(): Promise<void> {
         await this.sessionService.clearSession();
+
+        // Fall back to root session
+        const rootUser = await firstValueFrom(this.usersStore.getUser('root'));
+        if (rootUser) {
+            await this.sessionService.setUserSession({
+                user: rootUser,
+                loginTime: Date.now(),
+                lastActivity: Date.now(),
+            });
+        }
     }
 
     async setPassword(userId: string, password: string): Promise<void> {

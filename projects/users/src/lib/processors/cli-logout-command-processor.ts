@@ -26,13 +26,15 @@ export class CliLogoutCommandProcessor implements ICliCommandProcessor {
     }
 
     async processCommand(command: CliProcessCommand, context: ICliExecutionContext): Promise<void> {
-        if (!context.userSession) {
-            context.writer.writeError('logout: no active session');
+        const currentUser = context.userSession?.user?.name;
+
+        if (!currentUser || currentUser === 'root') {
+            context.writer.writeError('logout: cannot logout from root session');
             return;
         }
 
         await this.authService.logout();
-        context.writer.writeln('Logged out.');
+        context.writer.writeln(`Logged out ${currentUser}. Session restored to root.`);
     }
 
     writeDescription(context: ICliExecutionContext): void {

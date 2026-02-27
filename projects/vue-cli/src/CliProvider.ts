@@ -15,6 +15,10 @@ export const CliProvider = defineComponent({
             type: Object as PropType<CliEngineOptions>,
             default: undefined,
         },
+        services: {
+            type: Object as PropType<Record<string, any>>,
+            default: undefined,
+        },
         style: {
             type: Object as PropType<Record<string, string>>,
             default: undefined,
@@ -26,6 +30,7 @@ export const CliProvider = defineComponent({
         const engine = useCliEngine(containerRef, {
             processors: props.processors,
             options: props.options,
+            services: props.services,
         });
 
         provide(CliInjectionKey, { engine });

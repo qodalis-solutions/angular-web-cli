@@ -192,9 +192,16 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
         this.defaultTheme = context.terminal.options.theme!;
         const state = context.state.getState<ThemeState>();
 
+        console.debug('[theme] initialize — state:', JSON.stringify(state));
+
         if (state.selectedTheme && state.selectedTheme !== 'default') {
-            context.terminal.options.theme = themes[state.selectedTheme];
+            const theme = themes[state.selectedTheme];
+            console.debug(`[theme] applying "${state.selectedTheme}":`, !!theme);
+            if (theme) {
+                context.terminal.options.theme = theme;
+            }
         } else if (state.customOptions) {
+            console.debug('[theme] applying custom options');
             context.terminal.options.theme = state.customOptions;
         }
 

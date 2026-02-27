@@ -14,6 +14,10 @@ export const Cli = defineComponent({
             type: Object as PropType<CliEngineOptions>,
             default: undefined,
         },
+        services: {
+            type: Object as PropType<Record<string, any>>,
+            default: undefined,
+        },
         style: {
             type: Object as PropType<Record<string, string>>,
             default: undefined,
@@ -40,6 +44,12 @@ export const Cli = defineComponent({
             engine = new CliEngine(containerRef.value, props.options);
 
             engine.registerService('cli-framework', 'Vue');
+
+            if (props.services) {
+                for (const [token, value] of Object.entries(props.services)) {
+                    engine.registerService(token, value);
+                }
+            }
 
             if (props.processors) {
                 engine.registerProcessors(props.processors);

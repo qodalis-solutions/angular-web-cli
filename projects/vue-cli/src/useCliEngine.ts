@@ -5,6 +5,7 @@ import { ICliCommandProcessor } from '@qodalis/cli-core';
 export interface UseCliEngineConfig {
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
+    services?: Record<string, any>;
 }
 
 export function useCliEngine(
@@ -19,6 +20,12 @@ export function useCliEngine(
         const e = new CliEngine(containerRef.value, config?.options);
 
         e.registerService('cli-framework', 'Vue');
+
+        if (config?.services) {
+            for (const [token, value] of Object.entries(config.services)) {
+                e.registerService(token, value);
+            }
+        }
 
         if (config?.processors) {
             e.registerProcessors(config.processors);

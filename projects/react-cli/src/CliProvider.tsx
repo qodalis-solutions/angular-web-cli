@@ -7,6 +7,7 @@ import { useCliEngine } from './useCliEngine';
 export interface CliProviderProps {
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
+    services?: Record<string, any>;
     children: React.ReactNode;
     style?: React.CSSProperties;
 }
@@ -14,11 +15,12 @@ export interface CliProviderProps {
 export function CliProvider({
     processors,
     options,
+    services,
     children,
     style,
 }: CliProviderProps): React.JSX.Element {
     const containerRef = useRef<HTMLDivElement>(null);
-    const engine = useCliEngine(containerRef, { processors, options });
+    const engine = useCliEngine(containerRef, { processors, options, services });
 
     return (
         <CliContext.Provider value={{ engine }}>

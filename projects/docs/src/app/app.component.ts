@@ -57,9 +57,6 @@ export class AppComponent {
         welcomeMessage: {
             show: 'always',
         },
-        usersModule: {
-            enabled: true,
-        },
         logLevel: CliLogLevel.DEBUG,
     };
 

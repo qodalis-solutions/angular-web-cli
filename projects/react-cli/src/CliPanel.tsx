@@ -10,6 +10,7 @@ export interface CliPanelOptions extends CliEngineOptions {
 export interface CliPanelProps {
     options?: CliPanelOptions;
     processors?: ICliCommandProcessor[];
+    services?: Record<string, any>;
     style?: React.CSSProperties;
     className?: string;
 }
@@ -85,7 +86,7 @@ const CloseIcon = () => (
 
 /* ─── Component ──────────────────────────────────────────── */
 
-export function CliPanel({ options, processors, style, className }: CliPanelProps) {
+export function CliPanel({ options, processors, services, style, className }: CliPanelProps) {
     const [visible, setVisible] = useState(true);
     const [collapsed, setCollapsed] = useState(options?.isCollapsed ?? true);
     const [maximized, setMaximized] = useState(false);
@@ -469,7 +470,7 @@ export function CliPanel({ options, processors, style, className }: CliPanelProp
                                                             title="Close pane"
                                                         >&times;</button>
                                                     )}
-                                                    <Cli options={options} processors={processors} style={{ height: terminalHeight }} />
+                                                    <Cli options={options} processors={processors} services={services} style={{ height: terminalHeight }} />
                                                 </div>
                                             </React.Fragment>
                                         ))}

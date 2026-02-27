@@ -31,7 +31,7 @@ export class CliWelcomeMessage {
         } else {
             const welcomeMessage = [
                 `🚀 Welcome to Web CLI [Version ${context.writer.wrapInColor(LIBRARY_VERSION, CliForegroundColor.Green)}]`,
-                '(c) 2024 Qodalis Solutions. All rights reserved.',
+                `(c) ${new Date().getFullYear()} Qodalis Solutions. All rights reserved.`,
                 getCliNameArt(context.terminal.cols),
                 '',
                 `📖 ${context.writer.wrapInColor('Documentation:', CliForegroundColor.Green)} https://cli.qodalis.com/docs/`,

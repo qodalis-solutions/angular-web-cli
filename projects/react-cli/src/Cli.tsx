@@ -7,6 +7,7 @@ import { useCliEngine } from './useCliEngine';
 export interface CliProps {
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
+    services?: Record<string, any>;
     onReady?: (engine: CliEngine) => void;
     style?: React.CSSProperties;
     className?: string;
@@ -15,6 +16,7 @@ export interface CliProps {
 export function Cli({
     processors,
     options,
+    services,
     onReady,
     style,
     className,
@@ -26,7 +28,7 @@ export function Cli({
     // Otherwise, this component creates its own.
     const standaloneEngine = ctx.engine
         ? null
-        : useCliEngine(containerRef, { processors, options });
+        : useCliEngine(containerRef, { processors, options, services });
 
     const engine = ctx.engine ?? standaloneEngine;
 

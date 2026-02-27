@@ -5,7 +5,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import {
-    CliOptions, CliProvider, ICliCommandProcessor, DefaultThemes,
+    CliOptions, CliProvider, ICliCommandProcessor, ICliUserSessionService, ICliUsersStoreService, DefaultThemes,
 } from '@qodalis/cli-core';
 import { CliCommandExecutor } from '../executor/cli-command-executor';
 import { CliCommandProcessorRegistry } from '../registry/cli-command-processor-registry';
@@ -19,7 +19,10 @@ import { CliBoot } from '../services/cli-boot';
 import { CliWelcomeMessage } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
 import { builtinProcessors } from '../processors';
-import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN } from '../tokens';
+import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN, ICliUserSessionService_TOKEN, ICliUsersStoreService_TOKEN } from '../tokens';
+import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
+import { CliDefaultUsersStoreService } from '../services/defaults/cli-default-users-store.service';
+import { CliDefaultUserSessionService } from '../services/defaults/cli-default-user-session.service';
 
 export interface CliEngineOptions extends CliOptions {
     terminalOptions?: Partial<ITerminalOptions & ITerminalInitOnlyOptions>;
@@ -71,7 +74,8 @@ export class CliEngine {
      * Initialize the terminal, wire up services, boot processors, and show welcome message.
      */
     async start(): Promise<void> {
-        // 1. Initialize xterm.js terminal
+        // 1. Wait for container to have layout, then initialize xterm.js
+        await this.waitForLayout();
         this.initializeTerminal();
 
         // 2. Initialize storage (IndexedDB)
@@ -101,6 +105,22 @@ export class CliEngine {
             services.set(this.pendingServices);
         }
 
+        // Register default services only if not already provided
+        const pendingTokens = new Set(this.pendingServices.map((s) => s.provide));
+
+        if (!pendingTokens.has(ICliUsersStoreService_TOKEN)) {
+            services.set([{ provide: ICliUsersStoreService_TOKEN, useValue: new CliDefaultUsersStoreService() }]);
+        }
+
+        if (!pendingTokens.has(ICliUserSessionService_TOKEN)) {
+            const usersStore = services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
+            services.set([{ provide: ICliUserSessionService_TOKEN, useValue: new CliDefaultUserSessionService(usersStore) }]);
+        }
+
+        if (!pendingTokens.has(ICliPingServerService_TOKEN)) {
+            services.set([{ provide: ICliPingServerService_TOKEN, useValue: new CliDefaultPingServerService() }]);
+        }
+
         // 4. Create executor and execution context
         const executor = new CliCommandExecutor(this.registry);
         const terminalOptions = this.getTerminalOptions();
@@ -113,6 +133,16 @@ export class CliEngine {
         );
 
         this.executionContext.initializeTerminalListeners();
+
+        // Subscribe to user session changes
+        const userSessionService = services.get<ICliUserSessionService>(ICliUserSessionService_TOKEN);
+        if (userSessionService) {
+            userSessionService.getUserSession().subscribe((session) => {
+                if (session) {
+                    this.executionContext.setSession(session);
+                }
+            });
+        }
 
         // 5. Boot processors
         await this.bootService.boot(this.executionContext, this.userProcessors);
@@ -217,5 +247,22 @@ export class CliEngine {
 
         this.resizeObserver = new ResizeObserver(() => this.fitAddon.fit());
         this.resizeObserver.observe(this.container);
+    }
+
+    /**
+     * Wait until the container element has non-zero dimensions.
+     * xterm.js requires the host element to be laid out before open() is called.
+     */
+    private waitForLayout(): Promise<void> {
+        return new Promise<void>((resolve) => {
+            const check = () => {
+                if (this.container.offsetWidth > 0 && this.container.offsetHeight > 0) {
+                    resolve();
+                    return;
+                }
+                requestAnimationFrame(check);
+            };
+            check();
+        });
     }
 }

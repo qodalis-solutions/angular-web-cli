@@ -10,3 +10,4 @@ export { CliWelcomeMessage } from './cli-welcome-message';
 export { CliBoot } from './cli-boot';
 export { ScriptLoaderService, CdnSourceName } from './script-loader';
 export { CliPackageManagerService } from './cli-package-manager';
+export { CliDefaultPingServerService, CliDefaultUsersStoreService, CliDefaultUserSessionService } from './defaults';

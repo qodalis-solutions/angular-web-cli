@@ -3,14 +3,11 @@ import {
     ElementRef,
     HostListener,
     Input,
-    OnDestroy,
     QueryList,
     ViewChild,
     ViewChildren,
 } from '@angular/core';
 import { CliOptions, ICliCommandProcessor } from '@qodalis/cli-core';
-import { CliCanViewService } from '../services';
-import { Subscription } from 'rxjs';
 import { CliComponent } from '../cli/cli.component';
 import { CollapsableContentComponent } from '../collapsable-content/collapsable-content.component';
 
@@ -48,7 +45,7 @@ export type CliPanelOptions = CliOptions & {
     templateUrl: './cli-panel.component.html',
     styleUrls: ['./cli-panel.component.sass'],
 })
-export class CliPanelComponent implements OnDestroy {
+export class CliPanelComponent {
     /**
      * The options for the CLI.
      */
@@ -63,7 +60,7 @@ export class CliPanelComponent implements OnDestroy {
     @ViewChild(CollapsableContentComponent) collapsableContent!: CollapsableContentComponent;
     @ViewChildren(CliComponent) cliComponents!: QueryList<CliComponent>;
 
-    visible = false;
+    visible = true;
 
     tabs: TerminalTab[] = [];
     activeTabId = 0;
@@ -91,24 +88,12 @@ export class CliPanelComponent implements OnDestroy {
 
     protected initialized: boolean = false;
 
-    private subscriptions: Subscription = new Subscription();
-
     private static readonly TAB_BAR_HEIGHT = 38;
 
     constructor(
-        private readonly canView: CliCanViewService,
         private readonly elementRef: ElementRef,
-    ) {
-        this.subscriptions.add(
-            this.canView.canView().subscribe((canView) => {
-                this.visible = canView;
-            }),
-        );
-    }
+    ) {}
 
-    ngOnDestroy(): void {
-        this.subscriptions.unsubscribe();
-    }
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent): void {

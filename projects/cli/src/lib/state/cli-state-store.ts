@@ -54,14 +54,18 @@ export class CliStateStore implements ICliStateStore {
     }
 
     async initialize(): Promise<void> {
-        const keyValueStore = this.services.get<ICliKeyValueStore>(
-            'cli-key-value-store',
-        );
+        try {
+            const keyValueStore = this.services.get<ICliKeyValueStore>(
+                'cli-key-value-store',
+            );
 
-        const state = await keyValueStore.get<CliState>(this.storageKey);
+            const state = await keyValueStore.get<CliState>(this.storageKey);
 
-        if (state) {
-            this.state$.next(state);
+            if (state) {
+                this.state$.next(state);
+            }
+        } catch (e) {
+            console.error(`CliStateStore: Failed to load state for "${this.name}":`, e);
         }
     }
 }

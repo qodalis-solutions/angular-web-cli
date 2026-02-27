@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { ICliCommandProcessor, CliOptions } from '@qodalis/cli-core';
+import {
+    ICliCommandProcessor,
+    CliOptions,
+    CliLogLevel,
+} from '@qodalis/cli-core';
 import { CliGuidCommandProcessor } from '@qodalis/cli-guid';
 import { CliRegexCommandProcessor } from '@qodalis/cli-regex';
 import { CliTextToImageCommandProcessor } from '@qodalis/cli-text-to-image';
@@ -38,5 +42,7 @@ export class AppComponent {
         new CliLogsCommandProcessor(),
     ];
 
-    options: CliOptions = {};
+    options: CliOptions = {
+        logLevel: CliLogLevel.DEBUG,
+    };
 }

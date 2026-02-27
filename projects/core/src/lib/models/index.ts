@@ -230,11 +230,6 @@ export type CliOptions = Record<string, any> & {
      */
     usersModule?: {
         /**
-         * If true, the users module is enabled
-         */
-        enabled: boolean;
-
-        /**
          * Hide the prompt to display when the CLI is ready to accept input
          */
         hideUserName?: boolean;

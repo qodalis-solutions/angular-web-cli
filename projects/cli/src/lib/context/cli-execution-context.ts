@@ -294,11 +294,9 @@ export class CliExecutionContext implements ICliExecutionContext {
     }
 
     private getPromptString(): string {
-        let promptStartMessage =
-            this.options?.usersModule?.hideUserName ||
-            !this.options?.usersModule?.enabled
-                ? ''
-                : `\x1b[32m${this.userSession?.user.email}\x1b[0m:`;
+        let promptStartMessage = this.options?.usersModule?.hideUserName
+            ? ''
+            : `\x1b[32m${this.userSession?.user.email}\x1b[0m:`;
 
         if (this.contextProcessor) {
             promptStartMessage = `${this.contextProcessor.command}`;

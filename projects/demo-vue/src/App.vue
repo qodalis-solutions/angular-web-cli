@@ -13,6 +13,8 @@ import { CliPasswordGeneratorCommandProcessor } from '@qodalis/cli-password-gene
 import { CliQrCommandProcessor } from '@qodalis/cli-qr';
 import { CliYesnoCommandProcessor } from '@qodalis/cli-yesno';
 import { CliLogsCommandProcessor } from '@qodalis/cli-server-logs';
+import { CliLogLevel } from '@qodalis/cli-core';
+import { CliCustomUsersStoreService } from './services/custom-users-store.service';
 
 const processors = [
     new CliGuidCommandProcessor(),
@@ -29,9 +31,17 @@ const processors = [
     new CliYesnoCommandProcessor(),
     new CliLogsCommandProcessor(),
 ];
+
+const options = {
+    logLevel: CliLogLevel.DEBUG,
+};
+
+const services = {
+    'cli-users-store-service': new CliCustomUsersStoreService(),
+};
 </script>
 
 <template>
-  <Cli :processors="processors" :style="{ width: '100vw', height: '100vh' }" />
-  <CliPanel :processors="processors" />
+  <Cli :processors="processors" :options="options" :services="services" :style="{ width: '100vw', height: '100vh' }" />
+  <CliPanel :processors="processors" :options="options" :services="services" />
 </template>

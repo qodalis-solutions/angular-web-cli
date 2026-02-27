@@ -46,13 +46,6 @@ export class CliBoot {
 
         let filteredProcessors = processors;
 
-        //TODO: refactor in a better way
-        if (!context.options?.usersModule?.enabled) {
-            filteredProcessors = filteredProcessors.filter(
-                (p) => p.metadata?.module !== 'users',
-            );
-        }
-
         filteredProcessors = filteredProcessors.filter((p) => {
             const meta = p.metadata;
             if (
@@ -101,8 +94,8 @@ export class CliBoot {
         processors: ICliCommandProcessor[],
         parent?: ICliCommandProcessor,
     ): Promise<void> {
-        try {
-            for (const p of processors) {
+        for (const p of processors) {
+            try {
                 (p as ICliCommandChildProcessor).parent = parent;
 
                 if (p.initialize) {
@@ -123,9 +116,9 @@ export class CliBoot {
                         p,
                     );
                 }
+            } catch (e) {
+                console.error(`Error initializing processor "${p.command}":`, e);
             }
-        } catch (e) {
-            context.writer.writeError(`Error initializing processors: ${e}`);
         }
     }
 

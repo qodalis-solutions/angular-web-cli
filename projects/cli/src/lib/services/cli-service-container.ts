@@ -62,6 +62,21 @@ export class CliServiceContainer implements ICliServiceProvider {
     }
 
     /**
+     * Returns all registered service tokens (single + multi providers).
+     */
+    getRegisteredTokens(): string[] {
+        const tokens: string[] = [];
+        for (const key of this.services.keys()) {
+            tokens.push(typeof key === 'string' ? key : (typeof key === 'function' ? key.name : String(key)));
+        }
+        for (const key of this.multiServices.keys()) {
+            const name = typeof key === 'string' ? key : (typeof key === 'function' ? key.name : String(key));
+            tokens.push(`${name} (multi)`);
+        }
+        return tokens;
+    }
+
+    /**
      * Register a single provider.
      */
     private registerProvider(provider: CliProvider): void {

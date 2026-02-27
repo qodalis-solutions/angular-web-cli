@@ -349,17 +349,36 @@ export interface ICliPingServerService {
 /**
  * Represents a module for the CLI
  */
-export interface ICliUmdModule {
-    /**
-     * The name of the module
-     */
+export interface ICliModule {
+    /** Unique module identifier, e.g. '@qodalis/cli-guid' */
     name: string;
 
-    /**
-     * The processors for the module
-     */
-    processors: ICliCommandProcessor[];
+    /** Semver version string */
+    version?: string;
+
+    /** Human-readable description */
+    description?: string;
+
+    /** Module names this module depends on (resolved before this module boots) */
+    dependencies?: string[];
+
+    /** Command processors provided by this module */
+    processors?: ICliCommandProcessor[];
+
+    /** Services registered into the shared service container */
+    services?: CliProvider[];
+
+    /** Called after services are registered and before processors are initialized */
+    onInit?(context: ICliExecutionContext): Promise<void>;
+
+    /** Called when the module is being torn down */
+    onDestroy?(context: ICliExecutionContext): Promise<void>;
 }
+
+/**
+ * @deprecated Use ICliModule instead
+ */
+export type ICliUmdModule = ICliModule;
 
 /**
  * Represents a logger for the CLI

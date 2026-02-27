@@ -1,38 +1,46 @@
 import {
     ICliUserSessionService,
     ICliUserSession,
-    ICliUsersStoreService,
+    ICliKeyValueStore,
 } from '@qodalis/cli-core';
-import { BehaviorSubject, Observable, take } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+const SESSION_KEY = 'cli-session';
 
 export class CliDefaultUserSessionService implements ICliUserSessionService {
-    private userSessionSubject = new BehaviorSubject<
-        ICliUserSession | undefined
-    >({
-        user: {
-            id: 'anonymous',
-            name: 'Anonymous',
-            email: 'anonymous',
-        },
-    });
+    private sessionSubject = new BehaviorSubject<ICliUserSession | undefined>(undefined);
+    private kvStore!: ICliKeyValueStore;
 
-    constructor(usersService: ICliUsersStoreService) {
-        usersService
-            .getUsers()
-            .pipe(take(1))
-            .subscribe((users) => {
-                const user = users.find((u) => u.id === 'root');
-                if (user) {
-                    this.setUserSession({ user });
-                }
-            });
-    }
-
-    async setUserSession(session: ICliUserSession): Promise<void> {
-        this.userSessionSubject.next(session);
+    async initialize(kvStore: ICliKeyValueStore): Promise<void> {
+        this.kvStore = kvStore;
     }
 
     getUserSession(): Observable<ICliUserSession | undefined> {
-        return this.userSessionSubject.asObservable();
+        return this.sessionSubject.asObservable();
+    }
+
+    async setUserSession(session: ICliUserSession): Promise<void> {
+        this.sessionSubject.next(session);
+        await this.persistSession();
+    }
+
+    async clearSession(): Promise<void> {
+        this.sessionSubject.next(undefined);
+        await this.kvStore.remove(SESSION_KEY);
+    }
+
+    async persistSession(): Promise<void> {
+        const session = this.sessionSubject.getValue();
+        if (session) {
+            await this.kvStore.set(SESSION_KEY, session);
+        }
+    }
+
+    async restoreSession(): Promise<ICliUserSession | undefined> {
+        const stored = await this.kvStore.get<ICliUserSession>(SESSION_KEY);
+        if (stored) {
+            this.sessionSubject.next(stored);
+        }
+        return stored;
     }
 }

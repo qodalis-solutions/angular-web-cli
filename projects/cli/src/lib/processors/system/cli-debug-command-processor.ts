@@ -50,6 +50,7 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
 
                 const rows: string[][] = [];
                 for (const p of registry.processors) {
+                    // Arrow function captures `this` from class instance for countProcessors()
                     const childCount = this.countProcessors(p.processors || []);
                     rows.push([
                         p.command,
@@ -313,7 +314,7 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
                         module: p.metadata?.module || 'uncategorized',
                         sealed: p.metadata?.sealed || false,
                         hidden: p.metadata?.hidden || false,
-                        children: (p.processors || []).length,
+                        children: this.countProcessors(p.processors || []),
                     })),
                     history: {
                         total: history.getHistory().length,

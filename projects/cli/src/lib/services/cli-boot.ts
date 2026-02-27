@@ -4,7 +4,9 @@ import {
     ICliCommandChildProcessor,
     ICliCommandProcessor,
     ICliCommandProcessorRegistry,
-    ICliUmdModule,
+    ICliModule,
+    ICliServiceProvider,
+    CliModuleRegistry,
     initializeBrowserEnvironment,
     LIBRARY_VERSION as CORE_VERSION,
     satisfiesMinVersion,
@@ -12,41 +14,184 @@ import {
 import { LIBRARY_VERSION as CLI_VERSION } from '../version';
 import { CliExecutionContext } from '../context/cli-execution-context';
 import { CliCommandExecutionContext } from '../context/cli-command-execution-context';
+import { builtinProcessors } from '../processors';
 
 export class CliBoot {
     private initialized = false;
     private initializing = false;
+    private readonly moduleRegistry: CliModuleRegistry;
+    private readonly bootedModules = new Set<string>();
 
-    constructor(private readonly registry: ICliCommandProcessorRegistry) {}
+    constructor(
+        private readonly registry: ICliCommandProcessorRegistry,
+        private readonly services: ICliServiceProvider,
+    ) {
+        this.moduleRegistry = new CliModuleRegistry();
+    }
+
+    /**
+     * Get the module registry for external access.
+     */
+    getModuleRegistry(): CliModuleRegistry {
+        return this.moduleRegistry;
+    }
 
     public async boot(
         context: CliExecutionContext,
-        processors: ICliCommandProcessor[],
+        modules: ICliModule[],
     ): Promise<void> {
         context.spinner?.show(CliIcon.Rocket + '  Booting...');
 
         if (this.initialized || this.initializing) {
             await this.bootShared(context);
-
             context.spinner?.hide();
-
             return;
         }
 
         this.initializing = true;
 
+        // 1. Set up browser environment for dynamic UMD loading
         initializeBrowserEnvironment({
             context,
-            handlers: [
-                async (module: ICliUmdModule) => {
-                    await this.registerUmdModule(module, context);
-                },
-            ],
+            registry: this.moduleRegistry,
         });
 
-        let filteredProcessors = processors;
+        // 2. Wire handler so dynamically loaded UMD modules go through the same pipeline
+        this.moduleRegistry.onModuleBoot(async (module: ICliModule) => {
+            await this.bootModule(module, context);
+        });
 
-        filteredProcessors = filteredProcessors.filter((p) => {
+        // 3. Boot core module first (implicit dependency for all others)
+        const coreModule = this.buildCoreModule();
+        await this.bootModule(coreModule, context);
+
+        // 4. Topologically sort remaining modules by dependencies
+        const sorted = this.topologicalSort(modules, context);
+
+        // 5. Boot each module in order
+        for (const module of sorted) {
+            await this.bootModule(module, context);
+        }
+
+        await this.bootShared(context);
+
+        context.spinner?.hide();
+
+        this.initialized = true;
+    }
+
+    private async bootModule(
+        module: ICliModule,
+        context: CliExecutionContext,
+    ): Promise<void> {
+        // Skip if already booted
+        if (this.bootedModules.has(module.name)) {
+            return;
+        }
+
+        // Check dependencies are satisfied
+        for (const dep of module.dependencies ?? []) {
+            if (!this.bootedModules.has(dep)) {
+                context.writer.writeWarning(
+                    `Module "${module.name}" requires "${dep}" which is not loaded. Skipping.`,
+                );
+                return;
+            }
+        }
+
+        context.logger.info(`Booting module: ${module.name}`);
+
+        // Register services into the shared container
+        if (module.services && module.services.length > 0) {
+            this.services.set(module.services);
+        }
+
+        // Module lifecycle: onInit (before processors)
+        if (module.onInit) {
+            try {
+                await module.onInit(context);
+            } catch (e) {
+                console.error(`Error in onInit for module "${module.name}":`, e);
+            }
+        }
+
+        // Register and initialize processors
+        if (module.processors && module.processors.length > 0) {
+            const filtered = this.filterByVersion(module.processors, context);
+            for (const processor of filtered) {
+                this.registry.registerProcessor(processor);
+            }
+            await this.initializeProcessorsInternal(context, filtered);
+        }
+
+        this.bootedModules.add(module.name);
+    }
+
+    private buildCoreModule(): ICliModule {
+        return {
+            name: '@qodalis/cli-core',
+            version: CORE_VERSION,
+            description: 'Core CLI services and utilities',
+            processors: [...builtinProcessors],
+        };
+    }
+
+    /**
+     * Topologically sort modules by their dependencies.
+     * Modules with no dependencies (or only @qodalis/cli-core) come first.
+     * Circular dependencies are logged as warnings and the involved modules are appended at the end.
+     */
+    private topologicalSort(
+        modules: ICliModule[],
+        context: CliExecutionContext,
+    ): ICliModule[] {
+        const moduleMap = new Map<string, ICliModule>();
+        for (const m of modules) {
+            moduleMap.set(m.name, m);
+        }
+
+        const sorted: ICliModule[] = [];
+        const visited = new Set<string>();
+        const visiting = new Set<string>();
+
+        const visit = (mod: ICliModule): void => {
+            if (visited.has(mod.name)) return;
+
+            if (visiting.has(mod.name)) {
+                context.logger.warn(
+                    `Circular dependency detected involving module "${mod.name}". Loading order may be incorrect.`,
+                );
+                return;
+            }
+
+            visiting.add(mod.name);
+
+            for (const dep of mod.dependencies ?? []) {
+                if (dep === '@qodalis/cli-core') continue;
+
+                const depModule = moduleMap.get(dep);
+                if (depModule) {
+                    visit(depModule);
+                }
+            }
+
+            visiting.delete(mod.name);
+            visited.add(mod.name);
+            sorted.push(mod);
+        };
+
+        for (const mod of modules) {
+            visit(mod);
+        }
+
+        return sorted;
+    }
+
+    private filterByVersion(
+        processors: ICliCommandProcessor[],
+        context: CliExecutionContext,
+    ): ICliCommandProcessor[] {
+        return processors.filter((p) => {
             const meta = p.metadata;
             if (
                 meta?.requiredCoreVersion &&
@@ -68,16 +213,6 @@ export class CliBoot {
             }
             return true;
         });
-
-        filteredProcessors.forEach((impl) =>
-            this.registry.registerProcessor(impl),
-        );
-
-        await this.bootShared(context);
-
-        context.spinner?.hide();
-
-        this.initialized = true;
     }
 
     private async bootShared(context: CliExecutionContext): Promise<void> {
@@ -119,27 +254,6 @@ export class CliBoot {
             } catch (e) {
                 console.error(`Error initializing processor "${p.command}":`, e);
             }
-        }
-    }
-
-    private async registerUmdModule(
-        module: ICliUmdModule,
-        context: CliExecutionContext,
-    ): Promise<void> {
-        const { logger } = context;
-        if (!module) {
-            return;
-        }
-
-        if (module.processors) {
-            logger.info('Registering processors from module ' + module.name);
-            for (const processor of module.processors) {
-                this.registry.registerProcessor(processor);
-            }
-
-            await this.initializeProcessorsInternal(context, module.processors);
-        } else {
-            logger.warn(`Module ${module.name} has no processors`);
         }
     }
 }

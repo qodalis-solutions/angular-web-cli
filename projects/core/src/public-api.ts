@@ -17,3 +17,5 @@ export * from './lib/types';
 export * from './lib/themes';
 
 export * from './lib/version';
+
+export * from './lib/tokens';

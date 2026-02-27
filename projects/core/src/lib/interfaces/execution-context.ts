@@ -13,6 +13,7 @@ import {
     ICliTerminalWriter,
     ICliTextAnimator,
 } from '.';
+import { ICliInputReader } from './input-reader';
 import { CliOptions, ICliUserSession } from '../models';
 
 /**
@@ -53,6 +54,11 @@ export interface ICliExecutionContext {
      * The writer to use for writing to the terminal
      */
     writer: ICliTerminalWriter;
+
+    /**
+     * The reader to use for interactive input prompts (text, password, confirm, select)
+     */
+    reader: ICliInputReader;
 
     /**
      * The command executor to use for executing commands

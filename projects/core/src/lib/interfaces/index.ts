@@ -440,6 +440,8 @@ export interface ICliServiceProvider {
     set(definition: CliProvider | CliProvider[]): void;
 }
 
+export * from './input-reader';
+
 export * from './execution-context';
 
 export * from './command-processor';

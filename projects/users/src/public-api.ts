@@ -124,6 +124,46 @@ export const usersModule: ICliUsersModule = {
         if (moduleConfig.requirePasswordOnBoot) {
             // Force fresh login — do not restore previous session
             await sessionService.clearSession();
+
+            // Prompt for login after boot completes
+            setTimeout(async () => {
+                while (!context.userSession) {
+                    const username = await context.reader.readLine('Username: ');
+                    if (username === null) continue;
+
+                    if (!username) {
+                        context.writer.writeError('Username required');
+                        continue;
+                    }
+
+                    if (moduleConfig.requirePassword) {
+                        const password = await context.reader.readPassword('Password: ');
+                        if (password === null) continue;
+
+                        try {
+                            await authService.login(username, password);
+                        } catch (e: any) {
+                            context.writer.writeError(e.message || 'Authentication failure');
+                        }
+                    } else {
+                        const user = await firstValueFrom(usersStore.getUser(username));
+                        if (!user) {
+                            context.writer.writeError(`Unknown user: ${username}`);
+                            continue;
+                        }
+                        if (user.disabled) {
+                            context.writer.writeError('Account is disabled');
+                            continue;
+                        }
+                        await sessionService.setUserSession({
+                            user,
+                            loginTime: Date.now(),
+                            lastActivity: Date.now(),
+                        });
+                    }
+                }
+                context.showPrompt();
+            });
         } else {
             const restoredSession = await sessionService.restoreSession();
             if (!restoredSession) {

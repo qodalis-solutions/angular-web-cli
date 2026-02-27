@@ -13,8 +13,6 @@ import {
     ICliCommandProcessor,
     ICliModule,
     ICliPingServerService,
-    ICliUserSessionService,
-    ICliUsersStoreService,
     CliOptions,
 } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
@@ -22,8 +20,6 @@ import {
     CliCommandProcessor_TOKEN,
     CliModule_TOKEN,
     ICliPingServerService_TOKEN,
-    ICliUserSessionService_TOKEN,
-    ICliUsersStoreService_TOKEN,
 } from './tokens';
 
 @Component({
@@ -53,12 +49,6 @@ export class CliComponent implements AfterViewInit, OnDestroy {
         @Inject(CliModule_TOKEN)
         private readonly diModules: ICliModule[],
         @Optional()
-        @Inject(ICliUserSessionService_TOKEN)
-        private readonly userSessionService: ICliUserSessionService,
-        @Optional()
-        @Inject(ICliUsersStoreService_TOKEN)
-        private readonly usersStoreService: ICliUsersStoreService,
-        @Optional()
         @Inject(ICliPingServerService_TOKEN)
         private readonly pingServerService: ICliPingServerService,
     ) {}
@@ -77,12 +67,6 @@ export class CliComponent implements AfterViewInit, OnDestroy {
         this.engine.registerService('cli-framework', 'Angular');
 
         // Bridge Angular DI services into the engine's service container
-        if (this.userSessionService) {
-            this.engine.registerService('cli-user-session-service', this.userSessionService);
-        }
-        if (this.usersStoreService) {
-            this.engine.registerService('cli-users-store-service', this.usersStoreService);
-        }
         if (this.pingServerService) {
             this.engine.registerService('cli-ping-server-service', this.pingServerService);
         }

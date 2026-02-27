@@ -8,6 +8,7 @@ import {
     ICliExecutionContext,
     ICliExecutionProcess,
     ICliLogger,
+    ICliInputReader,
     ICliPercentageProgressBar,
     ICliSpinner,
     ICliStateStore,
@@ -39,6 +40,7 @@ export class CliCommandExecutionContext implements ICliExecutionContext {
     process: ICliExecutionProcess;
     logger: ICliLogger;
     services: ICliServiceProvider;
+    reader: ICliInputReader;
 
     get promptLength(): number {
         return this.context.promptLength;
@@ -93,6 +95,7 @@ export class CliCommandExecutionContext implements ICliExecutionContext {
         this.process = context.process;
         this.logger = context.logger;
         this.services = context.services;
+        this.reader = context.reader;
 
         this.state = context.services
             .get<ICliStateStoreManager>(CliStateStoreManager_TOKEN)

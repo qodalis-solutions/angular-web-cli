@@ -16,6 +16,7 @@ import {
     ICliStateStore,
     ICliTextAnimator,
     ICliCommandExecutorService,
+    ICliInputReader,
     clearTerminalLine,
     CliForegroundColor,
     colorFirstWord,
@@ -28,6 +29,7 @@ import { CliClipboard } from '../services/cli-clipboard';
 import { CliCommandHistory } from '../services/cli-command-history';
 import { CliExecutionProcess } from './cli-execution-process';
 import { CliStateStoreManager } from '../state/cli-state-store-manager';
+import { CliInputReader, ActiveInputRequest, CliInputReaderHost } from '../services/cli-input-reader';
 
 export interface CliExecutionContextDeps {
     services: ICliServiceProvider;
@@ -36,7 +38,7 @@ export interface CliExecutionContextDeps {
     stateStoreManager: CliStateStoreManager;
 }
 
-export class CliExecutionContext implements ICliExecutionContext {
+export class CliExecutionContext implements ICliExecutionContext, CliInputReaderHost {
     public userSession?: ICliUserSession;
 
     public contextProcessor?: ICliCommandProcessor;
@@ -68,6 +70,22 @@ export class CliExecutionContext implements ICliExecutionContext {
     public promptLength: number = 0;
 
     private _currentLine: string = '';
+
+    public readonly reader: ICliInputReader;
+
+    private _activeInputRequest: ActiveInputRequest | null = null;
+
+    public get activeInputRequest(): ActiveInputRequest | null {
+        return this._activeInputRequest;
+    }
+
+    public setActiveInputRequest(request: ActiveInputRequest | null): void {
+        this._activeInputRequest = request;
+    }
+
+    public writeToTerminal(text: string): void {
+        this.terminal.write(text);
+    }
 
     public get currentLine(): string {
         return this._currentLine;
@@ -113,6 +131,8 @@ export class CliExecutionContext implements ICliExecutionContext {
         this.clipboard = new CliClipboard(this);
         this.process = new CliExecutionProcess(this);
 
+        this.reader = new CliInputReader(this);
+
         //initialize logger
         this.logger = deps.logger;
         this.logger.setCliLogLevel(cliOptions?.logLevel || CliLogLevel.ERROR);
@@ -131,6 +151,26 @@ export class CliExecutionContext implements ICliExecutionContext {
 
         this.terminal.attachCustomKeyEventHandler((event) => {
             if (event.type === 'keydown') {
+                // Handle abort for active input requests
+                if (this._activeInputRequest) {
+                    if (event.code === 'KeyC' && event.ctrlKey) {
+                        this._activeInputRequest.resolve(null);
+                        this._activeInputRequest = null;
+                        this.terminal.writeln('');
+                        return false;
+                    }
+
+                    if (event.code === 'Escape') {
+                        this._activeInputRequest.resolve(null);
+                        this._activeInputRequest = null;
+                        this.terminal.writeln('');
+                        return false;
+                    }
+
+                    // During active input, let onData handle everything else
+                    return true;
+                }
+
                 if (event.code === 'KeyC' && event.ctrlKey) {
                     this.abort();
                     this.setContextProcessor(undefined);
@@ -341,6 +381,11 @@ export class CliExecutionContext implements ICliExecutionContext {
             return;
         }
 
+        if (this._activeInputRequest) {
+            this.handleReaderInput(data);
+            return;
+        }
+
         if (data === '\r') {
             this.terminal.write('\r\n');
 
@@ -393,6 +438,181 @@ export class CliExecutionContext implements ICliExecutionContext {
 
         this.cursorPosition += text.length;
         this.refreshCurrentLine();
+    }
+
+    private handleReaderInput(data: string): void {
+        const request = this._activeInputRequest!;
+
+        switch (request.type) {
+            case 'line':
+                this.handleLineInput(request, data);
+                break;
+            case 'password':
+                this.handlePasswordInput(request, data);
+                break;
+            case 'confirm':
+                this.handleConfirmInput(request, data);
+                break;
+            case 'select':
+                this.handleSelectInput(request, data);
+                break;
+        }
+    }
+
+    private handleLineInput(request: ActiveInputRequest, data: string): void {
+        if (data === '\r') {
+            this.terminal.write('\r\n');
+            const value = request.buffer;
+            this._activeInputRequest = null;
+            request.resolve(value);
+        } else if (data === '\u007F') {
+            // Backspace
+            if (request.cursorPosition > 0) {
+                request.buffer =
+                    request.buffer.slice(0, request.cursorPosition - 1) +
+                    request.buffer.slice(request.cursorPosition);
+                request.cursorPosition--;
+                this.redrawReaderLine(request, request.buffer);
+            }
+        } else if (data === '\u001B[D') {
+            // Arrow left
+            if (request.cursorPosition > 0) {
+                request.cursorPosition--;
+                this.terminal.write(data);
+            }
+        } else if (data === '\u001B[C') {
+            // Arrow right
+            if (request.cursorPosition < request.buffer.length) {
+                request.cursorPosition++;
+                this.terminal.write(data);
+            }
+        } else if (data.startsWith('\u001B')) {
+            // Ignore other escape sequences (arrow up/down, etc.)
+        } else {
+            const text = data.replace(/[\r\n]+/g, '');
+            request.buffer =
+                request.buffer.slice(0, request.cursorPosition) +
+                text +
+                request.buffer.slice(request.cursorPosition);
+            request.cursorPosition += text.length;
+            this.redrawReaderLine(request, request.buffer);
+        }
+    }
+
+    private handlePasswordInput(request: ActiveInputRequest, data: string): void {
+        if (data === '\r') {
+            this.terminal.write('\r\n');
+            const value = request.buffer;
+            this._activeInputRequest = null;
+            request.resolve(value);
+        } else if (data === '\u007F') {
+            // Backspace
+            if (request.cursorPosition > 0) {
+                request.buffer =
+                    request.buffer.slice(0, request.cursorPosition - 1) +
+                    request.buffer.slice(request.cursorPosition);
+                request.cursorPosition--;
+                this.redrawReaderLine(request, '*'.repeat(request.buffer.length));
+            }
+        } else if (data.startsWith('\u001B')) {
+            // Ignore all escape sequences for password (no cursor movement)
+        } else {
+            const text = data.replace(/[\r\n]+/g, '');
+            request.buffer =
+                request.buffer.slice(0, request.cursorPosition) +
+                text +
+                request.buffer.slice(request.cursorPosition);
+            request.cursorPosition += text.length;
+            this.redrawReaderLine(request, '*'.repeat(request.buffer.length));
+        }
+    }
+
+    private handleConfirmInput(request: ActiveInputRequest, data: string): void {
+        if (data === '\r') {
+            this.terminal.write('\r\n');
+            this._activeInputRequest = null;
+            const buf = request.buffer.toLowerCase();
+            if (buf === 'y') {
+                request.resolve(true);
+            } else if (buf === 'n') {
+                request.resolve(false);
+            } else {
+                request.resolve(request.defaultValue ?? false);
+            }
+        } else if (data === '\u007F') {
+            if (request.cursorPosition > 0) {
+                request.buffer = request.buffer.slice(0, -1);
+                request.cursorPosition--;
+                this.redrawReaderLine(request, request.buffer);
+            }
+        } else if (data.startsWith('\u001B')) {
+            // Ignore escape sequences
+        } else {
+            const char = data.toLowerCase();
+            if (char === 'y' || char === 'n') {
+                request.buffer = data;
+                request.cursorPosition = 1;
+                this.redrawReaderLine(request, request.buffer);
+            }
+            // Ignore all other characters
+        }
+    }
+
+    private handleSelectInput(request: ActiveInputRequest, data: string): void {
+        const options = request.options!;
+        let selectedIndex = request.selectedIndex!;
+
+        if (data === '\r') {
+            this.terminal.write('\r\n');
+            this._activeInputRequest = null;
+            request.resolve(options[selectedIndex].value);
+        } else if (data === '\u001B[A') {
+            // Arrow up
+            if (selectedIndex > 0) {
+                request.selectedIndex = selectedIndex - 1;
+                this.redrawSelectOptions(request);
+            }
+        } else if (data === '\u001B[B') {
+            // Arrow down
+            if (selectedIndex < options.length - 1) {
+                request.selectedIndex = selectedIndex + 1;
+                this.redrawSelectOptions(request);
+            }
+        }
+        // Ignore all other input
+    }
+
+    private redrawReaderLine(request: ActiveInputRequest, displayText: string): void {
+        // Clear line and rewrite prompt + display text
+        this.terminal.write('\x1b[2K\r');
+        this.terminal.write(request.promptText + displayText);
+
+        // Reposition cursor if not at end
+        const cursorOffset = request.buffer.length - request.cursorPosition;
+        if (cursorOffset > 0) {
+            this.terminal.write(`\x1b[${cursorOffset}D`);
+        }
+    }
+
+    private redrawSelectOptions(request: ActiveInputRequest): void {
+        const options = request.options!;
+        const selectedIndex = request.selectedIndex!;
+
+        // Move cursor up to start of options list
+        if (options.length > 0) {
+            this.terminal.write(`\x1b[${options.length}A`);
+        }
+
+        // Redraw all options
+        for (let i = 0; i < options.length; i++) {
+            this.terminal.write('\x1b[2K\r');
+            const prefix = i === selectedIndex ? '  \x1b[36m> ' : '    ';
+            const suffix = i === selectedIndex ? '\x1b[0m' : '';
+            this.terminal.write(`${prefix}${options[i].label}${suffix}`);
+            if (i < options.length - 1) {
+                this.terminal.write('\r\n');
+            }
+        }
     }
 
     private handleBackspace(): void {

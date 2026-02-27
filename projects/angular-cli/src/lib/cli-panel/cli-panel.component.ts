@@ -7,7 +7,7 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import { CliOptions, ICliCommandProcessor } from '@qodalis/cli-core';
+import { CliOptions, ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliComponent } from '../cli/cli.component';
 import { CollapsableContentComponent } from '../collapsable-content/collapsable-content.component';
 
@@ -52,8 +52,14 @@ export class CliPanelComponent {
     @Input() options?: CliPanelOptions;
 
     /**
+     * Optional list of CLI modules to register with each terminal pane.
+     */
+    @Input() modules?: ICliModule[];
+
+    /**
      * Optional list of command processors to register with each terminal pane.
      * This allows passing processors without Angular DI (framework-agnostic pattern).
+     * @deprecated Use modules instead.
      */
     @Input() processors?: ICliCommandProcessor[];
 

@@ -1,11 +1,15 @@
 import { defineComponent, ref, onMounted, onBeforeUnmount, PropType, h, inject } from 'vue';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { CliInjectionKey } from './cliInjection';
 
 export const Cli = defineComponent({
     name: 'Cli',
     props: {
+        modules: {
+            type: Array as PropType<ICliModule[]>,
+            default: undefined,
+        },
         processors: {
             type: Array as PropType<ICliCommandProcessor[]>,
             default: undefined,
@@ -49,6 +53,10 @@ export const Cli = defineComponent({
                 for (const [token, value] of Object.entries(props.services)) {
                     engine.registerService(token, value);
                 }
+            }
+
+            if (props.modules) {
+                engine.registerModules(props.modules);
             }
 
             if (props.processors) {

@@ -1,5 +1,5 @@
 import { defineComponent, ref, computed, PropType, h, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
 
@@ -66,6 +66,7 @@ export const CliPanel = defineComponent({
     name: 'CliPanel',
     props: {
         options: { type: Object as PropType<CliEngineOptions & { isCollapsed?: boolean }>, default: undefined },
+        modules: { type: Array as PropType<ICliModule[]>, default: undefined },
         processors: { type: Array as PropType<ICliCommandProcessor[]>, default: undefined },
         services: { type: Object as PropType<Record<string, any>>, default: undefined },
         style: { type: Object as PropType<Record<string, string>>, default: undefined },
@@ -333,7 +334,7 @@ export const CliPanel = defineComponent({
                                         class: 'cli-panel-pane-close-btn', title: 'Close pane',
                                         onClick: (e: MouseEvent) => { e.stopPropagation(); closePane(tab.id, pane.id); },
                                     }, '\u00d7') : null,
-                                    h(Cli, { options: props.options, processors: props.processors, services: props.services, style: { height: terminalHeight.value } }),
+                                    h(Cli, { options: props.options, modules: props.modules, processors: props.processors, services: props.services, style: { height: terminalHeight.value } }),
                                 ]));
                                 return nodes;
                             }),

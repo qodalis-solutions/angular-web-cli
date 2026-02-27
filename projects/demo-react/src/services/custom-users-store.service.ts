@@ -1,4 +1,4 @@
-import { CliDefaultUsersStoreService } from '@qodalis/cli';
+import { CliDefaultUsersStoreService } from '@qodalis/cli-users';
 
 export class CliCustomUsersStoreService extends CliDefaultUsersStoreService {
     constructor() {

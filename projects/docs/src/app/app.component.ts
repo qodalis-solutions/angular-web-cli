@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { CliLogLevel, CliOptions, ICliCommandProcessor } from '@qodalis/cli-core';
+import { CliLogLevel, CliOptions, ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
+import { usersModule } from '@qodalis/cli-users';
 import { CliGuidCommandProcessor } from '@qodalis/cli-guid';
 import { CliRegexCommandProcessor } from '@qodalis/cli-regex';
 import { CliTextToImageCommandProcessor } from '@qodalis/cli-text-to-image';
@@ -51,6 +52,10 @@ export class AppComponent {
         new CliYesnoCommandProcessor(),
         new CliLogsCommandProcessor(),
         new CliDemoCommandProcessor(),
+    ];
+
+    modules: ICliModule[] = [
+        usersModule,
     ];
 
     options: CliOptions = {

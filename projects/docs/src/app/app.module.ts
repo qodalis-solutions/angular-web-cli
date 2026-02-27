@@ -2,11 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
-import {
-    CliModule,
-    ICliUsersStoreService_TOKEN,
-} from '@qodalis/angular-cli';
-import { CliCustomUsersStoreService } from './services/custom-users-store.service';
+import { CliModule } from '@qodalis/angular-cli';
 
 @NgModule({
     declarations: [AppComponent],
@@ -15,12 +11,7 @@ import { CliCustomUsersStoreService } from './services/custom-users-store.servic
         BrowserAnimationsModule,
         CliModule,
     ],
-    providers: [
-        {
-            useClass: CliCustomUsersStoreService,
-            provide: ICliUsersStoreService_TOKEN,
-        },
-    ],
+    providers: [],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

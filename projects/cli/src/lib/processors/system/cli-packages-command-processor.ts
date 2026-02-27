@@ -38,7 +38,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
     stateConfiguration?: CliStateConfiguration | undefined = {
         initialState: {
-            cdnSource: 'unpkg' as CdnSourceName,
+            cdnSource: 'unpkg',
         },
     };
 
@@ -728,7 +728,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'source',
                 description:
-                    'Get or set the CDN source for package downloads',
+                    'Get or set the package source for downloads',
                 allowUnlistedCommands: true,
                 processors: [
                     {
@@ -736,79 +736,101 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         description: 'Show the current CDN source',
                         async processCommand(_, context) {
                             const current = scriptsLoader.getCdnSource();
+                            const allSources = scriptsLoader.getSources();
+                            const fallbacks = allSources.filter((s) => s !== current);
+
                             context.writer.writeln(
-                                `🌐 Current CDN source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
+                                `🌐 Current source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
                             );
-                            const fallback = current === 'unpkg' ? 'jsdelivr' : 'unpkg';
-                            context.writer.writeln(
-                                `   Fallback: ${context.writer.wrapInColor(fallback, CliForegroundColor.Yellow)}`,
-                            );
+
+                            if (fallbacks.length > 0) {
+                                context.writer.writeln(
+                                    `   Fallbacks: ${fallbacks.map((s) => context.writer.wrapInColor(s, CliForegroundColor.Yellow)).join(', ')}`,
+                                );
+                            }
                         },
                     },
                     {
                         command: 'set',
-                        description: 'Set the preferred CDN source',
+                        description: 'Set the preferred package source',
                         valueRequired: true,
                         allowUnlistedCommands: true,
                         async processCommand(command, context) {
                             const value = (command.value || '').trim().toLowerCase();
+                            const allSources = scriptsLoader.getSources();
 
-                            if (value !== 'unpkg' && value !== 'jsdelivr') {
+                            if (!allSources.includes(value)) {
                                 context.writer.writeError(
-                                    `Invalid source "${value}". Use "unpkg" or "jsdelivr".`,
+                                    `Invalid source "${value}". Available sources: ${allSources.join(', ')}`,
                                 );
                                 return;
                             }
 
-                            scriptsLoader.setCdnSource(value as CdnSourceName);
+                            scriptsLoader.setCdnSource(value);
                             context.state.updateState({ cdnSource: value });
                             await context.state.persist();
 
                             context.writer.writeSuccess(
-                                `CDN source set to ${context.writer.wrapInColor(value, CliForegroundColor.Cyan)}`,
+                                `Package source set to ${context.writer.wrapInColor(value, CliForegroundColor.Cyan)}`,
                             );
-                            const fallback = value === 'unpkg' ? 'jsdelivr' : 'unpkg';
-                            context.writer.writeln(
-                                `   Fallback: ${context.writer.wrapInColor(fallback, CliForegroundColor.Yellow)}`,
-                            );
+
+                            const fallbacks = allSources.filter((s) => s !== value);
+                            if (fallbacks.length > 0) {
+                                context.writer.writeln(
+                                    `   Fallbacks: ${fallbacks.map((s) => context.writer.wrapInColor(s, CliForegroundColor.Yellow)).join(', ')}`,
+                                );
+                            }
                         },
                         writeDescription(context) {
-                            context.writer.writeln('Set the preferred CDN source for package downloads');
+                            const allSources = scriptsLoader.getSources();
+                            context.writer.writeln('Set the preferred source for package downloads');
                             context.writer.writeln();
                             context.writer.writeln('📋 Usage:');
-                            context.writer.writeln(`  ${context.writer.wrapInColor('pkg source set <unpkg|jsdelivr>', CliForegroundColor.Cyan)}`);
+                            context.writer.writeln(`  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}`);
                             context.writer.writeln();
-                            context.writer.writeln('📝 Examples:');
-                            context.writer.writeln(`  pkg source set unpkg        ${context.writer.wrapInColor('# Use unpkg (default)', CliForegroundColor.Green)}`);
-                            context.writer.writeln(`  pkg source set jsdelivr     ${context.writer.wrapInColor('# Use jsDelivr', CliForegroundColor.Green)}`);
+                            context.writer.writeln('🌐 Available sources:');
+                            for (const name of allSources) {
+                                const url = scriptsLoader.getSourceUrl(name) || '';
+                                context.writer.writeln(`  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}       ${url}`);
+                            }
                         },
                     },
                 ],
                 async processCommand(_, context) {
                     const current = scriptsLoader.getCdnSource();
+                    const allSources = scriptsLoader.getSources();
+                    const fallbacks = allSources.filter((s) => s !== current);
+
                     context.writer.writeln(
-                        `🌐 Current CDN source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
+                        `🌐 Current source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
                     );
-                    const fallback = current === 'unpkg' ? 'jsdelivr' : 'unpkg';
-                    context.writer.writeln(
-                        `   Fallback: ${context.writer.wrapInColor(fallback, CliForegroundColor.Yellow)}`,
-                    );
+
+                    if (fallbacks.length > 0) {
+                        context.writer.writeln(
+                            `   Fallbacks: ${fallbacks.map((s) => context.writer.wrapInColor(s, CliForegroundColor.Yellow)).join(', ')}`,
+                        );
+                    }
+
                     context.writer.writeln();
                     context.writer.writeInfo(
-                        `💡 Use ${context.writer.wrapInColor('pkg source set <unpkg|jsdelivr>', CliForegroundColor.Cyan)} to change`,
+                        `💡 Use ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)} to change`,
                     );
                 },
                 writeDescription(context) {
-                    context.writer.writeln('Manage the CDN source used for downloading packages');
+                    const allSources = scriptsLoader.getSources();
+
+                    context.writer.writeln('Manage the source used for downloading packages');
                     context.writer.writeln();
                     context.writer.writeln('📋 Commands:');
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source', CliForegroundColor.Cyan)}                  Show current CDN source`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source get', CliForegroundColor.Cyan)}              Show current CDN source`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}       Set preferred CDN source`);
+                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source', CliForegroundColor.Cyan)}                  Show current source`);
+                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source get', CliForegroundColor.Cyan)}              Show current source`);
+                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}       Set preferred source`);
                     context.writer.writeln();
                     context.writer.writeln('🌐 Available sources:');
-                    context.writer.writeln(`  ${context.writer.wrapInColor('unpkg', CliForegroundColor.Cyan)}       https://unpkg.com (default)`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('jsdelivr', CliForegroundColor.Cyan)}    https://cdn.jsdelivr.net`);
+                    for (const name of allSources) {
+                        const url = scriptsLoader.getSourceUrl(name) || '';
+                        context.writer.writeln(`  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}       ${url}`);
+                    }
                     context.writer.writeln();
                     context.writer.writeInfo('The non-selected source is used as a fallback.');
                 },
@@ -834,7 +856,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         writer.writeln(`  ${writer.wrapInColor('pkg versions <package>', CliForegroundColor.Cyan)}         Show all published versions`);
         writer.writeln(`  ${writer.wrapInColor('pkg check', CliForegroundColor.Cyan)}                        Check for available updates`);
         writer.writeln(`  ${writer.wrapInColor('pkg update [package]', CliForegroundColor.Cyan)}                 Update one or all packages`);
-        writer.writeln(`  ${writer.wrapInColor('pkg source [get|set <name>]', CliForegroundColor.Cyan)}          Get or set CDN source`);
+        writer.writeln(`  ${writer.wrapInColor('pkg source [get|set <name>]', CliForegroundColor.Cyan)}          Get or set package source`);
         writer.writeln();
         writer.writeln(`🌐 Browse packages: ${writer.wrapInColor('https://www.npmjs.com/org/qodalis', CliForegroundColor.Blue)}`);
         writer.writeln();
@@ -851,6 +873,19 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
         const store = context.services.get<ICliKeyValueStore>('cli-key-value-store');
         this.packagesManager.setStore(store);
+
+        // Register custom package sources from options
+        const packageSources = context.options?.packageSources;
+        if (packageSources?.sources) {
+            for (const source of packageSources.sources) {
+                this.scriptsLoader.addSource(source.name, source.url);
+            }
+        }
+
+        // Set primary source from options (if specified and not overridden by persisted state)
+        if (packageSources?.primary) {
+            this.scriptsLoader.setCdnSource(packageSources.primary);
+        }
 
         context.state
             .select<CdnSourceName>((s) => s['cdnSource'])

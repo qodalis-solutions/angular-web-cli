@@ -1,30 +1,52 @@
-export type CdnSourceName = 'unpkg' | 'jsdelivr';
+export type CdnSourceName = string;
 
-const CDN_BASE_URLS: Record<CdnSourceName, string> = {
+const BUILTIN_SOURCES: Record<string, string> = {
     unpkg: 'https://unpkg.com/',
     jsdelivr: 'https://cdn.jsdelivr.net/npm/',
 };
 
-const DEFAULT_CDN_ORDER: CdnSourceName[] = ['unpkg', 'jsdelivr'];
-
 export class ScriptLoaderService {
-    private cdnOrder: CdnSourceName[] = [...DEFAULT_CDN_ORDER];
+    private sources: Map<string, string> = new Map(Object.entries(BUILTIN_SOURCES));
+    private primary: string = 'unpkg';
 
     constructor() {}
 
     /**
-     * Sets the preferred CDN source. The other source becomes the fallback.
+     * Registers a custom package source.
+     */
+    addSource(name: string, url: string): void {
+        // Ensure trailing slash
+        this.sources.set(name, url.endsWith('/') ? url : url + '/');
+    }
+
+    /**
+     * Returns all registered source names.
+     */
+    getSources(): string[] {
+        return Array.from(this.sources.keys());
+    }
+
+    /**
+     * Returns the base URL for a given source name, or undefined if not found.
+     */
+    getSourceUrl(name: string): string | undefined {
+        return this.sources.get(name);
+    }
+
+    /**
+     * Sets the preferred CDN source. The other sources become fallbacks.
      */
     setCdnSource(preferred: CdnSourceName): void {
-        const all: CdnSourceName[] = ['unpkg', 'jsdelivr'];
-        this.cdnOrder = [preferred, ...all.filter((s) => s !== preferred)];
+        if (this.sources.has(preferred)) {
+            this.primary = preferred;
+        }
     }
 
     /**
      * Returns the current preferred CDN source name.
      */
     getCdnSource(): CdnSourceName {
-        return this.cdnOrder[0];
+        return this.primary;
     }
 
     injectScript(src: string): Promise<void> {
@@ -117,10 +139,20 @@ export class ScriptLoaderService {
 
     /**
      * Returns CDN URLs for a given npm package path.
-     * The first entry is the primary CDN, the rest are fallbacks.
+     * The first entry is the primary source, the rest are fallbacks.
      */
     getCdnUrls(packagePath: string): string[] {
-        return this.cdnOrder.map((name) => `${CDN_BASE_URLS[name]}${packagePath}`);
+        const urls: string[] = [];
+        const primaryUrl = this.sources.get(this.primary);
+        if (primaryUrl) {
+            urls.push(`${primaryUrl}${packagePath}`);
+        }
+        for (const [name, baseUrl] of this.sources) {
+            if (name !== this.primary) {
+                urls.push(`${baseUrl}${packagePath}`);
+            }
+        }
+        return urls;
     }
 
     /**

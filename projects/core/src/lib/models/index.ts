@@ -200,6 +200,21 @@ export enum CliIcon {
 }
 
 /**
+ * Represents a package source for the CLI package manager
+ */
+export interface CliPackageSource {
+    /**
+     * The name of the source, e.g. 'local', 'unpkg', 'jsdelivr'
+     */
+    name: string;
+
+    /**
+     * The base URL for fetching package files, e.g. 'http://localhost:3000/'
+     */
+    url: string;
+}
+
+/**
  * Options for the CLI
  */
 export type CliOptions = Record<string, any> & {
@@ -249,6 +264,22 @@ export type CliOptions = Record<string, any> & {
      * The minimum log level to display
      */
     logLevel?: CliLogLevel;
+
+    /**
+     * Custom package sources for the package manager.
+     * Built-in sources (unpkg, jsdelivr) are always available.
+     */
+    packageSources?: {
+        /**
+         * Name of the primary source. Defaults to 'unpkg'.
+         */
+        primary?: string;
+
+        /**
+         * Additional custom sources
+         */
+        sources?: CliPackageSource[];
+    };
 };
 
 /**

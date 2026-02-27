@@ -25,6 +25,14 @@
     "qr-code-styling": "^1.9.1",
     "tslib": "^2.3.0"
   },
+  "cliDependencies": [
+    {
+      "name": "qr-code-styling",
+      "globalName": "QRCodeStyling",
+      "version": "1.9.1",
+      "url": "https://unpkg.com/qr-code-styling@1.9.1/lib/qr-code-styling.js"
+    }
+  ],
   "sideEffects": false,
   "scripts": {
     "rollup-compile": "npx rollup -c"

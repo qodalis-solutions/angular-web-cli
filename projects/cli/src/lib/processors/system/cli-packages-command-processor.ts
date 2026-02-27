@@ -14,7 +14,7 @@ import {
     Package,
 } from '@qodalis/cli-core';
 import { CliProcessorsRegistry_TOKEN } from '../../tokens';
-import { CdnSourceName, ScriptLoaderService } from '../../services/script-loader';
+import { CdnSourceName, ScriptLoaderService, SourceKind } from '../../services/script-loader';
 import { CliPackageManagerService } from '../../services/cli-package-manager';
 
 export class CliPackagesCommandProcessor implements ICliCommandProcessor {
@@ -107,114 +107,132 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'browse',
                 description:
-                    'List all available packages from the Qodalis registry',
+                    'List all available packages from all configured sources',
                 async processCommand(_, context) {
                     const { progressBar, writer } = context;
                     const { signal, cleanup } =
                         scope.createAbortSignal(context);
 
                     progressBar.show();
-                    progressBar.setText('Searching npm registry');
 
                     const prefix = packagesManager.QODALIS_COMMAND_PREFIX;
 
-                    let registryPackages: {
-                        name: string;
-                        shortName: string;
-                        version: string;
-                        description: string;
-                    }[] = [];
+                    const knownShortNames = [
+                        'browser-storage',
+                        'curl',
+                        'guid',
+                        'password-generator',
+                        'qr',
+                        'regex',
+                        'server-logs',
+                        'speed-test',
+                        'string',
+                        'text-to-image',
+                        'todo',
+                        'yesno',
+                    ];
 
-                    try {
-                        const response =
-                            await scriptsLoader.getScript(
-                                `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(prefix)}&size=250`,
+                    // Merged results: keyed by package name
+                    const packagesMap = new Map<
+                        string,
+                        {
+                            name: string;
+                            shortName: string;
+                            version: string;
+                            description: string;
+                            source: string;
+                        }
+                    >();
+
+                    // 1. Query registry sources (npm-compatible search API)
+                    const registrySources = scriptsLoader.getSourcesByKind('registry');
+                    for (const regSource of registrySources) {
+                        if (signal.aborted) break;
+
+                        progressBar.setText(`Searching ${regSource.name} registry`);
+
+                        try {
+                            const searchUrl = `${regSource.url}-/v1/search?text=${encodeURIComponent(prefix)}&size=250`;
+                            const response = await scriptsLoader.getScript(
+                                searchUrl,
                                 { signal },
                             );
 
-                        const data = JSON.parse(
-                            response.content || '{}',
-                        );
+                            const data = JSON.parse(response.content || '{}');
 
-                        registryPackages = (data.objects || [])
-                            .map((obj: any) => obj.package)
-                            .filter(
-                                (pkg: any) =>
-                                    pkg.name.startsWith(prefix) &&
-                                    pkg.name !== `${prefix}core`,
-                            )
-                            .map((pkg: any) => ({
-                                name: pkg.name,
-                                shortName: pkg.name.replace(
-                                    prefix,
-                                    '',
-                                ),
-                                version: pkg.version,
-                                description: pkg.description || '',
-                            }))
-                            .sort(
-                                (
-                                    a: { name: string },
-                                    b: { name: string },
-                                ) => a.name.localeCompare(b.name),
-                            );
-                    } catch (e: any) {
-                        if (signal.aborted) {
-                            cleanup();
-                            return;
+                            for (const obj of data.objects || []) {
+                                const pkg = obj.package;
+                                if (
+                                    !pkg.name.startsWith(prefix) ||
+                                    pkg.name === `${prefix}core`
+                                ) {
+                                    continue;
+                                }
+
+                                if (!packagesMap.has(pkg.name)) {
+                                    packagesMap.set(pkg.name, {
+                                        name: pkg.name,
+                                        shortName: pkg.name.replace(prefix, ''),
+                                        version: pkg.version,
+                                        description: pkg.description || '',
+                                        source: regSource.name,
+                                    });
+                                }
+                            }
+                        } catch (e: any) {
+                            if (signal.aborted) break;
+                            // Registry unavailable, continue with other sources
                         }
+                    }
 
-                        // npm registry unreachable, fall back to known packages
-                        progressBar.setText(
-                            'Registry unavailable, checking known packages',
-                        );
+                    // 2. Probe file sources for known packages
+                    const fileSources = scriptsLoader.getSourcesByKind('file');
+                    for (const fileSource of fileSources) {
+                        if (signal.aborted) break;
 
-                        const knownPackages = [
-                            'browser-storage',
-                            'curl',
-                            'guid',
-                            'password-generator',
-                            'qr',
-                            'regex',
-                            'server-logs',
-                            'speed-test',
-                            'string',
-                            'text-to-image',
-                            'todo',
-                        ];
+                        progressBar.setText(`Scanning ${fileSource.name}`);
 
-                        for (const shortName of knownPackages) {
+                        for (const shortName of knownShortNames) {
                             if (signal.aborted) break;
 
                             const fullName = `${prefix}${shortName}`;
                             progressBar.setText(
-                                `Checking ${shortName}`,
+                                `Scanning ${fileSource.name}: ${shortName}`,
                             );
 
                             try {
-                                const packageInfo =
-                                    await scriptsLoader
-                                        .getScriptWithFallback(
-                                            `${fullName}/package.json`,
-                                            { signal },
-                                        )
-                                        .then((r) =>
-                                            JSON.parse(
-                                                r.content || '{}',
-                                            ),
-                                        );
+                                const pkgUrl = `${fileSource.url}${fullName}/package.json`;
+                                const response = await scriptsLoader.getScript(
+                                    pkgUrl,
+                                    { signal },
+                                );
 
-                                registryPackages.push({
-                                    name: fullName,
-                                    shortName,
-                                    version:
-                                        packageInfo.version ||
-                                        'latest',
-                                    description:
-                                        packageInfo.description || '',
-                                });
+                                const packageInfo = JSON.parse(
+                                    response.content || '{}',
+                                );
+
+                                const existing = packagesMap.get(fullName);
+                                if (existing) {
+                                    // Append source name if different version or same
+                                    if (!existing.source.includes(fileSource.name)) {
+                                        existing.source += `, ${fileSource.name}`;
+                                    }
+                                    // If file source has a newer version, update
+                                    if (packageInfo.version && packageInfo.version !== existing.version) {
+                                        existing.version = packageInfo.version;
+                                        existing.source = fileSource.name;
+                                    }
+                                } else {
+                                    packagesMap.set(fullName, {
+                                        name: fullName,
+                                        shortName,
+                                        version: packageInfo.version || 'latest',
+                                        description: packageInfo.description || '',
+                                        source: fileSource.name,
+                                    });
+                                }
                             } catch {
-                                // Not published yet or aborted, skip
+                                // Not available on this source, skip
                             }
                         }
                     }
@@ -225,9 +243,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                     progressBar.complete();
 
-                    if (registryPackages.length === 0) {
+                    const allPackages = Array.from(packagesMap.values()).sort(
+                        (a, b) => a.name.localeCompare(b.name),
+                    );
+
+                    if (allPackages.length === 0) {
                         writer.writeInfo(
-                            '📦 No packages found in the registry',
+                            '📦 No packages found across any source',
                         );
                         return;
                     }
@@ -240,13 +262,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                     writer.writeln(
                         writer.wrapInColor(
-                            `📦 Available packages (${registryPackages.length}):`,
+                            `📦 Available packages (${allPackages.length}):`,
                             CliForegroundColor.Yellow,
                         ),
                     );
                     writer.writeln();
 
-                    for (const pkg of registryPackages) {
+                    for (const pkg of allPackages) {
                         const installedVersion = installedMap.get(
                             pkg.name,
                         );
@@ -271,8 +293,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                             );
                         }
 
+                        const sourceTag = writer.wrapInColor(
+                            `[${pkg.source}]`,
+                            CliForegroundColor.Blue,
+                        );
+
                         writer.writeln(
-                            `  ${writer.wrapInColor(pkg.shortName, CliForegroundColor.Cyan)}  ${writer.wrapInColor(`v${pkg.version}`, CliForegroundColor.Green)}  ${status}`,
+                            `  ${writer.wrapInColor(pkg.shortName, CliForegroundColor.Cyan)}  ${writer.wrapInColor(`v${pkg.version}`, CliForegroundColor.Green)}  ${status}  ${sourceTag}`,
                         );
 
                         if (pkg.description) {
@@ -289,7 +316,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription(context) {
                     context.writer.writeln(
-                        'Browse all available packages from the Qodalis registry',
+                        'Browse all available packages across all configured sources',
                     );
                     context.writer.writeln();
                     context.writer.writeln('📋 Usage:');
@@ -298,7 +325,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     );
                     context.writer.writeln();
                     context.writer.writeln(
-                        'Shows each package with its latest version and install status:',
+                        'Shows each package with its latest version, install status, and source:',
                     );
                     context.writer.writeln(
                         `  ${context.writer.wrapInColor('✅ installed', CliForegroundColor.Green)}     Already installed and up to date`,
@@ -308,6 +335,16 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     );
                     context.writer.writeln(
                         `  ${context.writer.wrapInColor('📥 not installed', CliForegroundColor.Magenta)}  Not yet installed`,
+                    );
+                    context.writer.writeln();
+                    context.writer.writeln(
+                        '🌐 Sources queried:',
+                    );
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('registry', CliForegroundColor.Cyan)}  npm-compatible search API (e.g. npmjs.org, Verdaccio)`,
+                    );
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('file', CliForegroundColor.Cyan)}      Static file servers, probed for known packages`,
                     );
                 },
             },
@@ -790,8 +827,9 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                             context.writer.writeln();
                             context.writer.writeln('🌐 Available sources:');
                             for (const name of allSources) {
-                                const url = scriptsLoader.getSourceUrl(name) || '';
-                                context.writer.writeln(`  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}       ${url}`);
+                                const entry = scriptsLoader.getSource(name);
+                                const kindTag = entry ? `[${entry.kind}]` : '';
+                                context.writer.writeln(`  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}  ${context.writer.wrapInColor(kindTag, CliForegroundColor.Yellow)}  ${entry?.url || ''}`);
                             }
                         },
                     },
@@ -878,7 +916,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         const packageSources = context.options?.packageSources;
         if (packageSources?.sources) {
             for (const source of packageSources.sources) {
-                this.scriptsLoader.addSource(source.name, source.url);
+                this.scriptsLoader.addSource(source.name, source.url, source.kind || 'file');
             }
         }
 
@@ -1112,9 +1150,16 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
     }
 
     private async injectScriptWithCdnFallback(url: string): Promise<void> {
-        const packagePath = url
-            .replace('https://unpkg.com/', '')
-            .replace('https://cdn.jsdelivr.net/npm/', '');
+        let packagePath = url;
+
+        // Strip any known source base URL to get the package path
+        for (const name of this.scriptsLoader.getSources()) {
+            const baseUrl = this.scriptsLoader.getSourceUrl(name);
+            if (baseUrl && packagePath.startsWith(baseUrl)) {
+                packagePath = packagePath.slice(baseUrl.length);
+                break;
+            }
+        }
 
         await this.scriptsLoader.injectScriptWithFallback(packagePath);
     }

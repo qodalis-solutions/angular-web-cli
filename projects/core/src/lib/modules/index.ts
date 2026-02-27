@@ -16,11 +16,13 @@ export const initializeBrowserEnvironment = ({
     // Expose the registry as the single clean global for UMD module loading
     (window as any).__cliModuleRegistry = registry;
 
-    // Expose core utilities (no boot logic)
+    // Expose core utilities and boot functions for UMD modules
     (window as any).cliCore = {
         ...constants,
         ...utils,
         ...enums,
+        bootCliModule,
+        bootUmdModule,
     };
 
     // Safety warning for any UMD module trying to use Angular decorators

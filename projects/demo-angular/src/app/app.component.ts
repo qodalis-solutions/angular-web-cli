@@ -42,12 +42,11 @@ export class AppComponent {
 
     options: CliOptions = {
         logLevel: CliLogLevel.DEBUG,
-        // Uncomment to use a local package source for testing:
-        // packageSources: {
-        //     primary: 'local',
-        //     sources: [
-        //         { name: 'local', url: 'http://localhost:3000/' },
-        //     ],
-        // },
+        packageSources: {
+            primary: 'local',
+            sources: [
+                { name: 'local', url: 'http://localhost:3000/', kind: 'file' },
+            ],
+        },
     };
 }

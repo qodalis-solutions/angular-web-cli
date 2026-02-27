@@ -1,12 +1,20 @@
 export type CdnSourceName = string;
 
-const BUILTIN_SOURCES: Record<string, string> = {
-    unpkg: 'https://unpkg.com/',
-    jsdelivr: 'https://cdn.jsdelivr.net/npm/',
+export type SourceKind = 'registry' | 'file';
+
+export interface SourceEntry {
+    url: string;
+    kind: SourceKind;
+}
+
+const BUILTIN_SOURCES: Record<string, SourceEntry> = {
+    unpkg: { url: 'https://unpkg.com/', kind: 'file' },
+    jsdelivr: { url: 'https://cdn.jsdelivr.net/npm/', kind: 'file' },
+    npm: { url: 'https://registry.npmjs.org/', kind: 'registry' },
 };
 
 export class ScriptLoaderService {
-    private sources: Map<string, string> = new Map(Object.entries(BUILTIN_SOURCES));
+    private sources: Map<string, SourceEntry> = new Map(Object.entries(BUILTIN_SOURCES));
     private primary: string = 'unpkg';
 
     constructor() {}
@@ -14,9 +22,12 @@ export class ScriptLoaderService {
     /**
      * Registers a custom package source.
      */
-    addSource(name: string, url: string): void {
+    addSource(name: string, url: string, kind: SourceKind = 'file'): void {
         // Ensure trailing slash
-        this.sources.set(name, url.endsWith('/') ? url : url + '/');
+        this.sources.set(name, {
+            url: url.endsWith('/') ? url : url + '/',
+            kind,
+        });
     }
 
     /**
@@ -27,10 +38,30 @@ export class ScriptLoaderService {
     }
 
     /**
+     * Returns the full source entry for a given name, or undefined if not found.
+     */
+    getSource(name: string): SourceEntry | undefined {
+        return this.sources.get(name);
+    }
+
+    /**
      * Returns the base URL for a given source name, or undefined if not found.
      */
     getSourceUrl(name: string): string | undefined {
-        return this.sources.get(name);
+        return this.sources.get(name)?.url;
+    }
+
+    /**
+     * Returns all sources of a given kind.
+     */
+    getSourcesByKind(kind: SourceKind): { name: string; url: string }[] {
+        const result: { name: string; url: string }[] = [];
+        for (const [name, entry] of this.sources) {
+            if (entry.kind === kind) {
+                result.push({ name, url: entry.url });
+            }
+        }
+        return result;
     }
 
     /**
@@ -140,16 +171,17 @@ export class ScriptLoaderService {
     /**
      * Returns CDN URLs for a given npm package path.
      * The first entry is the primary source, the rest are fallbacks.
+     * Only includes 'file' kind sources (CDNs and file servers).
      */
     getCdnUrls(packagePath: string): string[] {
         const urls: string[] = [];
-        const primaryUrl = this.sources.get(this.primary);
-        if (primaryUrl) {
-            urls.push(`${primaryUrl}${packagePath}`);
+        const primaryEntry = this.sources.get(this.primary);
+        if (primaryEntry && primaryEntry.kind === 'file') {
+            urls.push(`${primaryEntry.url}${packagePath}`);
         }
-        for (const [name, baseUrl] of this.sources) {
-            if (name !== this.primary) {
-                urls.push(`${baseUrl}${packagePath}`);
+        for (const [name, entry] of this.sources) {
+            if (name !== this.primary && entry.kind === 'file') {
+                urls.push(`${entry.url}${packagePath}`);
             }
         }
         return urls;

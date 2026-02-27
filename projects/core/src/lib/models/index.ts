@@ -212,6 +212,14 @@ export interface CliPackageSource {
      * The base URL for fetching package files, e.g. 'http://localhost:3000/'
      */
     url: string;
+
+    /**
+     * The kind of source.
+     * - 'registry': npm-compatible registry with search API (e.g. npmjs.org, Verdaccio)
+     * - 'file': static file server, packages are discovered by probing known paths
+     * @default 'file'
+     */
+    kind?: 'registry' | 'file';
 }
 
 /**
@@ -347,6 +355,12 @@ export type CliProcessorMetadata = Record<string, any> & {
      * If the installed CLI version is lower, the processor will be skipped during boot.
      */
     requiredCliVersion?: string;
+
+    /**
+     * If true, the processor is hidden from the help command listing.
+     * The command still works when typed directly and `help <command>` still shows its details.
+     */
+    hidden?: boolean;
 };
 
 /**

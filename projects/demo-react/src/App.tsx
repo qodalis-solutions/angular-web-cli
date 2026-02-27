@@ -34,6 +34,12 @@ const modules: ICliModule[] = [
 
 const options: CliOptions = {
   logLevel: CliLogLevel.DEBUG,
+  packageSources: {
+    primary: 'local',
+    sources: [
+      { name: 'local', url: 'http://localhost:3000/', kind: 'file' },
+    ],
+  },
 };
 
 const services = {

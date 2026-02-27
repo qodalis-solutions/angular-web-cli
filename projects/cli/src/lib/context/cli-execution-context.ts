@@ -603,15 +603,13 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
             this.terminal.write(`\x1b[${options.length}A`);
         }
 
-        // Redraw all options
+        // Redraw all options (always write \r\n after each, including last,
+        // so cursor ends on the line below — consistent with initial render)
         for (let i = 0; i < options.length; i++) {
             this.terminal.write('\x1b[2K\r');
             const prefix = i === selectedIndex ? '  \x1b[36m> ' : '    ';
             const suffix = i === selectedIndex ? '\x1b[0m' : '';
-            this.terminal.write(`${prefix}${options[i].label}${suffix}`);
-            if (i < options.length - 1) {
-                this.terminal.write('\r\n');
-            }
+            this.terminal.write(`${prefix}${options[i].label}${suffix}\r\n`);
         }
     }
 

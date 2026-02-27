@@ -1,11 +1,13 @@
 import { useRef, useEffect, useState, RefObject } from 'react';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 
 export interface UseCliEngineConfig {
+    modules?: ICliModule[];
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
     services?: Record<string, any>;
+    disabled?: boolean;
 }
 
 export function useCliEngine(
@@ -14,9 +16,17 @@ export function useCliEngine(
 ): CliEngine | null {
     const [engine, setEngine] = useState<CliEngine | null>(null);
     const engineRef = useRef<CliEngine | null>(null);
+    const mountedRef = useRef(false);
 
     useEffect(() => {
-        if (!containerRef.current) return;
+        if (config?.disabled || !containerRef.current) return;
+
+        // Guard against StrictMode double-mount: skip the first mount
+        // since React will immediately unmount and remount.
+        if (!mountedRef.current) {
+            mountedRef.current = true;
+            return;
+        }
 
         const e = new CliEngine(containerRef.current, config?.options);
 
@@ -26,6 +36,10 @@ export function useCliEngine(
             for (const [token, value] of Object.entries(config.services)) {
                 e.registerService(token, value);
             }
+        }
+
+        if (config?.modules) {
+            e.registerModules(config.modules);
         }
 
         if (config?.processors) {

@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
+import { CliContext } from './CliContext';
+import { useCliConfig } from './CliConfigContext';
 
 export interface CliPanelOptions extends CliEngineOptions {
     isCollapsed?: boolean;
@@ -9,6 +11,7 @@ export interface CliPanelOptions extends CliEngineOptions {
 
 export interface CliPanelProps {
     options?: CliPanelOptions;
+    modules?: ICliModule[];
     processors?: ICliCommandProcessor[];
     services?: Record<string, any>;
     style?: React.CSSProperties;
@@ -86,7 +89,13 @@ const CloseIcon = () => (
 
 /* ─── Component ──────────────────────────────────────────── */
 
-export function CliPanel({ options, processors, services, style, className }: CliPanelProps) {
+export function CliPanel({ options: optionsProp, modules: modulesProp, processors: processorsProp, services: servicesProp, style, className }: CliPanelProps) {
+    const config = useCliConfig();
+    const options = optionsProp ?? config.options as CliPanelOptions | undefined;
+    const modules = modulesProp ?? config.modules;
+    const processors = processorsProp ?? config.processors;
+    const services = servicesProp ?? config.services;
+
     const [visible, setVisible] = useState(true);
     const [collapsed, setCollapsed] = useState(options?.isCollapsed ?? true);
     const [maximized, setMaximized] = useState(false);
@@ -470,7 +479,9 @@ export function CliPanel({ options, processors, services, style, className }: Cl
                                                             title="Close pane"
                                                         >&times;</button>
                                                     )}
-                                                    <Cli options={options} processors={processors} services={services} style={{ height: terminalHeight }} />
+                                                    <CliContext.Provider value={{ engine: null }}>
+                                                        <Cli options={options} modules={modules} processors={processors} services={services} style={{ height: terminalHeight }} />
+                                                    </CliContext.Provider>
                                                 </div>
                                             </React.Fragment>
                                         ))}

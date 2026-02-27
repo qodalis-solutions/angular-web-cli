@@ -1,10 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { useCli } from './CliContext';
+import { useCliConfig } from './CliConfigContext';
 import { useCliEngine } from './useCliEngine';
 
 export interface CliProps {
+    modules?: ICliModule[];
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
     services?: Record<string, any>;
@@ -14,6 +16,7 @@ export interface CliProps {
 }
 
 export function Cli({
+    modules,
     processors,
     options,
     services,
@@ -22,13 +25,24 @@ export function Cli({
     className,
 }: CliProps): React.JSX.Element {
     const ctx = useCli();
+    const config = useCliConfig();
     const containerRef = useRef<HTMLDivElement>(null);
+    const hasProvider = !!ctx.engine;
 
-    // If inside a CliProvider, the provider owns the engine.
-    // Otherwise, this component creates its own.
-    const standaloneEngine = ctx.engine
-        ? null
-        : useCliEngine(containerRef, { processors, options, services });
+    // Merge: local props override global config
+    const mergedModules = modules ?? config.modules;
+    const mergedProcessors = processors ?? config.processors;
+    const mergedOptions = options ?? config.options;
+    const mergedServices = services ?? config.services;
+
+    // Always call the hook (React rules), but disable it when inside a CliProvider.
+    const standaloneEngine = useCliEngine(containerRef, {
+        modules: mergedModules,
+        processors: mergedProcessors,
+        options: mergedOptions,
+        services: mergedServices,
+        disabled: hasProvider,
+    });
 
     const engine = ctx.engine ?? standaloneEngine;
 
@@ -38,8 +52,8 @@ export function Cli({
         }
     }, [engine, onReady]);
 
-    // If inside a provider, render nothing (provider has the terminal div).
-    if (ctx.engine) {
+    // If inside a CliProvider, render nothing (provider has the terminal div).
+    if (hasProvider) {
         return <></>;
     }
 

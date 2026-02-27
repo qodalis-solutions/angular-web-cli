@@ -6,6 +6,8 @@ export { CliProvider } from './CliProvider';
 export type { CliProviderProps } from './CliProvider';
 export { useCli, CliContext } from './CliContext';
 export type { CliContextValue } from './CliContext';
+export { CliConfigProvider, useCliConfig } from './CliConfigContext';
+export type { CliConfigValue, CliConfigProviderProps } from './CliConfigContext';
 export { useCliEngine } from './useCliEngine';
 export type { UseCliEngineConfig } from './useCliEngine';
 

@@ -38,6 +38,7 @@ import { CliDefaultUserSessionService } from './lib/services/cli-default-user-se
 import { CliDefaultGroupsStoreService } from './lib/services/cli-default-groups-store.service';
 import { CliDefaultAuthService } from './lib/services/cli-default-auth.service';
 import { CliUsersModuleConfig } from './lib/models/users-module-config';
+import { firstValueFrom } from 'rxjs';
 
 import { LIBRARY_VERSION } from './lib/version';
 
@@ -109,8 +110,18 @@ export const usersModule: ICliModule = {
             }
         }
 
-        // Restore session from IndexedDB, or stay anonymous
-        await sessionService.restoreSession();
+        // Restore session from IndexedDB, or auto-login as root
+        const restoredSession = await sessionService.restoreSession();
+        if (!restoredSession) {
+            const rootUser = await firstValueFrom(usersStore.getUser('root'));
+            if (rootUser) {
+                await sessionService.setUserSession({
+                    user: rootUser,
+                    loginTime: Date.now(),
+                    lastActivity: Date.now(),
+                });
+            }
+        }
 
         // Subscribe session changes to execution context
         sessionService.getUserSession().subscribe(session => {

@@ -323,7 +323,7 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
 
                 try {
                     const moduleRegistry = context.services.get<CliModuleRegistry>(CliModuleRegistry_TOKEN);
-                    report.modules = moduleRegistry.getAll().map((m: ICliModule) => ({
+                    report['modules'] = moduleRegistry.getAll().map((m: ICliModule) => ({
                         name: m.name,
                         version: m.version || null,
                         description: m.description || null,
@@ -331,12 +331,12 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
                         dependencies: m.dependencies || [],
                     }));
                 } catch {
-                    report.modules = 'registry not available';
+                    report['modules'] = 'registry not available';
                 }
 
                 const container = context.services as CliServiceContainer;
                 if (container.getRegisteredTokens) {
-                    report.services = container.getRegisteredTokens();
+                    report['services'] = container.getRegisteredTokens();
                 }
 
                 writer.writeJson(report);

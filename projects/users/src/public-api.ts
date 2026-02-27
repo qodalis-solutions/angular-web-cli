@@ -38,7 +38,7 @@ import { CliDefaultUsersStoreService } from './lib/services/cli-default-users-st
 import { CliDefaultUserSessionService } from './lib/services/cli-default-user-session.service';
 import { CliDefaultGroupsStoreService } from './lib/services/cli-default-groups-store.service';
 import { CliDefaultAuthService } from './lib/services/cli-default-auth.service';
-import { CliUsersModuleConfig } from './lib/models/users-module-config';
+import { CliUsersModuleConfig, CliUsersModuleConfig_TOKEN } from './lib/models/users-module-config';
 import { firstValueFrom } from 'rxjs';
 
 import { LIBRARY_VERSION } from './lib/version';
@@ -79,6 +79,11 @@ export const usersModule: ICliUsersModule = {
     async onInit(context) {
         const moduleConfig = (this.config || {}) as CliUsersModuleConfig;
         const kvStore = context.services.get<ICliKeyValueStore>('cli-key-value-store');
+
+        // Register module config so processors can access it
+        context.services.set([
+            { provide: CliUsersModuleConfig_TOKEN, useValue: moduleConfig },
+        ]);
 
         // Initialize users store
         const usersStore = context.services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);

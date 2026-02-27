@@ -10,15 +10,14 @@ import {
     CliIcon,
     CliForegroundColor,
     CliStateConfiguration,
-} from '@qodalis/cli-core';
-
-import { firstValueFrom } from 'rxjs';
-import {
     ICliAuthService_TOKEN,
     ICliUserSessionService_TOKEN,
     ICliUsersStoreService_TOKEN,
+    DefaultLibraryAuthor,
 } from '@qodalis/cli-core';
-import { DefaultLibraryAuthor } from '@qodalis/cli-core';
+
+import { firstValueFrom } from 'rxjs';
+import { CliUsersModuleConfig, CliUsersModuleConfig_TOKEN } from '../models/users-module-config';
 
 export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
     command = 'su';
@@ -49,6 +48,7 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
     private userSessionService!: ICliUserSessionService;
     private usersStore!: ICliUsersStoreService;
     private authService!: ICliAuthService;
+    private moduleConfig!: CliUsersModuleConfig;
 
     async initialize(context: ICliExecutionContext): Promise<void> {
         this.userSessionService = context.services.get<ICliUserSessionService>(
@@ -60,6 +60,7 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
         this.authService = context.services.get<ICliAuthService>(
             ICliAuthService_TOKEN,
         );
+        this.moduleConfig = context.services.get<CliUsersModuleConfig>(CliUsersModuleConfig_TOKEN) || {};
     }
 
     async processCommand(
@@ -96,22 +97,24 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
             return;
         }
 
-        // Skip password prompt if current user is an admin
-        const isAdmin = fromUser.groups.includes('admin');
+        // Only prompt for password when requirePassword is enabled
+        if (this.moduleConfig.requirePassword) {
+            const isAdmin = fromUser.groups.includes('admin');
 
-        if (!isAdmin) {
-            const password = await context.reader.readPassword('Password: ');
+            if (!isAdmin) {
+                const password = await context.reader.readPassword('Password: ');
 
-            if (password === null) {
-                context.writer.writeError('Aborted');
-                return;
-            }
+                if (password === null) {
+                    context.writer.writeError('Aborted');
+                    return;
+                }
 
-            const valid = await this.authService.verifyPassword(user.id, password);
+                const valid = await this.authService.verifyPassword(user.id, password);
 
-            if (!valid) {
-                context.writer.writeError('su: Authentication failure');
-                return;
+                if (!valid) {
+                    context.writer.writeError('su: Authentication failure');
+                    return;
+                }
             }
         }
 

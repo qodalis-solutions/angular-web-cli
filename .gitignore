@@ -50,3 +50,6 @@ Thumbs.db
 # Deployment artifacts
 /deploy
 /typedoc-output
+
+# Worktrees
+.worktrees/

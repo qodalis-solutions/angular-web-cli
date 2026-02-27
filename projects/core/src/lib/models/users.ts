@@ -56,6 +56,8 @@ export interface ICliGroup {
 export interface ICliUserSession {
     /** The user associated with this session */
     user: ICliUser;
+    /** Pre-computed display name for the prompt (set by users module) */
+    displayName?: string;
     /** Timestamp when the session started */
     loginTime: number;
     /** Timestamp of last activity */

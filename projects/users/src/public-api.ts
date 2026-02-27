@@ -12,6 +12,7 @@ import {
     ICliUsersStoreService,
     ICliGroupsStoreService,
     ICliAuthService,
+    ICliUser,
     ICliUsersStoreService_TOKEN,
     ICliUserSessionService_TOKEN,
     ICliGroupsStoreService_TOKEN,
@@ -127,21 +128,17 @@ export const usersModule: ICliUsersModule = {
             }
         }
 
-        // Propagate userDisplayFormatter from module config to options
-        if (moduleConfig.userDisplayFormatter) {
-            if (!context.options) {
-                context.options = {};
-            }
-            if (!context.options.usersModule) {
-                context.options.usersModule = {};
-            }
-            context.options.usersModule.userDisplayFormatter = moduleConfig.userDisplayFormatter;
-        }
+        // Resolve display name formatter (default: user.name)
+        const formatDisplayName = moduleConfig.userDisplayFormatter
+            ?? ((user: ICliUser) => user.name);
 
         // Subscribe session changes to execution context
         sessionService.getUserSession().subscribe(session => {
             if (session) {
-                context.userSession = session;
+                context.userSession = {
+                    ...session,
+                    displayName: formatDisplayName(session.user),
+                };
             }
         });
     },

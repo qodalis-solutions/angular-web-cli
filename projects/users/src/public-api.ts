@@ -51,6 +51,7 @@ interface ICliUsersModule extends ICliModule {
 export const usersModule: ICliUsersModule = {
     name: '@qodalis/cli-users',
     version: LIBRARY_VERSION,
+    priority: Number.MAX_SAFE_INTEGER,
     description: 'Linux-style user and group management with authentication',
     processors: [
         new CliWhoamiCommandProcessor(),

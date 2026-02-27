@@ -16,7 +16,7 @@ import { CliCommandHistory } from '../services/cli-command-history';
 import { CliStateStoreManager } from '../state/cli-state-store-manager';
 import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
-import { CliWelcomeMessage } from '../services/cli-welcome-message';
+import { welcomeModule } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
 import { CliCommandHistory_TOKEN, CliModuleRegistry_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN } from '../tokens';
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
@@ -152,15 +152,17 @@ export class CliEngine {
 
         this.executionContext.initializeTerminalListeners();
 
-        // 6. Boot modules (core module + user modules)
-        await this.bootService.boot(this.executionContext, this.userModules);
+        // 6. Prepend welcome module (users can override via configure)
+        const allModules = [welcomeModule, ...this.userModules];
 
-        // 7. Show welcome message
-        const welcomeMessage = new CliWelcomeMessage();
-        welcomeMessage.displayWelcomeMessage(this.executionContext);
+        // 7. Boot all modules (core + welcome + user modules)
+        await this.bootService.boot(this.executionContext, allModules);
 
-        // 8. Run onAfterBoot hooks (terminal is now interactive)
-        for (const module of this.userModules) {
+        // 8. Run onAfterBoot hooks sorted by priority (lower first)
+        const sorted = [...allModules].sort(
+            (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
+        );
+        for (const module of sorted) {
             if (module.onAfterBoot) {
                 try {
                     await module.onAfterBoot(this.executionContext);

@@ -362,6 +362,9 @@ export interface ICliModule {
     /** Module names this module depends on (resolved before this module boots) */
     dependencies?: string[];
 
+    /** Boot priority — lower values boot first (default: 0) */
+    priority?: number;
+
     /** Command processors provided by this module */
     processors?: ICliCommandProcessor[];
 

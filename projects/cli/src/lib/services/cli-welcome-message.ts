@@ -1,35 +1,41 @@
 import { LIBRARY_VERSION } from '../version';
 import { getCliNameArt } from '../constants';
-import { CliForegroundColor, ICliExecutionContext } from '@qodalis/cli-core';
+import { CliForegroundColor, ICliExecutionContext, ICliModule } from '@qodalis/cli-core';
 import { getGreetingBasedOnTime } from '../utils';
 
-/**
- * Service that displays the welcome message to the user.
- */
-export class CliWelcomeMessage {
-    /**
-     * Displays the welcome message to the user.
-     * @param context
-     * @returns void
-     */
-    public displayWelcomeMessage(context: ICliExecutionContext) {
-        const welcomeConfig = context.options?.welcomeMessage;
+export interface CliWelcomeMessageConfig {
+    /** Custom message to display instead of the default */
+    message?: string;
+    /** When to show the welcome message (default: 'always') */
+    show?: 'always' | 'once' | 'daily' | 'never';
+}
 
-        // Handle the 'show' property
-        if (welcomeConfig?.show) {
-            const showOption = welcomeConfig.show;
+interface ICliWelcomeModule extends ICliModule {
+    configure(config: CliWelcomeMessageConfig): ICliModule;
+}
 
-            // Determine if the welcome message should be shown
-            if (!this.shouldDisplayWelcomeMessage(showOption)) {
+export const welcomeModule: ICliWelcomeModule = {
+    name: '@qodalis/cli-welcome',
+    priority: -1,
+
+    configure(config: CliWelcomeMessageConfig): ICliModule {
+        return { ...this, config };
+    },
+
+    async onAfterBoot(context) {
+        const config = (this.config || {}) as CliWelcomeMessageConfig;
+
+        if (config.show) {
+            if (!shouldDisplayWelcomeMessage(config.show)) {
                 context.showPrompt();
                 return;
             }
         }
 
-        if (welcomeConfig?.message) {
-            context.terminal.writeln(welcomeConfig?.message);
+        if (config.message) {
+            context.terminal.writeln(config.message);
         } else {
-            const welcomeMessage = [
+            const lines = [
                 `🚀 Welcome to Web CLI [Version ${context.writer.wrapInColor(LIBRARY_VERSION, CliForegroundColor.Green)}]`,
                 `(c) ${new Date().getFullYear()} Qodalis Solutions. All rights reserved.`,
                 getCliNameArt(context.terminal.cols),
@@ -40,61 +46,45 @@ export class CliWelcomeMessage {
                 '',
             ];
 
-            welcomeMessage.forEach((line, index) => {
+            lines.forEach(line => {
                 context.terminal.write(line + '\r\n');
             });
         }
 
-        this.recordWelcomeMessageDisplay();
+        recordWelcomeMessageDisplay();
         context.showPrompt();
         context.textAnimator?.showText(getGreetingBasedOnTime(), {
             speed: 60,
             removeAfterTyping: true,
         });
-    }
+    },
+};
 
-    /**
-     * Determines if the welcome message should be displayed based on the show option.
-     * @param showOption - The show option from the config.
-     * @returns true if the message should be displayed, false otherwise.
-     */
-    private shouldDisplayWelcomeMessage(
-        showOption: 'always' | 'once' | 'daily' | 'never',
-    ): boolean {
-        const lastDisplayed = this.getLastWelcomeMessageDisplayTime();
+function shouldDisplayWelcomeMessage(
+    showOption: 'always' | 'once' | 'daily' | 'never',
+): boolean {
+    const lastDisplayed = localStorage.getItem('cliWelcomeMessageLastDisplayed');
 
-        switch (showOption) {
-            case 'always':
-                return true;
-            case 'once':
-                return !lastDisplayed; // Show only if it hasn't been shown before
-            case 'daily':
-                if (!lastDisplayed) return true; // No previous display, show it
-                const now = new Date();
-                const lastDate = new Date(lastDisplayed);
-                return now.toDateString() !== lastDate.toDateString(); // Compare dates
-            case 'never':
-                return false;
-            default:
-                return true;
-        }
+    switch (showOption) {
+        case 'always':
+            return true;
+        case 'once':
+            return !lastDisplayed;
+        case 'daily':
+            if (!lastDisplayed) return true;
+            const now = new Date();
+            const lastDate = new Date(lastDisplayed);
+            return now.toDateString() !== lastDate.toDateString();
+        case 'never':
+            return false;
+        default:
+            return true;
     }
+}
 
-    /**
-     * Records the current time as the last display time for the welcome message.
-     */
-    private recordWelcomeMessageDisplay(): void {
-        localStorage.setItem(
-            'cliWelcomeMessageLastDisplayed',
-            new Date().toISOString(),
-        );
-    }
-
-    /**
-     * Retrieves the last display time of the welcome message.
-     * @returns The ISO string of the last display time or null if not recorded.
-     */
-    private getLastWelcomeMessageDisplayTime(): string | null {
-        return localStorage.getItem('cliWelcomeMessageLastDisplayed');
-    }
+function recordWelcomeMessageDisplay(): void {
+    localStorage.setItem(
+        'cliWelcomeMessageLastDisplayed',
+        new Date().toISOString(),
+    );
 }

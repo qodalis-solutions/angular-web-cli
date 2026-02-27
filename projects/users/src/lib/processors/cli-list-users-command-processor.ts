@@ -74,14 +74,26 @@ export class CliListUsersCommandProcessor implements ICliCommandProcessor {
             }),
         );
 
+        if (users.length === 0) {
+            writer.writeln('No users found');
+            return;
+        }
+
+        const displayUsers = users.map(u => ({
+            name: u.name,
+            email: u.email,
+            groups: u.groups.join(', ') || '(none)',
+            disabled: u.disabled ? 'yes' : 'no',
+        }));
+
         writer.writeln('Users:');
-        writer.writeObjectsAsTable(users);
+        writer.writeObjectsAsTable(displayUsers);
     }
 
     writeDescription({ writer }: ICliExecutionContext): void {
         writer.writeln('List all users in the system');
         writer.writeln();
-        writer.writeln('📋 Usage:');
+        writer.writeln('Usage:');
         writer.writeln(`  ${writer.wrapInColor('listusers', CliForegroundColor.Cyan)}                              List all users`);
         writer.writeln(`  ${writer.wrapInColor('listusers --query=<search>', CliForegroundColor.Cyan)}              Filter users by name/email`);
         writer.writeln(`  ${writer.wrapInColor('listusers --skip=5 --take=10', CliForegroundColor.Cyan)}            Paginate results`);

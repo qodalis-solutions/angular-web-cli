@@ -37,7 +37,7 @@ export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
     parameters?: ICliCommandParameterDescriptor[] | undefined = [
         {
             name: 'info',
-            description: 'Display user information',
+            description: 'Display detailed user information',
             type: 'boolean',
             required: false,
             aliases: ['i'],
@@ -56,20 +56,34 @@ export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const user = await firstValueFrom(
-            this.userSessionService.getUserSession(),
-        );
+        const session = context.userSession;
 
-        if (!user) {
+        if (!session) {
             context.writer.writeln('No user session found');
             return;
         }
 
         if (command.args['info'] || command.args['i']) {
+            const fullSession = await firstValueFrom(
+                this.userSessionService.getUserSession(),
+            );
+
+            if (!fullSession) {
+                context.writer.writeln('No user session found');
+                return;
+            }
+
+            const user = fullSession.user;
+
             context.writer.writeln('User information:');
-            context.writer.writeObjectsAsTable([user.user]);
+            context.writer.writeln(`  Name:      ${user.name}`);
+            context.writer.writeln(`  Email:     ${user.email}`);
+            context.writer.writeln(`  Groups:    ${user.groups.join(', ') || '(none)'}`);
+            context.writer.writeln(`  Home:      ${user.homeDir || '(not set)'}`);
+            context.writer.writeln(`  Created:   ${new Date(user.createdAt).toLocaleString()}`);
+            context.writer.writeln(`  Login:     ${new Date(fullSession.loginTime).toLocaleString()}`);
         } else {
-            context.writer.writeln(user?.user.email);
+            context.writer.writeln(session.user.email);
         }
     }
 
@@ -77,7 +91,7 @@ export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
         const { writer } = context;
         writer.writeln('Display the current logged-in user information');
         writer.writeln();
-        writer.writeln('📋 Usage:');
+        writer.writeln('Usage:');
         writer.writeln(`  ${writer.wrapInColor('whoami', CliForegroundColor.Cyan)}                 Show current user email`);
         writer.writeln(`  ${writer.wrapInColor('whoami --info', CliForegroundColor.Cyan)}           Show detailed user information`);
     }

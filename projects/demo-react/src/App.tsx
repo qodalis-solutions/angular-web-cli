@@ -12,6 +12,7 @@ import { passwordGeneratorModule } from "@qodalis/cli-password-generator";
 import { qrModule } from "@qodalis/cli-qr";
 import { yesnoModule } from "@qodalis/cli-yesno";
 import { serverLogsModule } from "@qodalis/cli-server-logs";
+import { usersModule } from "@qodalis/cli-users";
 import { CliLogLevel, type CliOptions, type ICliModule } from "@qodalis/cli-core";
 import { CliCustomUsersStoreService } from "./services/custom-users-store.service";
 
@@ -28,6 +29,7 @@ const modules: ICliModule[] = [
   qrModule,
   yesnoModule,
   serverLogsModule,
+  usersModule,
 ];
 
 const options: CliOptions = {

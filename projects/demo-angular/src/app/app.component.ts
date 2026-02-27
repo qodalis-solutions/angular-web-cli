@@ -16,6 +16,7 @@ import { passwordGeneratorModule } from '@qodalis/cli-password-generator';
 import { qrModule } from '@qodalis/cli-qr';
 import { yesnoModule } from '@qodalis/cli-yesno';
 import { serverLogsModule } from '@qodalis/cli-server-logs';
+import { usersModule } from '@qodalis/cli-users';
 
 @Component({
     selector: 'app-root',
@@ -36,6 +37,7 @@ export class AppComponent {
         qrModule,
         yesnoModule,
         serverLogsModule,
+        usersModule,
     ];
 
     options: CliOptions = {

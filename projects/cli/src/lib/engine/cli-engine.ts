@@ -5,7 +5,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import {
-    CliOptions, CliProvider, ICliCommandProcessor, ICliUserSessionService, ICliUsersStoreService, DefaultThemes,
+    CliOptions, CliProvider, ICliCommandProcessor, ICliModule, ICliUserSessionService, ICliUsersStoreService, DefaultThemes,
 } from '@qodalis/cli-core';
 import { CliCommandExecutor } from '../executor/cli-command-executor';
 import { CliCommandProcessorRegistry } from '../registry/cli-command-processor-registry';
@@ -18,7 +18,6 @@ import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
 import { CliWelcomeMessage } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
-import { builtinProcessors } from '../processors';
 import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN, ICliUserSessionService_TOKEN, ICliUsersStoreService_TOKEN } from '../tokens';
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
 import { CliDefaultUsersStoreService } from '../services/defaults/cli-default-users-store.service';
@@ -33,45 +32,67 @@ export class CliEngine {
     private fitAddon!: FitAddon;
     private executionContext!: CliExecutionContext;
     private registry: CliCommandProcessorRegistry;
-    private userProcessors: ICliCommandProcessor[] = [];
+    private userModules: ICliModule[] = [];
     private pendingServices: CliProvider[] = [];
     private resizeObserver?: ResizeObserver;
     private resizeListener?: () => void;
     private wheelListener?: (e: WheelEvent) => void;
-    private bootService: CliBoot;
+    private bootService?: CliBoot;
 
     constructor(
         private readonly container: HTMLElement,
         private readonly options?: CliEngineOptions,
     ) {
-        this.registry = new CliCommandProcessorRegistry([...builtinProcessors]);
-        this.bootService = new CliBoot(this.registry);
+        this.registry = new CliCommandProcessorRegistry();
+    }
+
+    /**
+     * Register a CLI module to be loaded on start().
+     */
+    registerModule(module: ICliModule): void {
+        this.userModules.push(module);
+    }
+
+    /**
+     * Register multiple CLI modules to be loaded on start().
+     */
+    registerModules(modules: ICliModule[]): void {
+        this.userModules.push(...modules);
     }
 
     /**
      * Register a command processor to be loaded on start().
+     * @deprecated Use registerModule() instead.
      */
     registerProcessor(processor: ICliCommandProcessor): void {
-        this.userProcessors.push(processor);
+        this.userModules.push({
+            name: `__inline_${processor.command}`,
+            processors: [processor],
+        });
     }
 
     /**
      * Register multiple command processors to be loaded on start().
+     * @deprecated Use registerModule() instead.
      */
     registerProcessors(processors: ICliCommandProcessor[]): void {
-        this.userProcessors.push(...processors);
+        this.userModules.push({
+            name: '__inline_processors',
+            processors,
+        });
     }
 
     /**
      * Register a service to be available in the service container.
      * Must be called before start().
+     * @deprecated Use registerModule() with services instead.
      */
     registerService(token: string, value: any): void {
         this.pendingServices.push({ provide: token, useValue: value });
     }
 
     /**
-     * Initialize the terminal, wire up services, boot processors, and show welcome message.
+     * Initialize the terminal, wire up services, boot modules, and show welcome message.
      */
     async start(): Promise<void> {
         // 1. Wait for container to have layout, then initialize xterm.js
@@ -121,7 +142,10 @@ export class CliEngine {
             services.set([{ provide: ICliPingServerService_TOKEN, useValue: new CliDefaultPingServerService() }]);
         }
 
-        // 4. Create executor and execution context
+        // 4. Create boot service with registry and services
+        this.bootService = new CliBoot(this.registry, services);
+
+        // 5. Create executor and execution context
         const executor = new CliCommandExecutor(this.registry);
         const terminalOptions = this.getTerminalOptions();
 
@@ -144,10 +168,10 @@ export class CliEngine {
             });
         }
 
-        // 5. Boot processors
-        await this.bootService.boot(this.executionContext, this.userProcessors);
+        // 6. Boot modules (core module + user modules)
+        await this.bootService.boot(this.executionContext, this.userModules);
 
-        // 6. Show welcome message
+        // 7. Show welcome message
         const welcomeMessage = new CliWelcomeMessage();
         welcomeMessage.displayWelcomeMessage(this.executionContext);
     }

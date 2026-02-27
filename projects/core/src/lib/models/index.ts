@@ -1,4 +1,5 @@
 import { ITerminalInitOnlyOptions, ITerminalOptions } from '@xterm/xterm';
+import { ICliUser } from './users';
 
 export type CliProcessCommand = {
     /**
@@ -261,6 +262,13 @@ export type CliOptions = Record<string, any> & {
          * Reload the page when the user changes
          */
         reloadPageOnUserChange?: boolean;
+
+        /**
+         * Custom formatter for the user display name in the prompt.
+         * Receives the current user and returns the string to display.
+         * @default user.name
+         */
+        userDisplayFormatter?: (user: ICliUser) => string;
     };
 
     /**

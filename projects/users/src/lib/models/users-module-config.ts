@@ -9,4 +9,11 @@ export interface CliUsersModuleConfig {
     requirePasswordOnSu?: boolean;
     /** Session timeout in ms (0 = no timeout, default: 0) */
     sessionTimeout?: number;
+    /**
+     * Custom formatter for the user display name in the prompt.
+     * @default user.name
+     * @example (user) => user.email
+     * @example (user) => `${user.name}@cli`
+     */
+    userDisplayFormatter?: (user: ICliUser) => string;
 }

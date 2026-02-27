@@ -1,6 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import {
     ICliCommandProcessor,
+    ICliModule,
     ICliPingServerService,
     ICliUserSessionService,
     ICliUsersStoreService,
@@ -20,3 +21,5 @@ export const ICliUsersStoreService_TOKEN = new InjectionToken<
 export const ICliPingServerService_TOKEN = new InjectionToken<
     ICliPingServerService[]
 >('cli-ping-server-service');
+
+export const CliModule_TOKEN = new InjectionToken<ICliModule[]>('cli-modules');

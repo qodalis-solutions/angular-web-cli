@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {
     ICliCommandProcessor,
+    ICliModule,
     ICliPingServerService,
     ICliUserSessionService,
     ICliUsersStoreService,
@@ -19,6 +20,7 @@ import {
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import {
     CliCommandProcessor_TOKEN,
+    CliModule_TOKEN,
     ICliPingServerService_TOKEN,
     ICliUserSessionService_TOKEN,
     ICliUsersStoreService_TOKEN,
@@ -36,6 +38,7 @@ import {
 export class CliComponent implements AfterViewInit, OnDestroy {
     @Input() options?: CliOptions;
     @Input() processors?: ICliCommandProcessor[];
+    @Input() modules?: ICliModule[];
     @Input() height?: string;
 
     @ViewChild('terminal', { static: true }) terminalDiv!: ElementRef;
@@ -46,6 +49,9 @@ export class CliComponent implements AfterViewInit, OnDestroy {
         @Optional()
         @Inject(CliCommandProcessor_TOKEN)
         private readonly diProcessors: ICliCommandProcessor[],
+        @Optional()
+        @Inject(CliModule_TOKEN)
+        private readonly diModules: ICliModule[],
         @Optional()
         @Inject(ICliUserSessionService_TOKEN)
         private readonly userSessionService: ICliUserSessionService,
@@ -89,6 +95,16 @@ export class CliComponent implements AfterViewInit, OnDestroy {
         // Register processors provided via @Input
         if (this.processors && this.processors.length > 0) {
             this.engine.registerProcessors(this.processors);
+        }
+
+        // Register modules provided via Angular DI
+        if (this.diModules && this.diModules.length > 0) {
+            this.engine.registerModules(this.diModules);
+        }
+
+        // Register modules provided via @Input
+        if (this.modules && this.modules.length > 0) {
+            this.engine.registerModules(this.modules);
         }
 
         this.engine.start();

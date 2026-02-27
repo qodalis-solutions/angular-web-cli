@@ -1,0 +1,12 @@
+import { ICliUser } from '@qodalis/cli-core';
+
+export interface CliUsersModuleConfig {
+    /** Default password for seeded users (default: 'root') */
+    defaultPassword?: string;
+    /** Users to seed on first boot (in addition to root) */
+    seedUsers?: Array<Omit<ICliUser, 'id' | 'createdAt' | 'updatedAt'>>;
+    /** Whether su requires a password (default: true, admin users skip) */
+    requirePasswordOnSu?: boolean;
+    /** Session timeout in ms (0 = no timeout, default: 0) */
+    sessionTimeout?: number;
+}

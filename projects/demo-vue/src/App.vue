@@ -15,7 +15,6 @@ import { yesnoModule } from '@qodalis/cli-yesno';
 import { serverLogsModule } from '@qodalis/cli-server-logs';
 import { usersModule } from '@qodalis/cli-users';
 import { CliLogLevel, type ICliModule } from '@qodalis/cli-core';
-import { CliCustomUsersStoreService } from './services/custom-users-store.service';
 
 const modules: ICliModule[] = [
     guidModule,
@@ -30,7 +29,12 @@ const modules: ICliModule[] = [
     qrModule,
     yesnoModule,
     serverLogsModule,
-    usersModule,
+    usersModule.configure!({
+        seedUsers: [
+            { name: 'root1', email: 'root1@root.com', groups: ['admin'] },
+        ],
+        defaultPassword: 'root',
+    }),
 ];
 
 const options = {
@@ -42,13 +46,9 @@ const options = {
         ],
     },
 };
-
-const services = {
-    'cli-users-store-service': new CliCustomUsersStoreService(),
-};
 </script>
 
 <template>
-  <Cli :modules="modules" :options="options" :services="services" :style="{ width: '100vw', height: '100vh' }" />
-  <CliPanel :modules="modules" :options="options" :services="services" />
+  <Cli :modules="modules" :options="options" :style="{ width: '100vw', height: '100vh' }" />
+  <CliPanel :modules="modules" :options="options" />
 </template>

@@ -9,8 +9,12 @@ describe('CliUsersModule', () => {
         expect(usersModule.name).toBe('@qodalis/cli-users');
     });
 
-    it('should have 4 processors', () => {
-        expect(usersModule.processors?.length).toBe(4);
+    it('should have 14 processors', () => {
+        expect(usersModule.processors?.length).toBe(14);
+    });
+
+    it('should have a configure method', () => {
+        expect(usersModule.configure).toBeDefined();
     });
 
     it('should have services', () => {

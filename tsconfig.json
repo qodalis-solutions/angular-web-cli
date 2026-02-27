@@ -29,6 +29,9 @@
       ],
       "@qodalis/cli-yesno": [
         "dist/yesno"
+      ],
+      "@qodalis/cli-users": [
+        "dist/users"
       ]
     },
     "outDir": "./dist/out-tsc",

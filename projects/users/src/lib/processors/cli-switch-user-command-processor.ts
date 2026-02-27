@@ -97,24 +97,20 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
             return;
         }
 
-        // Only prompt for password when requirePassword is enabled
+        // Prompt for password when requirePassword is enabled
         if (this.moduleConfig.requirePassword) {
-            const isAdmin = fromUser.groups.includes('admin');
+            const password = await context.reader.readPassword('Password: ');
 
-            if (!isAdmin) {
-                const password = await context.reader.readPassword('Password: ');
+            if (password === null) {
+                context.writer.writeError('Aborted');
+                return;
+            }
 
-                if (password === null) {
-                    context.writer.writeError('Aborted');
-                    return;
-                }
+            const valid = await this.authService.verifyPassword(user.id, password);
 
-                const valid = await this.authService.verifyPassword(user.id, password);
-
-                if (!valid) {
-                    context.writer.writeError('su: Authentication failure');
-                    return;
-                }
+            if (!valid) {
+                context.writer.writeError('su: Authentication failure');
+                return;
             }
         }
 

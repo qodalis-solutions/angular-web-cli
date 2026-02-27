@@ -373,9 +373,9 @@ export interface ICliModule {
 
     /**
      * Returns a configured copy of this module.
-     * Usage: usersModule.configure({ defaultPassword: 'admin', seedUsers: [...] })
+     * Modules should narrow the config type via a module-specific interface.
      */
-    configure?(config: Record<string, any>): ICliModule;
+    configure?(config: any): ICliModule;
 
     /** Called after services are registered and before processors are initialized */
     onInit?(context: ICliExecutionContext): Promise<void>;

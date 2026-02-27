@@ -42,7 +42,11 @@ import { firstValueFrom } from 'rxjs';
 
 import { LIBRARY_VERSION } from './lib/version';
 
-export const usersModule: ICliModule = {
+interface ICliUsersModule extends ICliModule {
+    configure(config: CliUsersModuleConfig): ICliModule;
+}
+
+export const usersModule: ICliUsersModule = {
     name: '@qodalis/cli-users',
     version: LIBRARY_VERSION,
     description: 'Linux-style user and group management with authentication',

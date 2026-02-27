@@ -28,7 +28,7 @@ const modules: ICliModule[] = [
   qrModule,
   yesnoModule,
   serverLogsModule,
-  usersModule.configure!({
+  usersModule.configure({
     seedUsers: [
       { name: 'root1', email: 'root1@root.com', groups: ['admin'] },
     ],

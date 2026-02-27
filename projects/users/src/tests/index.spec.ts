@@ -97,7 +97,7 @@ describe('CliUsersModule', () => {
 
     it('configure() should return a new module with config set', () => {
         const config = { defaultPassword: 'test123' };
-        const configured = usersModule.configure!(config);
+        const configured = usersModule.configure(config);
         expect(configured).toBeDefined();
         expect(configured).not.toBe(usersModule);
         expect((configured as any).config).toEqual(config);
@@ -105,7 +105,7 @@ describe('CliUsersModule', () => {
 
     it('configure() should preserve all original properties', () => {
         const config = { sessionTimeout: 5000 };
-        const configured = usersModule.configure!(config);
+        const configured = usersModule.configure(config);
         expect(configured.name).toBe(usersModule.name);
         expect(configured.processors?.length).toBe(usersModule.processors?.length);
         expect(configured.services?.length).toBe(usersModule.services?.length);

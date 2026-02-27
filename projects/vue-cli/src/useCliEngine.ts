@@ -1,8 +1,9 @@
 import { ref, onMounted, onBeforeUnmount, Ref, shallowRef } from 'vue';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
-import { ICliCommandProcessor } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 
 export interface UseCliEngineConfig {
+    modules?: ICliModule[];
     processors?: ICliCommandProcessor[];
     options?: CliEngineOptions;
     services?: Record<string, any>;
@@ -25,6 +26,10 @@ export function useCliEngine(
             for (const [token, value] of Object.entries(config.services)) {
                 e.registerService(token, value);
             }
+        }
+
+        if (config?.modules) {
+            e.registerModules(config.modules);
         }
 
         if (config?.processors) {

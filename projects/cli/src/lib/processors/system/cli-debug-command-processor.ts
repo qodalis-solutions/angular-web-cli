@@ -144,22 +144,23 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
                 const { writer } = context;
 
                 const container = context.services as CliServiceContainer;
-                if (!container.getRegisteredTokens) {
+                if (!container.getRegisteredServiceDetails) {
                     writer.writeError('Service introspection not available.');
                     return;
                 }
 
-                const tokens = container.getRegisteredTokens();
+                const details = container.getRegisteredServiceDetails();
 
                 writer.writeln(writer.wrapInColor('Registered Services:', CliForegroundColor.Yellow));
                 writer.writeln();
 
-                for (const token of tokens) {
-                    writer.writeln(`  ${writer.wrapInColor(CliIcon.Dot, CliForegroundColor.Green)} ${token}`);
-                }
+                writer.writeTable(
+                    ['Token', 'Type', 'Multi'],
+                    details.map((d) => [d.token, d.type, d.multi ? 'yes' : 'no']),
+                );
 
                 writer.writeln();
-                writer.writeln(`Total: ${writer.wrapInColor(String(tokens.length), CliForegroundColor.Cyan)} services`);
+                writer.writeln(`Total: ${writer.wrapInColor(String(details.length), CliForegroundColor.Cyan)} services`);
             },
         } as ICliCommandProcessor,
         {

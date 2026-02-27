@@ -368,6 +368,15 @@ export interface ICliModule {
     /** Services registered into the shared service container */
     services?: CliProvider[];
 
+    /** Module configuration, set via configure() */
+    config?: Record<string, any>;
+
+    /**
+     * Returns a configured copy of this module.
+     * Usage: usersModule.configure({ defaultPassword: 'admin', seedUsers: [...] })
+     */
+    configure?(config: Record<string, any>): ICliModule;
+
     /** Called after services are registered and before processors are initialized */
     onInit?(context: ICliExecutionContext): Promise<void>;
 

@@ -54,7 +54,7 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
             writer.writeln();
 
             const groupedCommands = groupBy<ICliCommandProcessor, string>(
-                registry.processors,
+                registry.processors.filter((p) => !p.metadata?.hidden),
                 (x) => x.metadata?.module || 'uncategorized',
             );
 

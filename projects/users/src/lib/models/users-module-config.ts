@@ -7,8 +7,6 @@ export interface CliUsersModuleConfig {
     defaultPassword?: string;
     /** Users to seed on first boot (in addition to root) */
     seedUsers?: Array<Omit<ICliUser, 'id' | 'createdAt' | 'updatedAt'>>;
-    /** Whether su requires a password (default: true, admin users skip) */
-    requirePasswordOnSu?: boolean;
     /** Require password for login and su commands (default: false) */
     requirePassword?: boolean;
     /** Require password on initial boot login (default: false — auto-login as root) */

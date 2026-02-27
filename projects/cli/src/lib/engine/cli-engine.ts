@@ -5,7 +5,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import {
-    CliOptions, CliProvider, ICliCommandProcessor, ICliModule, ICliUserSessionService, ICliUsersStoreService, DefaultThemes,
+    CliOptions, CliProvider, ICliCommandProcessor, ICliModule, DefaultThemes,
 } from '@qodalis/cli-core';
 import { CliCommandExecutor } from '../executor/cli-command-executor';
 import { CliCommandProcessorRegistry } from '../registry/cli-command-processor-registry';
@@ -18,10 +18,8 @@ import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
 import { CliWelcomeMessage } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
-import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN, ICliUserSessionService_TOKEN, ICliUsersStoreService_TOKEN } from '../tokens';
+import { CliCommandHistory_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN } from '../tokens';
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
-import { CliDefaultUsersStoreService } from '../services/defaults/cli-default-users-store.service';
-import { CliDefaultUserSessionService } from '../services/defaults/cli-default-user-session.service';
 
 export interface CliEngineOptions extends CliOptions {
     terminalOptions?: Partial<ITerminalOptions & ITerminalInitOnlyOptions>;
@@ -129,15 +127,6 @@ export class CliEngine {
         // Register default services only if not already provided
         const pendingTokens = new Set(this.pendingServices.map((s) => s.provide));
 
-        if (!pendingTokens.has(ICliUsersStoreService_TOKEN)) {
-            services.set([{ provide: ICliUsersStoreService_TOKEN, useValue: new CliDefaultUsersStoreService() }]);
-        }
-
-        if (!pendingTokens.has(ICliUserSessionService_TOKEN)) {
-            const usersStore = services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
-            services.set([{ provide: ICliUserSessionService_TOKEN, useValue: new CliDefaultUserSessionService(usersStore) }]);
-        }
-
         if (!pendingTokens.has(ICliPingServerService_TOKEN)) {
             services.set([{ provide: ICliPingServerService_TOKEN, useValue: new CliDefaultPingServerService() }]);
         }
@@ -157,16 +146,6 @@ export class CliEngine {
         );
 
         this.executionContext.initializeTerminalListeners();
-
-        // Subscribe to user session changes
-        const userSessionService = services.get<ICliUserSessionService>(ICliUserSessionService_TOKEN);
-        if (userSessionService) {
-            userSessionService.getUserSession().subscribe((session) => {
-                if (session) {
-                    this.executionContext.setSession(session);
-                }
-            });
-        }
 
         // 6. Boot modules (core module + user modules)
         await this.bootService.boot(this.executionContext, this.userModules);

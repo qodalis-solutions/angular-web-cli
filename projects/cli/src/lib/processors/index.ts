@@ -55,12 +55,10 @@ export * from './cli-uname-command-processor';
 export * from './system';
 export * from './theme/cli-theme-command-processor';
 export * from './theme/types';
-export * from './users';
 export * from './cli-ping-command-processor';
 
 import { ICliCommandProcessor } from '@qodalis/cli-core';
 import { systemProcessors } from './system';
-import { userProcessors } from './users';
 import { CliThemeCommandProcessor } from './theme/cli-theme-command-processor';
 import { CliPingCommandProcessor } from './cli-ping-command-processor';
 
@@ -96,7 +94,6 @@ export const miscProcessors = [
 export const builtinProcessors: ICliCommandProcessor[] = [
     ...miscProcessors,
     ...systemProcessors,
-    ...userProcessors,
     new CliThemeCommandProcessor(),
     new CliPingCommandProcessor(),
 ];

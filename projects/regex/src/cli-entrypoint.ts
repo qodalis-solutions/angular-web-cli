@@ -1,9 +1,9 @@
-import { bootUmdModule, ICliUmdModule } from '@qodalis/cli-core';
+import { bootCliModule, ICliModule } from '@qodalis/cli-core';
 import { CliRegexCommandProcessor } from './lib';
 
-const module: ICliUmdModule = {
+const module: ICliModule = {
     name: '@qodalis/cli-regex',
     processors: [new CliRegexCommandProcessor()],
 };
 
-bootUmdModule(module);
+bootCliModule(module);

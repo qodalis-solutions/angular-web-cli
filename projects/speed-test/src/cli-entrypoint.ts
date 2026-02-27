@@ -1,9 +1,9 @@
-import { bootUmdModule, ICliUmdModule } from '@qodalis/cli-core';
+import { bootCliModule, ICliModule } from '@qodalis/cli-core';
 import { CliSpeedTestCommandProcessor } from './lib';
 
-const module: ICliUmdModule = {
+const module: ICliModule = {
     name: '@qodalis/cli-speed-test',
     processors: [new CliSpeedTestCommandProcessor()],
 };
 
-bootUmdModule(module);
+bootCliModule(module);

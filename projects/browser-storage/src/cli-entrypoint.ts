@@ -1,10 +1,10 @@
-import { bootUmdModule, ICliUmdModule } from '@qodalis/cli-core';
+import { bootCliModule, ICliModule } from '@qodalis/cli-core';
 import {
     CliCookiesCommandProcessor,
     CliLocalStorageCommandProcessor,
 } from './lib/';
 
-const module: ICliUmdModule = {
+const module: ICliModule = {
     name: '@qodalis/cli-browser-storage',
     processors: [
         new CliCookiesCommandProcessor(),
@@ -12,4 +12,4 @@ const module: ICliUmdModule = {
     ],
 };
 
-bootUmdModule(module);
+bootCliModule(module);

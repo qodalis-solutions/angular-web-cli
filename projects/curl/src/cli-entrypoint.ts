@@ -1,9 +1,9 @@
-import { bootUmdModule, ICliUmdModule } from '@qodalis/cli-core';
+import { bootCliModule, ICliModule } from '@qodalis/cli-core';
 import { CliCurlCommandProcessor } from './lib/processors/cli-curl-command-processor';
 
-const module: ICliUmdModule = {
+const module: ICliModule = {
     name: '@qodalis/cli-curl',
     processors: [new CliCurlCommandProcessor()],
 };
 
-bootUmdModule(module);
+bootCliModule(module);

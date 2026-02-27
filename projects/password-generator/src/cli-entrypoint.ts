@@ -1,9 +1,9 @@
-import { bootUmdModule, ICliUmdModule } from '@qodalis/cli-core';
+import { bootCliModule, ICliModule } from '@qodalis/cli-core';
 import { CliPasswordGeneratorCommandProcessor } from './lib/processors/cli-password-generator-command-processor';
 
-const module: ICliUmdModule = {
+const module: ICliModule = {
     name: '@qodalis/cli-password-generator',
     processors: [new CliPasswordGeneratorCommandProcessor()],
 };
 
-bootUmdModule(module);
+bootCliModule(module);

@@ -1,9 +1,9 @@
-import { bootUmdModule, ICliUmdModule } from '@qodalis/cli-core';
+import { bootCliModule, ICliModule } from '@qodalis/cli-core';
 import { CliTodoCommandProcessor } from './lib/processors/cli-todo-command-processor';
 
-const module: ICliUmdModule = {
+const module: ICliModule = {
     name: '@qodalis/cli-todo',
     processors: [new CliTodoCommandProcessor()],
 };
 
-bootUmdModule(module);
+bootCliModule(module);

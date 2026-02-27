@@ -17,6 +17,7 @@ import { qrModule } from '@qodalis/cli-qr';
 import { yesnoModule } from '@qodalis/cli-yesno';
 import { serverLogsModule } from '@qodalis/cli-server-logs';
 import { usersModule } from '@qodalis/cli-users';
+import { CliInputDemoCommandProcessor } from './processors/cli-input-demo-command-processor';
 
 @Component({
     selector: 'app-root',
@@ -38,6 +39,10 @@ export class AppComponent {
         yesnoModule,
         serverLogsModule,
         usersModule,
+        {
+            name: 'input-demo',
+            processors: [new CliInputDemoCommandProcessor()],
+        },
     ];
 
     options: CliOptions = {

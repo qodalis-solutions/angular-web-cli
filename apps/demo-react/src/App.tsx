@@ -1,4 +1,4 @@
-import { CliPanel, CliProvider } from "@qodalis/react-cli";
+import { Cli, CliConfigProvider, CliPanel } from "@qodalis/react-cli";
 import "@qodalis/cli/assets/cli-panel.css";
 import { guidModule } from "@qodalis/cli-guid";
 import { regexModule } from "@qodalis/cli-regex";
@@ -14,7 +14,11 @@ import { yesnoModule } from "@qodalis/cli-yesno";
 import { serverLogsModule } from "@qodalis/cli-server-logs";
 import { usersModule } from "@qodalis/cli-users";
 import { filesModule } from "@qodalis/cli-files";
-import { CliLogLevel, type CliOptions, type ICliModule } from "@qodalis/cli-core";
+import {
+  CliLogLevel,
+  type CliOptions,
+  type ICliModule,
+} from "@qodalis/cli-core";
 import { CliInputDemoCommandProcessor } from "./processors/cli-input-demo-command-processor";
 
 const modules: ICliModule[] = [
@@ -32,14 +36,12 @@ const modules: ICliModule[] = [
   yesnoModule,
   serverLogsModule,
   usersModule.configure({
-    seedUsers: [
-      { name: 'root1', email: 'root1@root.com', groups: ['admin'] },
-    ],
-    defaultPassword: 'root',
+    seedUsers: [{ name: "root1", email: "root1@root.com", groups: ["admin"] }],
+    defaultPassword: "root",
     requirePassword: true,
   }),
   {
-    name: 'input-demo',
+    name: "input-demo",
     processors: [new CliInputDemoCommandProcessor()],
   },
 ];
@@ -47,25 +49,18 @@ const modules: ICliModule[] = [
 const options: CliOptions = {
   logLevel: CliLogLevel.DEBUG,
   packageSources: {
-    primary: 'local',
-    sources: [
-      { name: 'local', url: 'http://localhost:3000/', kind: 'file' },
-    ],
+    primary: "local",
+    sources: [{ name: "local", url: "http://localhost:3000/", kind: "file" }],
   },
-  servers: [
-    { name: 'local', url: '' },
-  ],
+  servers: [{ name: "local", url: "" }],
 };
 
 function App() {
   return (
-    <CliProvider
-      modules={modules}
-      options={options}
-      style={{ width: "100vw", height: "100vh" }}
-    >
+    <CliConfigProvider modules={modules} options={options}>
+      <Cli />
       <CliPanel />
-    </CliProvider>
+    </CliConfigProvider>
   );
 }
 

@@ -55,23 +55,24 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "port": 4300,
+        "proxyConfig": "proxy.conf.json"
+      },
       "configurations": {
         "production": {
-          "buildTarget": "docs:build:production"
+          "browserTarget": "docs:build:production"
         },
         "development": {
-          "buildTarget": "docs:build:development"
+          "browserTarget": "docs:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "options": {
-        "proxyConfig": "proxy.conf.json"
-      }
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "docs:build"
+        "browserTarget": "docs:build"
       }
     },
     "test": {

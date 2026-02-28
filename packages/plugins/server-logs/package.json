@@ -21,14 +21,10 @@
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",
   "dependencies": {
-    "tslib": "^2.3.0",
     "@qodalis/cli-core": "workspace:*",
     "@microsoft/signalr": "^8.0.7"
   },
   "sideEffects": false,
-  "scripts": {
-    "rollup-compile": "npx rollup -c"
-  },
   "cliDependencies": [
     {
       "name": "signalR",
@@ -36,5 +32,15 @@
       "version": "8.0.7",
       "url": "https://unpkg.com/@microsoft/signalr@8.0.7/dist/browser/signalr.js"
     }
-  ]
+  ],
+  "main": "./public-api.js",
+  "module": "./public-api.mjs",
+  "types": "./public-api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./public-api.d.ts",
+      "import": "./public-api.mjs",
+      "require": "./public-api.js"
+    }
+  }
 }

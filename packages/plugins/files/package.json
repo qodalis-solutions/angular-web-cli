@@ -9,15 +9,31 @@
     "url": "https://github.com/qodalis-solutions/web-cli"
   },
   "homepage": "https://qodalis.com",
-  "keywords": ["cli", "qodalis", "terminal", "filesystem", "files", "linux", "ls", "cd", "mkdir"],
+  "keywords": [
+    "cli",
+    "qodalis",
+    "terminal",
+    "filesystem",
+    "files",
+    "linux",
+    "ls",
+    "cd",
+    "mkdir"
+  ],
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",
   "dependencies": {
-    "tslib": "^2.3.0",
     "@qodalis/cli-core": "workspace:*"
   },
   "sideEffects": false,
-  "scripts": {
-    "rollup-compile": "npx rollup -c"
+  "main": "./public-api.js",
+  "module": "./public-api.mjs",
+  "types": "./public-api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./public-api.d.ts",
+      "import": "./public-api.mjs",
+      "require": "./public-api.js"
+    }
   }
 }

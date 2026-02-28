@@ -22,8 +22,7 @@
   "unpkg": "./umd/index.js",
   "dependencies": {
     "@qodalis/cli-core": "workspace:*",
-    "qr-code-styling": "^1.9.1",
-    "tslib": "^2.3.0"
+    "qr-code-styling": "^1.9.1"
   },
   "cliDependencies": [
     {
@@ -34,10 +33,17 @@
     }
   ],
   "sideEffects": false,
-  "scripts": {
-    "rollup-compile": "npx rollup -c"
-  },
   "devDependencies": {
     "@types/node": "^22.13.11"
+  },
+  "main": "./public-api.js",
+  "module": "./public-api.mjs",
+  "types": "./public-api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./public-api.d.ts",
+      "import": "./public-api.mjs",
+      "require": "./public-api.js"
+    }
   }
 }

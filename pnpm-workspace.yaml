@@ -1,0 +1,10 @@
+packages:
+  - "packages/*"
+  - "packages/plugins/*"
+  - "apps/*"
+
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - esbuild
+  - less
+  - nice-napi

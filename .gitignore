@@ -51,5 +51,8 @@ Thumbs.db
 /deploy
 /typedoc-output
 
+# Lock files (using pnpm)
+package-lock.json
+
 # Worktrees
 .worktrees/

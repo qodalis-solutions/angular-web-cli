@@ -21,7 +21,7 @@ function runCommand(command, folder) {
 
 // Root folder containing subfolders
 const rootFolder = path.resolve(__dirname, "../");
-const projectsFolder = path.resolve(__dirname, "../projects");
+const projectsFolder = path.resolve(__dirname, "../packages");
 
 // Folders that use tsup instead of ng build
 const tsupFolders = ["react-cli", "vue-cli"];

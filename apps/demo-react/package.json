@@ -12,7 +12,7 @@
   "dependencies": {
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "@qodalis/react-cli": "file:../react-cli",
+    "@qodalis/react-cli": "file:../../packages/react-cli",
     "@qodalis/cli": "file:../../dist/cli",
     "@qodalis/cli-core": "file:../../dist/core",
     "@qodalis/cli-guid": "file:../../dist/guid",

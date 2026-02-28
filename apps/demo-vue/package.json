@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "vue": "^3.5.25",
-    "@qodalis/vue-cli": "file:../vue-cli",
+    "@qodalis/vue-cli": "file:../../packages/vue-cli",
     "@qodalis/cli": "file:../../dist/cli",
     "@qodalis/cli-core": "file:../../dist/core",
     "@qodalis/cli-guid": "file:../../dist/guid",

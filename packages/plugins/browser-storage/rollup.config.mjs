@@ -1,4 +1,4 @@
-import { baseConfig, buildLibraryOutputConfig } from "../../rollup.shared.mjs";
+import { baseConfig, buildLibraryOutputConfig } from "../../../rollup.shared.mjs";
 
 export default {
   ...baseConfig,

@@ -1,9 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "module": "umd",
     "target": "es5",
-    "outDir": "../../dist/users",
+    "outDir": "../../../dist/users",
     "lib": ["dom", "es5"],
     "declaration": false,
     "declarationMap": false,

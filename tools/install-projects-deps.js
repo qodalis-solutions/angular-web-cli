@@ -20,7 +20,7 @@ function runCommand(command, folder) {
 }
 
 // Root folder containing subfolders
-const projectsFolder = path.resolve(__dirname, "../projects");
+const projectsFolder = path.resolve(__dirname, "../packages");
 
 async function installDeps() {
   try {

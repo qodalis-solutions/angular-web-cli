@@ -3,7 +3,7 @@ const path = require("path");
 
 function updateLibrariesVersions() {
   // Path to the libraries folder in your Angular workspace
-  const librariesPath = path.resolve(__dirname, "../projects");
+  const librariesPath = path.resolve(__dirname, "../packages");
 
   // Get all library directories
   const libraryDirs = fs.readdirSync(librariesPath).filter((dir) => {
@@ -48,7 +48,7 @@ function updateWorkspaceVersion() {
   // Specify the project's package.json path
   const projectPackageJsonPath = path.resolve(
     __dirname,
-    "../projects",
+    "../packages",
     "cli",
     "package.json",
   );

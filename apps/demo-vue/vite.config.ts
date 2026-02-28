@@ -23,7 +23,7 @@ export default defineConfig({
         alias: {
             '@qodalis/cli-core': path.resolve(__dirname, '../../dist/core'),
             '@qodalis/cli': path.resolve(__dirname, '../../dist/cli'),
-            '@qodalis/vue-cli': path.resolve(__dirname, '../vue-cli'),
+            '@qodalis/vue-cli': path.resolve(__dirname, '../../packages/vue-cli'),
         },
     },
 });

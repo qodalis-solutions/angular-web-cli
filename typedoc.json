@@ -1,14 +1,14 @@
 {
   "entryPoints": [
-    "projects/core/src/public-api.ts",
-    "projects/cli/src/public-api.ts",
-    "projects/guid/src/public-api.ts",
-    "projects/browser-storage/src/public-api.ts",
-    "projects/regex/src/public-api.ts",
-    "projects/server-logs/src/public-api.ts",
-    "projects/string/src/public-api.ts",
-    "projects/todo/src/public-api.ts",
-    "projects/speed-test/src/public-api.ts"
+    "packages/core/src/public-api.ts",
+    "packages/cli/src/public-api.ts",
+    "packages/plugins/guid/src/public-api.ts",
+    "packages/plugins/browser-storage/src/public-api.ts",
+    "packages/plugins/regex/src/public-api.ts",
+    "packages/plugins/server-logs/src/public-api.ts",
+    "packages/plugins/string/src/public-api.ts",
+    "packages/plugins/todo/src/public-api.ts",
+    "packages/plugins/speed-test/src/public-api.ts"
   ], // Path to the entry file of your TypeScript project
   "out": "docs", // Output folder for documentation
   "name": "Qodalis Angular CLI", // Project name for the docs

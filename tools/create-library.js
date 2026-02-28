@@ -93,11 +93,11 @@ async function createFile(filePath, content = "") {
 }
 
 async function getTemplate(templateName) {
-  return await getFileContent(`./scripts/templates/${templateName}`);
+  return await getFileContent(`./tools/templates/${templateName}`);
 }
 
 async function getTemplateWithVars(templateName, data) {
-  const template = await getFileContent(`./scripts/templates/${templateName}`);
+  const template = await getFileContent(`./tools/templates/${templateName}`);
 
   if (!template) {
     throw new Error(`Template not found: ${templateName}`);
@@ -124,7 +124,7 @@ async function main() {
 
   await runCommand(`ng generate library ${name}`, process.cwd());
 
-  const projectDirectory = "./projects/" + name;
+  const projectDirectory = "./packages/plugins/" + name;
 
   await clearDirectory(projectDirectory + "/src/lib");
 

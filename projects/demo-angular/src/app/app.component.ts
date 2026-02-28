@@ -58,5 +58,8 @@ export class AppComponent {
                 { name: 'local', url: 'http://localhost:3000/', kind: 'file' },
             ],
         },
+        servers: [
+            { name: 'local', url: '' },  // Empty URL = same origin (proxied via proxy.conf.json)
+        ],
     };
 }

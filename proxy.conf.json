@@ -14,5 +14,11 @@
     "pathRewrite": {
       "^/speed-test": ""
     }
+  },
+  "/api/cli/*": {
+    "target": "http://localhost:8046",
+    "changeOrigin": true,
+    "secure": false,
+    "logLevel": "debug"
   }
 }

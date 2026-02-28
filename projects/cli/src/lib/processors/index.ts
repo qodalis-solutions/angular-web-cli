@@ -24,6 +24,7 @@ import { CliUnameCommandProcessor } from './cli-uname-command-processor';
 import { CliUptimeCommandProcessor } from './cli-uptime-command-processor';
 import { CliUrlCommandProcessor } from './cli-url-command-processor';
 import { CliYesCommandProcessor } from './cli-yes-command-processor';
+import { CliConfigureCommandProcessor } from './configure/cli-configure-command-processor';
 
 export * from './cli-echo-command-processor';
 export * from './cli-clear-command-processor';
@@ -55,6 +56,8 @@ export * from './cli-uname-command-processor';
 export * from './system';
 export * from './theme/cli-theme-command-processor';
 export * from './theme/types';
+export * from './configure/cli-configure-command-processor';
+export * from './configure/types';
 export * from './cli-ping-command-processor';
 
 import { ICliCommandProcessor } from '@qodalis/cli-core';
@@ -95,5 +98,6 @@ export const builtinProcessors: ICliCommandProcessor[] = [
     ...miscProcessors,
     ...systemProcessors,
     new CliThemeCommandProcessor(),
+    new CliConfigureCommandProcessor(),
     new CliPingCommandProcessor(),
 ];

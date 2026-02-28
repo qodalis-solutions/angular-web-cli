@@ -17,9 +17,6 @@ import {
     ICliTextAnimator,
     ICliCommandExecutorService,
     ICliInputReader,
-    clearTerminalLine,
-    CliForegroundColor,
-    colorFirstWord,
 } from '@qodalis/cli-core';
 import { CliTerminalWriter } from '../services/cli-terminal-writer';
 import { CliTerminalSpinner } from '../services/progress-bars/cli-terminal-spinner';
@@ -31,6 +28,17 @@ import { CliExecutionProcess } from './cli-execution-process';
 import { CliStateStoreManager } from '../state/cli-state-store-manager';
 import { CliInputReader, ActiveInputRequest, CliInputReaderHost } from '../services/cli-input-reader';
 import { CliCompletionEngine } from '../completion/cli-completion-engine';
+import {
+    CliLineBuffer,
+    IInputMode,
+    CommandLineMode,
+    CommandLineModeHost,
+    ReaderMode,
+    ReaderModeHost,
+    RawMode,
+    CliTerminalLineRenderer,
+    PromptOptions,
+} from '../input';
 
 export interface CliExecutionContextDeps {
     services: ICliServiceProvider;
@@ -39,12 +47,12 @@ export interface CliExecutionContextDeps {
     stateStoreManager: CliStateStoreManager;
 }
 
-export class CliExecutionContext implements ICliExecutionContext, CliInputReaderHost {
+export class CliExecutionContext
+    implements ICliExecutionContext, CliInputReaderHost, CommandLineModeHost, ReaderModeHost
+{
     public userSession?: ICliUserSession;
 
     public contextProcessor?: ICliCommandProcessor;
-
-    private isExecutingCommand = false;
 
     public readonly writer: ICliTerminalWriter;
 
@@ -74,36 +82,17 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
 
     public promptLength: number = 0;
 
-    private _currentLine: string = '';
-
     public readonly reader: ICliInputReader;
+
+    public readonly lineBuffer = new CliLineBuffer();
+
+    public readonly lineRenderer: CliTerminalLineRenderer;
+
+    public readonly commandHistory: CliCommandHistory;
 
     private _activeInputRequest: ActiveInputRequest | null = null;
 
-    public get activeInputRequest(): ActiveInputRequest | null {
-        return this._activeInputRequest;
-    }
-
-    public setActiveInputRequest(request: ActiveInputRequest | null): void {
-        this._activeInputRequest = request;
-    }
-
-    public writeToTerminal(text: string): void {
-        this.terminal.write(text);
-    }
-
-    public get currentLine(): string {
-        return this._currentLine;
-    }
-
-    public cursorPosition: number = 0;
-
-    private historyIndex: number = 0;
-
-    private selectionStart: { x: number; y: number } | null = null;
-    private selectionEnd: { x: number; y: number } | null = null;
-
-    private readonly commandHistoryService: CliCommandHistory;
+    private readonly modeStack: IInputMode[] = [];
 
     constructor(
         deps: CliExecutionContextDeps,
@@ -142,114 +131,82 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
         this.logger = deps.logger;
         this.logger.setCliLogLevel(cliOptions?.logLevel || CliLogLevel.ERROR);
 
-        this.commandHistoryService = deps.commandHistory;
+        this.commandHistory = deps.commandHistory;
+        this.lineRenderer = new CliTerminalLineRenderer(terminal, this.writer);
+    }
+
+    // -- Public API (ICliExecutionContext) --
+
+    public get activeInputRequest(): ActiveInputRequest | null {
+        return this._activeInputRequest;
+    }
+
+    /**
+     * Sets the active input request. When a non-null request is provided,
+     * pushes ReaderMode onto the mode stack. ReaderMode pops itself on
+     * completion, so passing null here does NOT pop the mode.
+     */
+    public setActiveInputRequest(request: ActiveInputRequest | null): void {
+        this._activeInputRequest = request;
+        if (request !== null) {
+            this.pushMode(new ReaderMode(this));
+        }
+    }
+
+    public writeToTerminal(text: string): void {
+        this.terminal.write(text);
+    }
+
+    public get currentLine(): string {
+        return this.lineBuffer.text;
+    }
+
+    public get cursorPosition(): number {
+        return this.lineBuffer.cursorPosition;
+    }
+
+    public set cursorPosition(value: number) {
+        this.lineBuffer.cursorPosition = value;
     }
 
     initializeTerminalListeners(): void {
-        this.commandHistoryService.initialize().then(() => {
-            this.historyIndex = this.commandHistoryService.getLastIndex();
+        // Push CommandLineMode as the base mode
+        const commandLineMode = new CommandLineMode(this);
+        this.pushMode(commandLineMode);
+
+        this.terminal.onData(async (data) => {
+            if (this.isProgressRunning()) {
+                return;
+            }
+            const mode = this.currentMode;
+            if (mode) {
+                await mode.handleInput(data);
+            }
         });
 
-        this.terminal.onData(async (data) => await this.handleInput(data));
-
-        this.terminal.onKey(async (event) => {});
+        this.terminal.onKey(async (_event) => {});
 
         this.terminal.attachCustomKeyEventHandler((event) => {
             if (event.type === 'keydown') {
-                // Handle abort for active input requests
-                if (this._activeInputRequest) {
-                    if (event.code === 'KeyC' && event.ctrlKey) {
-                        this._activeInputRequest.resolve(null);
-                        this._activeInputRequest = null;
-                        this.terminal.writeln('');
-                        return false;
-                    }
-
-                    if (event.code === 'Escape') {
-                        this._activeInputRequest.resolve(null);
-                        this._activeInputRequest = null;
-                        this.terminal.writeln('');
-                        return false;
-                    }
-
-                    // During active input, let onData handle everything else
-                    return true;
-                }
-
-                // If context processor handles raw input, bypass default key handling
-                if (this.contextProcessor?.onData) {
-                    // Prevent browser defaults for editor shortcuts
-                    if (event.ctrlKey) {
-                        event.preventDefault();
-                    }
-                    return true; // Let all keys pass through to onData
-                }
-
-                if (event.code === 'KeyC' && event.ctrlKey) {
-                    this.abort();
-                    this.setContextProcessor(undefined);
-                    this.terminal.writeln('Ctrl+C');
-
-                    if (!this.isExecutingCommand) {
-                        this.showPrompt();
-                    }
-
-                    return false;
-                }
-
-                if (event.code === 'Escape') {
-                    this.abort();
-                    this.showPrompt({ newLine: true });
-                    return false;
-                }
-
-                if (event.code === 'KeyV' && event.ctrlKey) {
-                    return false;
-                }
-
-                if (event.code === 'KeyL' && event.ctrlKey) {
-                    event.preventDefault();
-                    this.clearCurrentLine();
-                    this.terminal.clear();
-                    return false;
-                }
-
-                if (
-                    event.shiftKey &&
-                    (event.code === 'ArrowLeft' || event.code === 'ArrowRight')
-                ) {
-                    if (!this.selectionStart) {
-                        this.selectionStart =
-                            this.getTerminalCursorPosition();
-                    }
-
-                    switch (event.code) {
-                        case 'ArrowLeft':
-                            this.moveCursorLeft();
-                            break;
-                        case 'ArrowRight':
-                            this.moveCursorRight();
-                            break;
-                    }
-
-                    this.selectionEnd = this.getTerminalCursorPosition();
-                    this.updateSelection();
-                    return false;
-                } else {
-                    this.selectionStart = null;
+                const mode = this.currentMode;
+                if (mode) {
+                    return mode.handleKeyEvent(event);
                 }
             }
-
             return true;
         });
     }
 
-    setContextProcessor(
+    setContextProcessor = (
         processor: ICliCommandProcessor | undefined,
         silent?: boolean,
-    ): void {
+    ): void => {
         if (!processor) {
-            this.contextProcessor = processor;
+            // Clearing the context processor — pop RawMode if one was active
+            if (this.contextProcessor?.onData) {
+                this.popMode();
+            }
+            this.contextProcessor = undefined;
             return;
         }
 
@@ -262,16 +219,20 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
         }
 
         this.contextProcessor = processor;
-    }
+
+        // If processor has onData, push a RawMode to intercept all input
+        if (processor.onData) {
+            this.pushMode(new RawMode(processor, this));
+        }
+    };
 
     setCurrentLine(line: string): void {
-        this._currentLine = line;
+        this.lineBuffer.setText(line);
     }
 
     clearLine(): void {
-        clearTerminalLine(
-            this.terminal,
-            this.promptLength + this.currentLine.length,
+        this.lineRenderer.clearLine(
+            this.promptLength + this.lineBuffer.text.length,
         );
     }
 
@@ -291,77 +252,30 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
         }
 
         if (!keepCurrentLine) {
-            this._currentLine = '';
-            this.cursorPosition = 0;
+            this.lineBuffer.clear();
         }
 
-        this.terminal.write(this.getPromptString());
-        this.promptLength = this.terminal.buffer.active.cursorX;
+        this.promptLength = this.lineRenderer.renderPrompt(
+            this.getPromptOptions(),
+        );
     }
 
     clearCurrentLine(): void {
         this.clearLine();
         this.showPrompt();
-        this._currentLine = '';
-        this.cursorPosition = 0;
     }
 
     refreshCurrentLine(previousContentLength?: number): void {
-        const contentLength =
-            this.promptLength + this.currentLine.length;
-        const cols = this.terminal.cols;
-        const clearLength = previousContentLength !== undefined
-            ? Math.max(contentLength, previousContentLength)
-            : contentLength;
-        const lines = Math.max(1, Math.ceil(clearLength / cols));
-
-        // Build the entire update as a single write to avoid flickering
-        let output = '';
-
-        // 1. Clear lines
-        for (let i = 0; i < lines; i++) {
-            output += '\x1b[2K';
-            if (i < lines - 1) {
-                output += '\x1b[A';
-            }
-        }
-        output += '\r';
-
-        // 2. Prompt
-        output += this.getPromptString();
-
-        // 3. Current line with syntax coloring
-        output += colorFirstWord(
-            this.currentLine,
-            (word) =>
-                this.writer.wrapInColor(word, CliForegroundColor.Yellow) ??
-                this.currentLine,
+        const promptStr = this.lineRenderer.getPromptString(
+            this.getPromptOptions(),
         );
-
-        // 4. Cursor positioning
-        const cursorOffset = this.currentLine.length - this.cursorPosition;
-        if (cursorOffset > 0) {
-            output += `\x1b[${cursorOffset}D`;
-        }
-
-        this.terminal.write(output);
-    }
-
-    private getPromptString(): string {
-        let promptStartMessage = this.options?.usersModule?.hideUserName
-            ? ''
-            : `\x1b[32m${this.userSession?.displayName ?? ''}\x1b[0m:`;
-
-        if (this.contextProcessor) {
-            promptStartMessage = `${this.contextProcessor.command}`;
-        }
-
-        const path = this.promptPathProvider?.() ?? null;
-        const pathSegment = path !== null
-            ? `\x1b[34m${path}\x1b[0m`
-            : '\x1b[34m~\x1b[0m';
-        const promptEndMessage = `${pathSegment}$ `;
-        return `${promptStartMessage}${promptEndMessage}`;
+        this.lineRenderer.refreshLine(
+            this.lineBuffer.text,
+            this.lineBuffer.cursorPosition,
+            this.promptLength,
+            promptStr,
+            previousContentLength,
+        );
     }
 
     public isProgressRunning(): boolean {
@@ -392,408 +306,62 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
         this.userSession = session;
     }
 
-    // -- Input handling --
+    // -- CommandLineModeHost interface --
 
-    private async handleInput(data: string): Promise<void> {
-        if (this.isProgressRunning()) {
-            return;
+    getPromptOptions(): PromptOptions {
+        return {
+            userName: this.userSession?.displayName,
+            hideUserName: this.options?.usersModule?.hideUserName,
+            contextProcessor: this.contextProcessor?.command,
+            pathProvider: this.promptPathProvider,
+        };
+    }
+
+    getPromptLength(): number {
+        return this.promptLength;
+    }
+
+    setPromptLength(value: number): void {
+        this.promptLength = value;
+    }
+
+    getExecutionContext(): ICliExecutionContext {
+        return this;
+    }
+
+    // -- ReaderModeHost interface --
+
+    getActiveInputRequest(): ActiveInputRequest | null {
+        return this._activeInputRequest;
+    }
+
+    // -- Mode stack management --
+
+    private get currentMode(): IInputMode | undefined {
+        return this.modeStack.length > 0
+            ? this.modeStack[this.modeStack.length - 1]
+            : undefined;
+    }
+
+    pushMode(mode: IInputMode): void {
+        const previous = this.currentMode;
+        if (previous?.deactivate) {
+            previous.deactivate();
         }
-
-        if (this._activeInputRequest) {
-            this.handleReaderInput(data);
-            return;
-        }
-
-        // If context processor handles raw input, delegate everything to it
-        if (this.contextProcessor?.onData) {
-            await this.contextProcessor.onData(data, this);
-            return;
-        }
-
-        if (data === '\u0009') {
-            // Tab key — trigger completion
-            await this.handleTabCompletion();
-            return;
-        }
-
-        // Any non-tab key resets completion state
-        this.completionEngine.resetState();
-
-        if (data === '\r') {
-            this.terminal.write('\r\n');
-
-            if (this.currentLine) {
-                await this.commandHistoryService.addCommand(this.currentLine);
-                this.historyIndex = this.commandHistoryService.getLastIndex();
-                this.cursorPosition = 0;
-
-                this.isExecutingCommand = true;
-                await this.executor.executeCommand(this.currentLine, this);
-                this.isExecutingCommand = false;
-
-                if (this.onAbort.observed) {
-                    this.terminal.writeln(
-                        '\x1b[33m' + 'Press Ctrl+C to cancel' + '\x1b[0m',
-                    );
-                }
-            }
-
-            this.showPrompt();
-        } else if (data === '\u001B[A') {
-            this.showPreviousCommand();
-        } else if (data === '\u001B[B') {
-            this.showNextCommand();
-        } else if (data === '\u001B[D') {
-            this.moveCursorLeft(data);
-        } else if (data === '\u001B[C') {
-            this.moveCursorRight(data);
-        } else if (data === '\u007F') {
-            this.handleBackspace();
-        } else {
-            this.handleInputText(data);
+        this.modeStack.push(mode);
+        if (mode.activate) {
+            mode.activate();
         }
     }
 
-    private normalizeText(text: string): string {
-        return text.replace(/[\r\n\t]+/g, '');
-    }
-
-    private handleInputText(text: string): void {
-        text = this.normalizeText(text);
-
-        this._currentLine =
-            this._currentLine.slice(0, this.cursorPosition) +
-            text +
-            this._currentLine.slice(this.cursorPosition);
-
-        this.cursorPosition += text.length;
-        this.refreshCurrentLine();
-    }
-
-    private async handleTabCompletion(): Promise<void> {
-        const result = await this.completionEngine.complete(
-            this._currentLine,
-            this.cursorPosition,
-        );
-
-        switch (result.action) {
-            case 'complete': {
-                const { replacement, tokenStart, token } = result;
-                if (replacement === undefined || tokenStart === undefined || token === undefined) {
-                    break;
-                }
-
-                // Replace the token in the current line
-                const before = this._currentLine.slice(0, tokenStart);
-                const after = this._currentLine.slice(tokenStart + token.length);
-
-                // Add trailing space for single-match completions
-                const suffix = after.length === 0 && !replacement.endsWith('/') ? ' ' : '';
-                this._currentLine = before + replacement + suffix + after;
-                this.cursorPosition = tokenStart + replacement.length + suffix.length;
-                this.refreshCurrentLine();
-                break;
-            }
-            case 'show-candidates': {
-                const candidates = result.candidates ?? [];
-                if (candidates.length === 0) break;
-
-                // Print candidates below the current line, then reprint prompt
-                this.terminal.write('\r\n');
-
-                // Format candidates in columns
-                const maxLen = Math.max(...candidates.map((c) => c.length));
-                const cols = Math.max(1, Math.floor((this.terminal.cols || 80) / (maxLen + 2)));
-                let line = '';
-                for (let i = 0; i < candidates.length; i++) {
-                    line += candidates[i].padEnd(maxLen + 2);
-                    if ((i + 1) % cols === 0) {
-                        this.terminal.write(line + '\r\n');
-                        line = '';
-                    }
-                }
-                if (line) {
-                    this.terminal.write(line + '\r\n');
-                }
-
-                // Reprint prompt and current line
-                this.terminal.write(this.getPromptString());
-                this.promptLength = this.terminal.buffer.active.cursorX;
-                this.terminal.write(this._currentLine);
-
-                // Reposition cursor if not at end
-                const charsAfterCursor = this._currentLine.length - this.cursorPosition;
-                if (charsAfterCursor > 0) {
-                    this.terminal.write(`\x1b[${charsAfterCursor}D`);
-                }
-                break;
-            }
+    popMode(): void {
+        const removed = this.modeStack.pop();
+        if (removed?.deactivate) {
+            removed.deactivate();
         }
-    }
-
-    private handleReaderInput(data: string): void {
-        const request = this._activeInputRequest!;
-
-        switch (request.type) {
-            case 'line':
-                this.handleLineInput(request, data);
-                break;
-            case 'password':
-                this.handlePasswordInput(request, data);
-                break;
-            case 'confirm':
-                this.handleConfirmInput(request, data);
-                break;
-            case 'select':
-                this.handleSelectInput(request, data);
-                break;
-        }
-    }
-
-    private handleLineInput(request: ActiveInputRequest, data: string): void {
-        if (data === '\r') {
-            this.terminal.write('\r\n');
-            const value = request.buffer;
-            this._activeInputRequest = null;
-            request.resolve(value);
-        } else if (data === '\u007F') {
-            // Backspace
-            if (request.cursorPosition > 0) {
-                request.buffer =
-                    request.buffer.slice(0, request.cursorPosition - 1) +
-                    request.buffer.slice(request.cursorPosition);
-                request.cursorPosition--;
-                this.redrawReaderLine(request, request.buffer);
-            }
-        } else if (data === '\u001B[D') {
-            // Arrow left
-            if (request.cursorPosition > 0) {
-                request.cursorPosition--;
-                this.terminal.write(data);
-            }
-        } else if (data === '\u001B[C') {
-            // Arrow right
-            if (request.cursorPosition < request.buffer.length) {
-                request.cursorPosition++;
-                this.terminal.write(data);
-            }
-        } else if (data.startsWith('\u001B')) {
-            // Ignore other escape sequences (arrow up/down, etc.)
-        } else {
-            const text = data.replace(/[\r\n]+/g, '');
-            request.buffer =
-                request.buffer.slice(0, request.cursorPosition) +
-                text +
-                request.buffer.slice(request.cursorPosition);
-            request.cursorPosition += text.length;
-            this.redrawReaderLine(request, request.buffer);
-        }
-    }
-
-    private handlePasswordInput(request: ActiveInputRequest, data: string): void {
-        if (data === '\r') {
-            this.terminal.write('\r\n');
-            const value = request.buffer;
-            this._activeInputRequest = null;
-            request.resolve(value);
-        } else if (data === '\u007F') {
-            // Backspace
-            if (request.cursorPosition > 0) {
-                request.buffer =
-                    request.buffer.slice(0, request.cursorPosition - 1) +
-                    request.buffer.slice(request.cursorPosition);
-                request.cursorPosition--;
-                this.redrawReaderLine(request, '*'.repeat(request.buffer.length));
-            }
-        } else if (data.startsWith('\u001B')) {
-            // Ignore all escape sequences for password (no cursor movement)
-        } else {
-            const text = data.replace(/[\r\n]+/g, '');
-            request.buffer =
-                request.buffer.slice(0, request.cursorPosition) +
-                text +
-                request.buffer.slice(request.cursorPosition);
-            request.cursorPosition += text.length;
-            this.redrawReaderLine(request, '*'.repeat(request.buffer.length));
-        }
-    }
-
-    private handleConfirmInput(request: ActiveInputRequest, data: string): void {
-        if (data === '\r') {
-            this.terminal.write('\r\n');
-            this._activeInputRequest = null;
-            const buf = request.buffer.toLowerCase();
-            if (buf === 'y') {
-                request.resolve(true);
-            } else if (buf === 'n') {
-                request.resolve(false);
-            } else {
-                request.resolve(request.defaultValue ?? false);
-            }
-        } else if (data === '\u007F') {
-            if (request.cursorPosition > 0) {
-                request.buffer = request.buffer.slice(0, -1);
-                request.cursorPosition--;
-                this.redrawReaderLine(request, request.buffer);
-            }
-        } else if (data.startsWith('\u001B')) {
-            // Ignore escape sequences
-        } else {
-            const char = data.toLowerCase();
-            if (char === 'y' || char === 'n') {
-                request.buffer = data;
-                request.cursorPosition = 1;
-                this.redrawReaderLine(request, request.buffer);
-            }
-            // Ignore all other characters
-        }
-    }
-
-    private handleSelectInput(request: ActiveInputRequest, data: string): void {
-        const options = request.options!;
-        let selectedIndex = request.selectedIndex!;
-
-        if (data === '\r') {
-            this.terminal.write('\r\n');
-            this._activeInputRequest = null;
-            request.resolve(options[selectedIndex].value);
-        } else if (data === '\u001B[A') {
-            // Arrow up
-            if (selectedIndex > 0) {
-                request.selectedIndex = selectedIndex - 1;
-                this.redrawSelectOptions(request);
-            }
-        } else if (data === '\u001B[B') {
-            // Arrow down
-            if (selectedIndex < options.length - 1) {
-                request.selectedIndex = selectedIndex + 1;
-                this.redrawSelectOptions(request);
-            }
-        }
-        // Ignore all other input
-    }
-
-    private redrawReaderLine(request: ActiveInputRequest, displayText: string): void {
-        // Clear line and rewrite prompt + display text
-        this.terminal.write('\x1b[2K\r');
-        this.terminal.write(request.promptText + displayText);
-
-        // Reposition cursor if not at end
-        const cursorOffset = request.buffer.length - request.cursorPosition;
-        if (cursorOffset > 0) {
-            this.terminal.write(`\x1b[${cursorOffset}D`);
-        }
-    }
-
-    private redrawSelectOptions(request: ActiveInputRequest): void {
-        const options = request.options!;
-        const selectedIndex = request.selectedIndex!;
-
-        // Move cursor up to start of options list
-        if (options.length > 0) {
-            this.terminal.write(`\x1b[${options.length}A`);
-        }
-
-        // Redraw all options (always write \r\n after each, including last,
-        // so cursor ends on the line below — consistent with initial render)
-        for (let i = 0; i < options.length; i++) {
-            this.terminal.write('\x1b[2K\r');
-            const prefix = i === selectedIndex ? '  \x1b[36m> ' : '    ';
-            const suffix = i === selectedIndex ? '\x1b[0m' : '';
-            this.terminal.write(`${prefix}${options[i].label}${suffix}\r\n`);
-        }
-    }
-
-    private handleBackspace(): void {
-        if (this.cursorPosition > 0) {
-            this._currentLine =
-                this._currentLine.slice(0, this.cursorPosition - 1) +
-                this._currentLine.slice(this.cursorPosition);
-            this.cursorPosition--;
-            this.refreshCurrentLine();
-        }
-    }
-
-    private moveCursorLeft(key: string = '\x1b[D'): void {
-        if (this.cursorPosition > 0) {
-            this.cursorPosition--;
-            this.terminal.write(key);
-        }
-    }
-
-    private moveCursorRight(key: string = '\x1b[C'): void {
-        if (this.cursorPosition < this.currentLine.length) {
-            this.cursorPosition++;
-            this.terminal.write(key);
-        }
-    }
-
-    // -- History --
-
-    private showPreviousCommand(): void {
-        if (this.historyIndex > 0) {
-            this.historyIndex--;
-            this.displayCommandFromHistory();
-        }
-    }
-
-    private showNextCommand(): void {
-        if (this.historyIndex < this.commandHistoryService.getLastIndex() - 1) {
-            this.historyIndex++;
-            this.displayCommandFromHistory();
-        } else {
-            this.historyIndex = this.commandHistoryService.getLastIndex();
-            const previousContentLength = this.promptLength + this._currentLine.length;
-            this._currentLine = '';
-            this.cursorPosition = 0;
-            this.refreshCurrentLine(previousContentLength);
-        }
-    }
-
-    private displayCommandFromHistory(): void {
-        const previousContentLength = this.promptLength + this._currentLine.length;
-        this._currentLine =
-            this.commandHistoryService.getCommand(this.historyIndex) || '';
-        this.cursorPosition = this._currentLine.length;
-        this.refreshCurrentLine(previousContentLength);
-    }
-
-    // -- Selection --
-
-    private getTerminalCursorPosition() {
-        const x: number = (this.terminal as any)._core.buffer.x;
-        const y: number = (this.terminal as any)._core.buffer.y;
-        return { x, y };
-    }
-
-    private updateSelection(): void {
-        if (this.selectionStart && this.selectionEnd) {
-            const startRow = Math.min(
-                this.selectionStart.y,
-                this.selectionEnd.y,
-            );
-            const endRow = Math.max(
-                this.selectionStart.y,
-                this.selectionEnd.y,
-            );
-
-            if (startRow === endRow) {
-                const startCol = Math.min(
-                    this.selectionStart.x,
-                    this.selectionEnd.x,
-                );
-                const endCol = Math.max(
-                    this.selectionStart.x,
-                    this.selectionEnd.x,
-                );
-                this.terminal.select(
-                    startCol,
-                    startRow,
-                    Math.abs(endCol - startCol),
-                );
-            } else {
-                this.terminal.selectLines(startRow, endRow);
-            }
+        const current = this.currentMode;
+        if (current?.activate) {
+            current.activate();
         }
     }
 }

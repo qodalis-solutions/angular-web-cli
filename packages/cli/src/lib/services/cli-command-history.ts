@@ -34,6 +34,11 @@ export class CliCommandHistory {
         await this.saveHistory();
     }
 
+    public async setHistory(commands: string[]): Promise<void> {
+        this.commandHistory = [...commands];
+        await this.saveHistory();
+    }
+
     public getCommand(index: number): string | undefined {
         return this.commandHistory[index];
     }

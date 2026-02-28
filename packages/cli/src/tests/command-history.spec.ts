@@ -108,4 +108,17 @@ describe('CliCommandHistory', () => {
         const stored = await store.get<string[]>('cli-command-history');
         expect(stored).toEqual([]);
     });
+
+    it('should set history from an array', async () => {
+        await history.addCommand('existing');
+        await history.setHistory(['alpha', 'beta', 'gamma']);
+        expect(history.getHistory()).toEqual(['alpha', 'beta', 'gamma']);
+        expect(history.getLastIndex()).toBe(3);
+    });
+
+    it('should persist after setHistory', async () => {
+        await history.setHistory(['one', 'two']);
+        const stored = await store.get<string[]>('cli-command-history');
+        expect(stored).toEqual(['one', 'two']);
+    });
 });

@@ -175,6 +175,15 @@ export interface ICliCommandProcessor {
      * @param context The context in which the command is executed
      */
     initialize?(context: ICliExecutionContext): Promise<void>;
+
+    /**
+     * Handle raw terminal data when this processor is the active context processor.
+     * When implemented, ALL terminal input is routed here instead of normal CLI input handling.
+     * Used for full-screen interactive modes (editors, pagers, etc.).
+     * @param data The raw terminal data string (escape sequences, control chars, printable text)
+     * @param context The execution context
+     */
+    onData?(data: string, context: ICliExecutionContext): Promise<void>;
 }
 
 /**

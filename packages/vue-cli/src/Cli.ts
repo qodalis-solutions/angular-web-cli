@@ -10,6 +10,7 @@ import {
 import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { CliInjectionKey } from './cliInjection';
+import { CliConfigKey } from './CliConfigProvider';
 
 export const Cli = defineComponent({
     name: 'Cli',
@@ -43,6 +44,7 @@ export const Cli = defineComponent({
     setup(props, { emit }) {
         const containerRef = ref<HTMLElement | null>(null);
         const ctx = inject(CliInjectionKey, null);
+        const config = inject(CliConfigKey, null);
         let engine: CliEngine | null = null;
 
         // If inside a CliProvider, don't create our own engine
@@ -50,25 +52,31 @@ export const Cli = defineComponent({
             return () => null;
         }
 
+        // Merge: local props override config context
+        const modules = props.modules ?? config?.modules;
+        const processors = props.processors ?? config?.processors;
+        const options = props.options ?? config?.options;
+        const services = props.services ?? config?.services;
+
         onMounted(async () => {
             if (!containerRef.value) return;
 
-            engine = new CliEngine(containerRef.value, props.options);
+            engine = new CliEngine(containerRef.value, options);
 
             engine.registerService('cli-framework', 'Vue');
 
-            if (props.services) {
-                for (const [token, value] of Object.entries(props.services)) {
+            if (services) {
+                for (const [token, value] of Object.entries(services)) {
                     engine.registerService(token, value);
                 }
             }
 
-            if (props.modules) {
-                engine.registerModules(props.modules);
+            if (modules) {
+                engine.registerModules(modules);
             }
 
-            if (props.processors) {
-                engine.registerProcessors(props.processors);
+            if (processors) {
+                engine.registerProcessors(processors);
             }
 
             await engine.start();

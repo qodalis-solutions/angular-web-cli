@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Cli, CliPanel, type CliPanelOptions } from '@qodalis/vue-cli';
+import { Cli, CliPanel, CliConfigProvider, type CliPanelOptions } from '@qodalis/vue-cli';
 import '@qodalis/cli/assets/cli-panel.css';
 import { guidModule } from '@qodalis/cli-guid';
 import { regexModule } from '@qodalis/cli-regex';
@@ -64,6 +64,8 @@ const panelOptions: CliPanelOptions = {
 </script>
 
 <template>
-  <Cli :modules="modules" :options="options" :style="{ width: '100vw', height: '100vh' }" />
-  <CliPanel :modules="modules" :options="panelOptions" />
+  <CliConfigProvider :modules="modules" :options="options">
+    <Cli :style="{ width: '100vw', height: '100vh' }" />
+    <CliPanel :options="panelOptions" />
+  </CliConfigProvider>
 </template>

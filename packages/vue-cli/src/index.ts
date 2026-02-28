@@ -2,6 +2,8 @@ export { Cli } from './Cli';
 export { CliPanel } from './CliPanel';
 export type { CliPanelOptions } from './CliPanel';
 export { CliProvider } from './CliProvider';
+export { CliConfigProvider, CliConfigKey } from './CliConfigProvider';
+export type { CliConfigValue } from './CliConfigProvider';
 export { useCli } from './useCli';
 export { useCliEngine } from './useCliEngine';
 export { CliInjectionKey } from './cliInjection';

@@ -2,6 +2,7 @@ import {
     defineComponent,
     ref,
     computed,
+    inject,
     PropType,
     h,
     onMounted,
@@ -10,6 +11,7 @@ import {
 import { ICliCommandProcessor, ICliModule, CliPanelConfig, CliPanelPosition } from '@qodalis/cli-core';
 import { CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
+import { CliConfigKey } from './CliConfigProvider';
 
 export type CliPanelOptions = CliEngineOptions & CliPanelConfig;
 
@@ -129,8 +131,16 @@ export const CliPanel = defineComponent({
         class: { type: String, default: undefined },
     },
     setup(props) {
+        const config = inject(CliConfigKey, null);
+
+        // Merge: local props override config context
+        const mergedOptions = computed(() => props.options ?? config?.options as CliPanelOptions | undefined);
+        const mergedModules = computed(() => props.modules ?? config?.modules);
+        const mergedProcessors = computed(() => props.processors ?? config?.processors);
+        const mergedServices = computed(() => props.services ?? config?.services);
+
         const visible = ref(true);
-        const collapsed = ref(props.options?.isCollapsed ?? true);
+        const collapsed = ref(mergedOptions.value?.isCollapsed ?? true);
         const maximized = ref(false);
         const panelHeight = ref(600);
         const panelWidth = ref(400);
@@ -138,9 +148,9 @@ export const CliPanel = defineComponent({
         const prevWidth = ref(400);
         const initialized = ref(false);
 
-        const position = computed<CliPanelPosition>(() => props.options?.position ?? 'bottom');
-        const closable = computed(() => props.options?.closable ?? true);
-        const resizable = computed(() => props.options?.resizable ?? true);
+        const position = computed<CliPanelPosition>(() => mergedOptions.value?.position ?? 'bottom');
+        const closable = computed(() => mergedOptions.value?.closable ?? true);
+        const resizable = computed(() => mergedOptions.value?.resizable ?? true);
         const isHorizontal = computed(() => position.value === 'left' || position.value === 'right');
 
         const tabs = ref<TerminalTab[]>([]);
@@ -726,13 +736,13 @@ export const CliPanel = defineComponent({
                                                                   : null,
                                                               h(Cli, {
                                                                   options:
-                                                                      props.options,
+                                                                      mergedOptions.value,
                                                                   modules:
-                                                                      props.modules,
+                                                                      mergedModules.value,
                                                                   processors:
-                                                                      props.processors,
+                                                                      mergedProcessors.value,
                                                                   services:
-                                                                      props.services,
+                                                                      mergedServices.value,
                                                                   style: {
                                                                       height: '100%',
                                                                   },

@@ -370,8 +370,9 @@ export class CliEngine {
             store.updateState(entry.state);
         }
 
-        // Show prompt after restore
-        this.executionContext.showPrompt();
+        // No showPrompt() here — the serialized buffer already contains
+        // the prompt visually. The execution context's CommandLineMode
+        // (set up by initializeTerminalListeners) handles new input.
     }
 
     private getTerminalOptions(): ITerminalOptions & ITerminalInitOnlyOptions {
@@ -433,7 +434,11 @@ export class CliEngine {
             this.container.offsetWidth > 0 &&
             this.container.offsetHeight > 0
         ) {
+            const oldCols = this.terminal.cols;
             this.fitAddon.fit();
+            if (this.executionContext && oldCols !== this.terminal.cols) {
+                this.executionContext.handleTerminalResize();
+            }
         }
     }
 

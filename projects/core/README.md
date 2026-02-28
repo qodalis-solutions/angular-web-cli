@@ -1,24 +1,65 @@
-# Core
+# @qodalis/cli-core
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+Shared interfaces, models, types, themes, and utilities for the [Qodalis Web CLI](https://github.com/qodalis-solutions/angular-web-cli) framework.
 
-## Code scaffolding
+## Installation
 
-Run `ng generate component component-name --project core` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project core`.
-> Note: Don't forget to add `--project core` or else it will be added to the default project in your `angular.json` file. 
+```bash
+npm install @qodalis/cli-core
+```
 
-## Build
+## What's Inside
 
-Run `ng build core` to build the project. The build artifacts will be stored in the `dist/` directory.
+This package provides the foundational types that all Qodalis CLI libraries and plugins depend on:
 
-## Publishing
+### Interfaces
 
-After building your library with `ng build core`, go to the dist folder `cd dist/core` and run `npm publish`.
+- **`ICliCommandProcessor`** — The core interface for implementing CLI commands. Defines `command`, `description`, `processCommand()`, optional sub-processors, parameters, and hooks.
+- **`ICliExecutionContext`** — Passed to every command at runtime. Provides access to the terminal writer, input reader, progress bars, spinners, state store, user session, clipboard, and abort signals.
+- **`ICliInputReader`** — Terminal input API: `readLine()`, `readPassword()`, `readConfirm()`, `readSelect()` (with optional `onChange` callback for live preview).
+- **`ICliTerminalWriter`** — Terminal output API: `writeln()`, `writeError()`, `writeSuccess()`, `writeWarning()`, `writeInfo()`, `wrapInColor()`.
 
-## Running unit tests
+### Models
 
-Run `ng test core` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- **`CliProcessCommand`** — Parsed command with `command`, `value`, `args`, `chainCommands`, and `rawCommand`.
+- **`CliProcessorMetadata`** — Processor metadata: `sealed`, `hidden`, `module`, `icon`, `requiredCoreVersion`.
+- **`CliSelectOption`** — Options for `readSelect()` interactive menus.
+- **`CliStateConfiguration`** — State persistence configuration for processors.
 
-## Further help
+### Themes
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Built-in terminal themes (Dark, Dracula, Solarized, etc.) and the `ICliTheme` interface for custom themes.
+
+### Utilities
+
+Helper functions for command parsing, string manipulation, and common CLI operations.
+
+## Usage
+
+```typescript
+import {
+  ICliCommandProcessor,
+  ICliExecutionContext,
+  CliProcessCommand,
+} from '@qodalis/cli-core';
+
+export class MyCommandProcessor implements ICliCommandProcessor {
+  command = 'my-command';
+  description = 'Does something useful';
+
+  async processCommand(
+    command: CliProcessCommand,
+    context: ICliExecutionContext,
+  ): Promise<void> {
+    context.writer.writeln('Hello from my command!');
+  }
+}
+```
+
+## Documentation
+
+See the [main README](https://github.com/qodalis-solutions/angular-web-cli#readme) for full documentation, framework integration guides, and the complete command reference.
+
+## License
+
+MIT

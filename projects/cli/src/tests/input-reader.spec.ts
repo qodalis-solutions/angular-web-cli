@@ -139,5 +139,37 @@ describe('CliInputReader', () => {
             // Options are rendered after prompt
             expect(host.writtenText.length).toBeGreaterThan(1);
         });
+
+        it('should store onChange callback on the request', () => {
+            const onChange = jasmine.createSpy('onChange');
+            reader.readSelect('Pick one:', options, onChange);
+            expect(host.activeInputRequest!.onChange).toBe(onChange);
+        });
+
+        it('should call onChange with initial selection value on creation', () => {
+            const onChange = jasmine.createSpy('onChange');
+            reader.readSelect('Pick one:', options, onChange);
+            expect(onChange).toHaveBeenCalledTimes(1);
+            expect(onChange).toHaveBeenCalledWith('a');
+        });
+
+        it('should not fail when onChange is not provided', () => {
+            expect(() => reader.readSelect('Pick one:', options)).not.toThrow();
+            expect(host.activeInputRequest!.onChange).toBeUndefined();
+        });
+
+        it('should resolve with selected value when resolve is called', async () => {
+            const promise = reader.readSelect('Pick one:', options);
+            host.activeInputRequest!.resolve('b');
+            const result = await promise;
+            expect(result).toBe('b');
+        });
+
+        it('should resolve with null when aborted', async () => {
+            const promise = reader.readSelect('Pick one:', options);
+            host.activeInputRequest!.resolve(null);
+            const result = await promise;
+            expect(result).toBeNull();
+        });
     });
 });

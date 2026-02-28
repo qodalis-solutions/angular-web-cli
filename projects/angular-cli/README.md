@@ -1,24 +1,87 @@
-# Cli
+# @qodalis/angular-cli
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+Angular wrapper for the [Qodalis Web CLI](https://github.com/qodalis-solutions/angular-web-cli) — a web-based terminal with 50+ built-in commands, theming, and runtime package installation.
 
-## Code scaffolding
+## Installation
 
-Run `ng generate component component-name --project cli` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project cli`.
-> Note: Don't forget to add `--project cli` or else it will be added to the default project in your `angular.json` file. 
+```bash
+npm install @qodalis/angular-cli
+```
 
-## Build
+## Quick Start
 
-Run `ng build cli` to build the project. The build artifacts will be stored in the `dist/` directory.
+Import the module:
 
-## Publishing
+```typescript
+import { CliModule } from '@qodalis/angular-cli';
 
-After building your library with `ng build cli`, go to the dist folder `cd dist/cli` and run `npm publish`.
+@NgModule({
+  imports: [CliModule],
+})
+export class AppModule {}
+```
 
-## Running unit tests
+Add styles to `angular.json`:
 
-Run `ng test cli` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```json
+{
+  "styles": [
+    "node_modules/@qodalis/angular-cli/src/assets/styles.sass"
+  ]
+}
+```
 
-## Further help
+Use the component:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```html
+<!-- Full terminal -->
+<cli [options]="cliOptions" />
+
+<!-- Collapsible panel -->
+<cli-panel />
+```
+
+## Configuration
+
+```typescript
+const cliOptions = {
+  welcomeMessage: {
+    message: '-- Welcome to My App --',
+    show: 'daily', // 'never' | 'once' | 'daily' | 'always'
+  },
+  usersModule: {
+    enabled: true,
+  },
+};
+```
+
+## Registering Custom Commands
+
+```typescript
+import { CliModule, resolveCommandProcessorProvider } from '@qodalis/angular-cli';
+import { MyCommandProcessor } from './my-command-processor';
+
+@NgModule({
+  imports: [CliModule],
+  providers: [resolveCommandProcessorProvider(MyCommandProcessor)],
+})
+export class AppModule {}
+```
+
+## Exports
+
+| Export | Description |
+|--------|-------------|
+| `CliModule` | Angular module that registers the terminal components |
+| `CliComponent` | Full-screen terminal component (`<cli>`) |
+| `CliPanelComponent` | Collapsible panel variant (`<cli-panel>`) |
+| `resolveCliProviders` | Helper to register custom command processors via DI |
+| `CliEngine` | Re-exported framework-agnostic engine for advanced use |
+
+## Documentation
+
+See the [main README](https://github.com/qodalis-solutions/angular-web-cli#readme) for the full command reference, extension guide, and framework comparison.
+
+## License
+
+MIT

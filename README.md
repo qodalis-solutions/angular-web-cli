@@ -124,7 +124,7 @@ const options = {
 | `version` | `ver` | Display CLI version and documentation link |
 | `hotkeys` | `shortcuts`, `keys` | Show keyboard shortcuts |
 | `history` | `hist` | Browse and clear command history |
-| `theme` | `themes` | Apply, customize, and save terminal themes |
+| `theme` | `themes` | Apply, customize, and save terminal themes (interactive selection with live preview) |
 | `feedback` | `support` | Report bugs or request features on GitHub |
 | `pkg` | `packages` | Install, update, remove, and browse packages |
 
@@ -186,6 +186,8 @@ pkg update                     # Update all packages
 pkg update guid@1.0.2          # Pin a specific version
 pkg check                      # Check for updates
 pkg versions guid              # Show all published versions
+pkg source set                 # Interactively select a package source (CDN)
+pkg source set unpkg           # Set package source directly
 ```
 
 ### Available Packages
@@ -296,12 +298,14 @@ await engine.start();
 ## Features
 
 - **Multi-framework** — Angular, React, Vue, or vanilla JS
-- **Command chaining** with `&&` and `||` operators
+- **Command chaining** with `&&`, `||`, `|`, and `>>` operators
 - **Command history** with arrow key navigation
 - **Tab-like completions** and keyboard shortcuts (`Ctrl+C`, `Ctrl+L`, `Escape`)
 - **Theming** with built-in themes and custom color support
 - **User sessions** with multi-user support
 - **State persistence** across sessions
+- **Interactive prompts** with live preview (select menus with real-time feedback)
+- **Full-screen mode API** for rich TUI commands
 - **Progress bars, spinners, and text animations**
 - **Runtime package installation** from npm
 

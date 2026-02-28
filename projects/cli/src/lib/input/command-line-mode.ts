@@ -21,6 +21,7 @@ export interface CommandLineModeHost {
     setPromptLength(value: number): void;
     getExecutionContext(): ICliExecutionContext;
     isProgressRunning(): boolean;
+    isRawModeActive(): boolean;
     abort(): void;
     showPrompt(options?: { reset?: boolean; newLine?: boolean; keepCurrentLine?: boolean }): void;
 }
@@ -61,14 +62,19 @@ export class CommandLineMode implements IInputMode {
                 await ctx.executor.executeCommand(buffer.text, ctx);
                 this.isExecutingCommand = false;
 
-                if (ctx.onAbort.observed) {
-                    this.host.terminal.write(
-                        '\x1b[33mPress Ctrl+C to cancel\x1b[0m\r\n',
-                    );
+                // Don't write post-command messages if we switched to full-screen mode
+                if (!this.host.isRawModeActive()) {
+                    if (ctx.onAbort.observed) {
+                        this.host.terminal.write(
+                            '\x1b[33mPress Ctrl+C to cancel\x1b[0m\r\n',
+                        );
+                    }
                 }
             }
 
-            this.host.showPrompt();
+            if (!this.host.isRawModeActive()) {
+                this.host.showPrompt();
+            }
         } else if (data === '\u001B[A') {
             this.showPreviousCommand();
         } else if (data === '\u001B[B') {

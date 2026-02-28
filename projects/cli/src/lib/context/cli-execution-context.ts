@@ -278,6 +278,10 @@ export class CliExecutionContext
         );
     }
 
+    public isRawModeActive(): boolean {
+        return !!this.contextProcessor?.onData;
+    }
+
     public isProgressRunning(): boolean {
         return (
             this.progressBar.isRunning ||

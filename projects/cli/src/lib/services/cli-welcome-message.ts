@@ -25,8 +25,12 @@ export const welcomeModule: ICliWelcomeModule = {
     async onAfterBoot(context) {
         const config = (this.config || {}) as CliWelcomeMessageConfig;
 
-        if (config.show) {
-            if (!shouldDisplayWelcomeMessage(config.show)) {
+        // Prefer the persisted setting from `configure` over the module-level config
+        const showOption = context.options?.welcomeMessage?.show
+            || config.show;
+
+        if (showOption) {
+            if (!shouldDisplayWelcomeMessage(showOption)) {
                 context.showPrompt();
                 return;
             }

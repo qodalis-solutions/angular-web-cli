@@ -13,19 +13,34 @@ export class CliEchoCommandProcessor implements ICliCommandProcessor {
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
     allowUnlistedCommands = true;
+    extendsProcessor = true;
+    originalProcessor?: ICliCommandProcessor;
     metadata = { icon: '💬', module: 'file management' };
 
     async processCommand(
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
         const raw = command.rawCommand;
-
         const afterEcho = raw.substring(raw.indexOf('echo') + 5).trim();
 
+        // Check for file redirection syntax
+        const hasRedirection = />>?\s*.+$/.test(afterEcho);
+
+        if (!hasRedirection) {
+            // No redirection — delegate to the original echo processor
+            if (this.originalProcessor) {
+                await this.originalProcessor.processCommand(command, context);
+            } else {
+                context.writer.writeln(afterEcho);
+            }
+            return;
+        }
+
+        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
+
         let text: string;
-        let filePath: string | null = null;
+        let filePath: string;
         let append = false;
 
         const appendMatch = afterEcho.match(/^(.*?)\s*>>\s*(.+)$/);
@@ -35,12 +50,9 @@ export class CliEchoCommandProcessor implements ICliCommandProcessor {
             text = appendMatch[1].trim();
             filePath = appendMatch[2].trim();
             append = true;
-        } else if (overwriteMatch) {
-            text = overwriteMatch[1].trim();
-            filePath = overwriteMatch[2].trim();
-            append = false;
         } else {
-            text = afterEcho;
+            text = overwriteMatch![1].trim();
+            filePath = overwriteMatch![2].trim();
         }
 
         // Remove surrounding quotes
@@ -51,15 +63,11 @@ export class CliEchoCommandProcessor implements ICliCommandProcessor {
             text = text.slice(1, -1);
         }
 
-        if (filePath) {
-            try {
-                fs.writeFile(filePath, text + '\n', append);
-                await fs.persist();
-            } catch (e: any) {
-                context.writer.writeError(e.message);
-            }
-        } else {
-            context.writer.writeln(text);
+        try {
+            fs.writeFile(filePath, text + '\n', append);
+            await fs.persist();
+        } catch (e: any) {
+            context.writer.writeError(e.message);
         }
     }
 }

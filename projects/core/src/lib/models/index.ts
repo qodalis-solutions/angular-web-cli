@@ -325,7 +325,8 @@ export interface Package {
  */
 export type CliProcessorMetadata = Record<string, any> & {
     /**
-     * If true, the processor is sealed and cannot be extended
+     * If true, the processor is sealed and cannot be replaced or removed.
+     * Sealed processors can still be extended (wrapped) by processors with `extendsProcessor = true`.
      */
     sealed?: boolean;
 

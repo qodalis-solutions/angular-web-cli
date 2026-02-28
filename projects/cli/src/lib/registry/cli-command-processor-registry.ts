@@ -19,6 +19,17 @@ export class CliCommandProcessorRegistry
         const existingProcessor = this.getProcessorByName(processor.command);
 
         if (existingProcessor) {
+            const existingIndex = this.processors.findIndex(
+                (p) => p.command === processor.command,
+            );
+
+            if (processor.extendsProcessor) {
+                // Extension: wire the original and replace the slot
+                processor.originalProcessor = existingProcessor;
+                this.processors[existingIndex] = processor;
+                return;
+            }
+
             if (existingProcessor.metadata?.sealed) {
                 console.warn(
                     `Processor with command: ${processor.command} is sealed and cannot be replaced.`,
@@ -26,10 +37,6 @@ export class CliCommandProcessorRegistry
 
                 return;
             }
-
-            const existingIndex = this.processors.findIndex(
-                (p) => p.command === processor.command,
-            );
 
             // Replace the existing processor
             this.processors[existingIndex] = processor;
@@ -42,7 +49,7 @@ export class CliCommandProcessorRegistry
         const existingProcessor = this.getProcessorByName(processor.command);
 
         if (existingProcessor) {
-            if (existingProcessor.metadata?.sealed) {
+            if (existingProcessor.metadata?.sealed && !existingProcessor.originalProcessor) {
                 console.warn(
                     `Processor with command: ${processor.command} is sealed and cannot be removed.`,
                 );
@@ -55,7 +62,13 @@ export class CliCommandProcessorRegistry
         );
 
         if (index !== -1) {
-            this.processors.splice(index, 1);
+            const current = this.processors[index];
+            if (current.originalProcessor) {
+                // Restore the original processor instead of removing
+                this.processors[index] = current.originalProcessor;
+            } else {
+                this.processors.splice(index, 1);
+            }
         }
     }
 

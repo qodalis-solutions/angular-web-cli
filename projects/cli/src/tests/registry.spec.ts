@@ -72,4 +72,116 @@ describe('CliCommandProcessorRegistry', () => {
         registry.registerProcessor(parent);
         expect(registry.findProcessorInCollection('parent', ['sub'], registry.processors)).toBe(child);
     });
+
+    describe('Extension / Delegation', () => {
+        it('should wire originalProcessor when extendsProcessor is true', () => {
+            const original = createProcessor('echo');
+            const extension = createProcessor('echo');
+            extension.extendsProcessor = true;
+
+            registry.registerProcessor(original);
+            registry.registerProcessor(extension);
+
+            const found = registry.findProcessor('echo', []);
+            expect(found).toBe(extension);
+            expect(found?.originalProcessor).toBe(original);
+        });
+
+        it('should chain multiple extensions (A -> B -> C)', () => {
+            const base = createProcessor('echo');
+            base.description = 'base';
+            const ext1 = createProcessor('echo');
+            ext1.extendsProcessor = true;
+            ext1.description = 'ext1';
+            const ext2 = createProcessor('echo');
+            ext2.extendsProcessor = true;
+            ext2.description = 'ext2';
+
+            registry.registerProcessor(base);
+            registry.registerProcessor(ext1);
+            registry.registerProcessor(ext2);
+
+            const found = registry.findProcessor('echo', []);
+            expect(found).toBe(ext2);
+            expect(found?.originalProcessor).toBe(ext1);
+            expect(found?.originalProcessor?.originalProcessor).toBe(base);
+        });
+
+        it('should allow extending sealed processors', () => {
+            const sealed = createProcessor('help');
+            sealed.metadata = { sealed: true };
+            const extension = createProcessor('help');
+            extension.extendsProcessor = true;
+
+            registry.registerProcessor(sealed);
+            registry.registerProcessor(extension);
+
+            const found = registry.findProcessor('help', []);
+            expect(found).toBe(extension);
+            expect(found?.originalProcessor).toBe(sealed);
+        });
+
+        it('should register normally when no existing command to extend', () => {
+            const extension = createProcessor('newcmd');
+            extension.extendsProcessor = true;
+
+            registry.registerProcessor(extension);
+
+            const found = registry.findProcessor('newcmd', []);
+            expect(found).toBe(extension);
+            expect(found?.originalProcessor).toBeUndefined();
+        });
+
+        it('should restore original when unregistering an extending processor', () => {
+            const original = createProcessor('echo');
+            const extension = createProcessor('echo');
+            extension.extendsProcessor = true;
+
+            registry.registerProcessor(original);
+            registry.registerProcessor(extension);
+            registry.unregisterProcessor(extension);
+
+            const found = registry.findProcessor('echo', []);
+            expect(found).toBe(original);
+        });
+
+        it('should allow extending processor to delegate to original', async () => {
+            const calls: string[] = [];
+            const original = createProcessor('echo');
+            original.processCommand = async () => { calls.push('original'); };
+
+            const extension = createProcessor('echo');
+            extension.extendsProcessor = true;
+            extension.processCommand = async function (this: ICliCommandProcessor, cmd: any, ctx: any) {
+                calls.push('extension');
+                await this.originalProcessor!.processCommand(cmd, ctx);
+            }.bind(extension);
+
+            registry.registerProcessor(original);
+            registry.registerProcessor(extension);
+
+            const found = registry.findProcessor('echo', [])!;
+            await found.processCommand({ command: 'echo', rawCommand: 'echo hi', chainCommands: [], args: {} }, {} as any);
+
+            expect(calls).toEqual(['extension', 'original']);
+        });
+
+        it('should allow extending processor to NOT delegate', async () => {
+            const calls: string[] = [];
+            const original = createProcessor('echo');
+            original.processCommand = async () => { calls.push('original'); };
+
+            const extension = createProcessor('echo');
+            extension.extendsProcessor = true;
+            extension.processCommand = async () => { calls.push('extension-only'); };
+
+            registry.registerProcessor(original);
+            registry.registerProcessor(extension);
+
+            const found = registry.findProcessor('echo', [])!;
+            await found.processCommand({ command: 'echo', rawCommand: 'echo hi', chainCommands: [], args: {} }, {} as any);
+
+            expect(calls).toEqual(['extension-only']);
+        });
+    });
 });

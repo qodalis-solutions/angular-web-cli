@@ -60,12 +60,13 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
                         p.metadata?.sealed ? 'yes' : 'no',
                         p.metadata?.hidden ? 'yes' : 'no',
                         String(childCount),
+                        p.originalProcessor?.metadata?.module || '-',
                         p.author?.name || '-',
                     ]);
                 }
 
                 writer.writeTable(
-                    ['Command', 'Aliases', 'Version', 'Module', 'Sealed', 'Hidden', 'Children', 'Author'],
+                    ['Command', 'Aliases', 'Version', 'Module', 'Sealed', 'Hidden', 'Children', 'Extends', 'Author'],
                     rows,
                 );
 
@@ -316,6 +317,7 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
                         sealed: p.metadata?.sealed || false,
                         hidden: p.metadata?.hidden || false,
                         children: this.countProcessors(p.processors || []),
+                        extends: p.originalProcessor?.metadata?.module || null,
                     })),
                     history: {
                         total: history.getHistory().length,

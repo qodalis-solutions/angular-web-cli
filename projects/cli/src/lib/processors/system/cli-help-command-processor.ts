@@ -156,6 +156,26 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
             this.writeSeparator(context);
         }
 
+        // Extension chain
+        if (processor.originalProcessor) {
+            writer.writeln(
+                writer.wrapInColor('🔗 Extension chain:', CliForegroundColor.Yellow),
+            );
+            let current = processor.originalProcessor;
+            let depth = 1;
+            while (current) {
+                const module = current.metadata?.module || 'unknown';
+                const version = current.version || '1.0.0';
+                writer.writeln(
+                    `  ${'└'.padStart(depth + 1, ' ')} ${writer.wrapInColor(current.command, CliForegroundColor.Cyan)} v${version} ${writer.wrapInColor(`(${module})`, CliForegroundColor.Magenta)}`,
+                );
+                current = current.originalProcessor!;
+                depth++;
+            }
+
+            this.writeSeparator(context);
+        }
+
         // Description
         if (processor.writeDescription) {
             writer.writeln(

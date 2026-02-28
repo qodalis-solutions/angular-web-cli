@@ -142,6 +142,20 @@ export interface ICliCommandProcessor {
     stateConfiguration?: CliStateConfiguration;
 
     /**
+     * When true, this processor extends (wraps) an existing processor with the same
+     * command name instead of replacing it. The registry sets `originalProcessor`
+     * to the previous processor so this one can delegate to it.
+     */
+    extendsProcessor?: boolean;
+
+    /**
+     * Reference to the original processor that this one extends.
+     * Set automatically by the registry — do not set manually.
+     * Call `this.originalProcessor.processCommand(command, context)` to delegate.
+     */
+    originalProcessor?: ICliCommandProcessor;
+
+    /**
      * Process the command
      * @param command The command to process
      * @param context The context in which the command is executed

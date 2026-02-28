@@ -2,24 +2,34 @@ const fs = require("fs");
 const path = require("path");
 
 function updateLibrariesVersions() {
-  // Path to the libraries folder in your Angular workspace
-  const librariesPath = path.resolve(__dirname, "../packages");
+  const packagesPath = path.resolve(__dirname, "../packages");
+  const pluginsPath = path.resolve(__dirname, "../packages/plugins");
 
-  // Get all library directories
-  const libraryDirs = fs.readdirSync(librariesPath).filter((dir) => {
-    const packageJsonPath = path.join(librariesPath, dir, "package.json");
-    return fs.existsSync(packageJsonPath);
+  // Get top-level packages (excluding 'plugins' directory)
+  const topLevelDirs = fs.readdirSync(packagesPath).filter((dir) => {
+    const fullPath = path.join(packagesPath, dir);
+    return (
+      fs.statSync(fullPath).isDirectory() &&
+      dir !== "plugins" &&
+      fs.existsSync(path.join(fullPath, "package.json"))
+    );
   });
 
-  libraryDirs.forEach((lib) => {
-    const packageJsonPath = path.join(librariesPath, lib, "package.json");
-    const versionFilePath = path.join(
-      librariesPath,
-      lib,
-      "src",
-      "lib",
-      "version.ts",
-    );
+  // Get plugin packages
+  const pluginDirs = fs.existsSync(pluginsPath)
+    ? fs.readdirSync(pluginsPath).filter((dir) => {
+        const fullPath = path.join(pluginsPath, dir);
+        return (
+          fs.statSync(fullPath).isDirectory() &&
+          fs.existsSync(path.join(fullPath, "package.json"))
+        );
+      })
+    : [];
+
+  // Helper to write version file for a package
+  function writeVersionFile(packageDir, lib) {
+    const packageJsonPath = path.join(packageDir, "package.json");
+    const versionFilePath = path.join(packageDir, "src", "lib", "version.ts");
 
     const packageJson = require(packageJsonPath);
     const version = packageJson.version;
@@ -36,8 +46,20 @@ export const LIBRARY_VERSION = '${version}';
       return;
     }
 
-    fs.writeFileSync(versionFilePath, versionFileContent, { encoding: "utf8" });
+    fs.writeFileSync(versionFilePath, versionFileContent, {
+      encoding: "utf8",
+    });
     console.log(`Version ${version} written to ${versionFilePath}`);
+  }
+
+  // Process top-level packages
+  topLevelDirs.forEach((lib) => {
+    writeVersionFile(path.join(packagesPath, lib), lib);
+  });
+
+  // Process plugin packages
+  pluginDirs.forEach((lib) => {
+    writeVersionFile(path.join(pluginsPath, lib), `plugins/${lib}`);
   });
 }
 
@@ -45,7 +67,7 @@ function updateWorkspaceVersion() {
   // Specify the workspace package.json path
   const workspacePackageJsonPath = path.resolve(__dirname, "../package.json");
 
-  // Specify the project's package.json path
+  // Specify the project's package.json path (cli is the canonical version source)
   const projectPackageJsonPath = path.resolve(
     __dirname,
     "../packages",

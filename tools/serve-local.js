@@ -3,7 +3,7 @@
  * Creates a temporary directory with symlinks matching the @qodalis/ scope,
  * then starts a static file server on port 3000.
  *
- * Usage: node scripts/serve-local.js
+ * Usage: node tools/serve-local.js
  */
 
 const fs = require('fs');

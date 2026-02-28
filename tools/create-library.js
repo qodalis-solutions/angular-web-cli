@@ -122,9 +122,11 @@ async function main() {
 
   console.log(`Creating ${name} library...`);
 
-  await runCommand(`ng generate library ${name}`, process.cwd());
-
   const projectDirectory = "./packages/plugins/" + name;
+
+  // Create the project directory structure
+  await fs.mkdir(projectDirectory + "/src/lib", { recursive: true });
+  await fs.mkdir(projectDirectory + "/src/tests", { recursive: true });
 
   await clearDirectory(projectDirectory + "/src/lib");
 
@@ -139,8 +141,8 @@ async function main() {
   const packageJson = await getTemplateWithVars("package.json", vars);
   await replaceFileContent(projectDirectory + "/package.json", packageJson);
 
-  const ngPackage = await getTemplateWithVars("ng-package.json", vars);
-  await replaceFileContent(projectDirectory + "/ng-package.json", ngPackage);
+  const tsupConfig = await getTemplateWithVars("tsup.config.ts", vars);
+  await createFile(projectDirectory + "/tsup.config.ts", tsupConfig);
 
   const readme = await getTemplateWithVars("README.md", vars);
   await replaceFileContent(projectDirectory + "/README.md", readme);
@@ -167,8 +169,7 @@ export const LIBRARY_VERSION = '${version}';
   const cliEntryPoint = await getTemplateWithVars("cli-entrypoint.txt", vars);
   await createFile(projectDirectory + "/src/cli-entrypoint.ts", cliEntryPoint);
 
-  const rollupConfig = await getTemplateWithVars("rollup.config.mjs", vars);
-  await createFile(projectDirectory + "/rollup.config.mjs", rollupConfig);
+  // tsup.config.ts was already created above from the template
 
   const publicApi = await getTemplateWithVars("public-api.txt", vars);
   await createFile(projectDirectory + "/src/public-api.ts", publicApi);
@@ -199,7 +200,7 @@ export const LIBRARY_VERSION = '${version}';
     tsConfig.replace(name, "@qodalis/cli-" + name),
   );
 
-  await runCommand(`ng build ${name}`, process.cwd());
+  await runCommand(`pnpm nx build ${name}`, process.cwd());
 }
 
 main();

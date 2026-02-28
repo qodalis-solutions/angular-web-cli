@@ -2,17 +2,12 @@
 
 # Compiled output
 /dist
-projects/react-cli/dist
-projects/vue-cli/dist
-projects/demo-react/dist
-projects/demo-vue/dist
 /tmp
 /out-tsc
 /bazel-out
 
 # Node
 /node_modules
-projects/cli/node_modules
 npm-debug.log
 yarn-error.log
 **/node_modules
@@ -59,5 +54,7 @@ package-lock.json
 
 # Worktrees
 .worktrees/
+
+# Framework wrapper local builds
 packages/react-cli/dist
 packages/vue-cli/dist

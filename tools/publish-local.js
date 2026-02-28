@@ -4,7 +4,7 @@
  * Start verdaccio first:  verdaccio
  * Browse packages at:     http://localhost:4873
  *
- * Usage: node scripts/publish-local.js
+ * Usage: node tools/publish-local.js
  */
 
 const fs = require('fs');

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ICliCommandProcessor, ICliModule, CliPanelConfig } from '@qodalis/cli-core';
-import { CliEngineOptions } from '@qodalis/cli';
+import { ICliCommandProcessor, ICliModule, CliPanelConfig, CliEngineSnapshot } from '@qodalis/cli-core';
+import { CliEngineOptions, CliEngine } from '@qodalis/cli';
 import { Cli } from './Cli';
 import { CliContext } from './CliContext';
 import { useCliConfig } from './CliConfigContext';
@@ -20,6 +20,7 @@ export interface CliPanelProps {
 interface TerminalPane {
     id: number;
     widthPercent: number;
+    snapshot?: CliEngineSnapshot;
 }
 
 interface TerminalTab {
@@ -122,6 +123,7 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
     const nextIdRef = useRef({ tab: 1, pane: 1 });
 
     const [contextMenu, setContextMenu] = useState<TabContextMenu>({ visible: false, x: 0, y: 0, tabId: 0 });
+    const engineMapRef = useRef<Map<number, CliEngine>>(new Map());
 
     // Pane resize state
     const [paneResizing, setPaneResizing] = useState(false);
@@ -167,6 +169,10 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
 
     const closeTab = useCallback((id: number) => {
         setTabs(prev => {
+            const tab = prev.find(t => t.id === id);
+            if (tab) {
+                tab.panes.forEach(p => engineMapRef.current.delete(p.id));
+            }
             const next = prev.filter(t => t.id !== id);
             if (next.length === 0) {
                 setInitialized(false);
@@ -537,7 +543,14 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
                                                         >&times;</button>
                                                     )}
                                                     <CliContext.Provider value={{ engine: null }}>
-                                                        <Cli options={options} modules={modules} processors={processors} services={services} />
+                                                        <Cli
+                                                            options={options}
+                                                            modules={modules}
+                                                            processors={processors}
+                                                            services={services}
+                                                            snapshot={pane.snapshot}
+                                                            onReady={(engine) => engineMapRef.current.set(pane.id, engine)}
+                                                        />
                                                     </CliContext.Provider>
                                                 </div>
                                             </React.Fragment>
@@ -562,9 +575,13 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
                         closeContextMenu();
                         const tab = tabs.find(t => t.id === contextMenu.tabId);
                         if (!tab) return;
+
+                        const sourceEngine = engineMapRef.current.get(tab.panes[0]?.id);
+                        const snapshot = sourceEngine?.snapshot();
+
                         const paneId = nextIdRef.current.pane++;
                         const tabId = nextIdRef.current.tab++;
-                        const pane: TerminalPane = { id: paneId, widthPercent: 100 };
+                        const pane: TerminalPane = { id: paneId, widthPercent: 100, snapshot };
                         const newTab: TerminalTab = { id: tabId, title: `${tab.title} (copy)`, isEditing: false, panes: [pane] };
                         const idx = tabs.indexOf(tab);
                         setTabs(prev => { const next = [...prev]; next.splice(idx + 1, 0, newTab); return next; });

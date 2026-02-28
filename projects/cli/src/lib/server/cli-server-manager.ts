@@ -22,13 +22,14 @@ export class CliServerManager {
             const connection = new CliServerConnection(config);
             this.connections.set(config.name, connection);
 
-            try {
-                await connection.connect();
+            await connection.connect();
+
+            if (connection.connected) {
                 logger?.info(
                     `Connected to server '${config.name}' (${connection.commands.length} commands)`,
                 );
                 this.registerProxyProcessors(connection, config.name);
-            } catch {
+            } else {
                 logger?.warn(
                     `Could not connect to server '${config.name}' at ${config.url}. Commands from this server will not be available.`,
                 );
@@ -123,11 +124,13 @@ export class CliServerManager {
             );
             if (!namespacedProcessor) continue;
 
-            const alias: any = {
-                ...namespacedProcessor,
-                command,
-                aliases: [namespacedCommand],
-            };
+            // Create a proper proxy processor instance (not a spread copy)
+            // to preserve prototype methods like processCommand
+            const connection = this.connections.get(serverName)!;
+            const descriptor = connection.commands.find(c => c.command === command)!;
+            const alias = new CliServerProxyProcessor(connection, descriptor, serverName);
+            alias.command = command;
+            alias.aliases = [namespacedCommand];
 
             this.registry.registerProcessor(alias);
         }

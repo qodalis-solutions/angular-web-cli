@@ -11,6 +11,7 @@ import { CliServerConnection } from './cli-server-connection';
 
 export class CliServerProxyProcessor implements ICliCommandProcessor {
     command: string;
+    aliases?: string[];
     description?: string;
     version?: string;
     metadata?: CliProcessorMetadata;
@@ -85,7 +86,7 @@ export class CliServerProxyProcessor implements ICliCommandProcessor {
         response: CliServerResponse,
         context: ICliExecutionContext,
     ): void {
-        for (const output of response.outputs) {
+        for (const output of response.outputs ?? []) {
             switch (output.type) {
                 case 'text': {
                     const style = output.style;

@@ -1,6 +1,6 @@
 # @qodalis/vue-cli
 
-Vue 3 wrapper for the [Qodalis Web CLI](https://github.com/qodalis-solutions/angular-web-cli) — a web-based terminal with 50+ built-in commands, theming, and runtime package installation.
+Vue 3 wrapper for the [Qodalis Web CLI](https://github.com/qodalis-solutions/web-cli) — a web-based terminal with 50+ built-in commands, theming, and runtime package installation.
 
 ## Installation
 
@@ -66,7 +66,7 @@ const processors = [new GreetCommandProcessor()];
 
 ## Documentation
 
-See the [main README](https://github.com/qodalis-solutions/angular-web-cli#readme) for the full command reference, extension guide, and framework comparison.
+See the [main README](https://github.com/qodalis-solutions/web-cli#readme) for the full command reference, extension guide, and framework comparison.
 
 ## License
 

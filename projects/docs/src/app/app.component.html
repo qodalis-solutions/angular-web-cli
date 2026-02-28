@@ -21,7 +21,7 @@
         >npm</a
       >
       <a
-        href="https://github.com/qodalis-solutions/angular-web-cli"
+        href="https://github.com/qodalis-solutions/web-cli"
         target="_blank"
         rel="noopener"
         class="nav-link gh-link"
@@ -67,6 +67,51 @@
   </div>
 </header>
 
+<!-- ===== FRAMEWORK CODE EXAMPLES ===== -->
+<section class="frameworks-section">
+  <div class="section-inner">
+    <h2 class="section-heading">Works with Your Stack</h2>
+    <p class="section-subheading">
+      Same plugin ecosystem. Same API. Native wrappers for every major framework.
+    </p>
+    <div class="framework-tabs">
+      <button
+        class="framework-tab"
+        [class.active]="activeFramework === 'angular'"
+        (click)="setFramework('angular')"
+      >
+        Angular
+      </button>
+      <button
+        class="framework-tab"
+        [class.active]="activeFramework === 'react'"
+        (click)="setFramework('react')"
+      >
+        React
+      </button>
+      <button
+        class="framework-tab"
+        [class.active]="activeFramework === 'vue'"
+        (click)="setFramework('vue')"
+      >
+        Vue
+      </button>
+    </div>
+    <div class="framework-panels">
+      <div class="code-panel">
+        <div class="code-block">
+          <span class="code-label">Setup</span>
+          <pre><code>{{ frameworkSnippets[activeFramework].imports }}</code></pre>
+        </div>
+        <div class="code-block">
+          <span class="code-label">Template</span>
+          <pre><code>{{ frameworkSnippets[activeFramework].template }}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== FEATURES ===== -->
 <section class="features-section">
   <div class="section-inner">
@@ -80,13 +125,32 @@
   </div>
 </section>
 
+<!-- ===== BUILT-IN COMMANDS ===== -->
+<section class="commands-section">
+  <div class="section-inner">
+    <h2 class="section-heading">50+ Built-in Commands</h2>
+    <p class="section-subheading">
+      A complete command set out of the box — dev tools, file management, editors, and system utilities.
+    </p>
+    <div class="command-groups">
+      <div class="command-group" *ngFor="let g of builtInGroups">
+        <span class="command-group-label">{{ g.label }}</span>
+        <div class="command-badges">
+          <code class="command-badge" *ngFor="let c of g.commands">{{ c }}</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== LIVE TERMINAL ===== -->
 <section class="terminal-section" #terminalSection>
   <div class="section-inner">
     <h2 class="section-heading">Live Terminal</h2>
     <p class="section-subheading">
       This is the real component running below. Type
-      <code>help</code> to explore available commands.
+      <code>help</code> to explore commands, <code>ls</code> to browse
+      files, or <code>nano</code> to open the editor.
     </p>
     <div class="terminal-wrapper">
       <div class="terminal-chrome">
@@ -96,7 +160,25 @@
         <span class="chrome-title">qodalis-cli</span>
       </div>
       <div class="terminal-body">
-        <cli [options]="options" [processors]="processors" [modules]="modules" height="420px" />
+        <cli [options]="options" [modules]="modules" height="420px" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ADVANCED FEATURES ===== -->
+<section class="advanced-section">
+  <div class="section-inner">
+    <h2 class="section-heading">Power Features</h2>
+    <p class="section-subheading">
+      Beyond the basics — server connectivity, runtime extensibility, and interactive workflows.
+    </p>
+    <div class="advanced-grid">
+      <div class="advanced-card" *ngFor="let a of advancedFeatures">
+        <div class="advanced-icon">{{ a.icon }}</div>
+        <h3 class="advanced-title">{{ a.title }}</h3>
+        <p class="advanced-desc">{{ a.description }}</p>
+        <code class="advanced-example">{{ a.example }}</code>
       </div>
     </div>
   </div>
@@ -105,7 +187,7 @@
 <!-- ===== PLUGINS ===== -->
 <section class="plugins-section">
   <div class="section-inner">
-    <h2 class="section-heading">Plugin Ecosystem</h2>
+    <h2 class="section-heading">13 Official Plugins</h2>
     <p class="section-subheading">
       Each plugin is a standalone package. Install only what you need.
     </p>
@@ -134,7 +216,7 @@
         >Get started</a
       >
       <a
-        href="https://github.com/qodalis-solutions/angular-web-cli"
+        href="https://github.com/qodalis-solutions/web-cli"
         target="_blank"
         rel="noopener"
         class="btn btn-ghost"
@@ -154,7 +236,7 @@
         >qodalis.com</a
       >
       <a
-        href="https://github.com/qodalis-solutions/angular-web-cli"
+        href="https://github.com/qodalis-solutions/web-cli"
         target="_blank"
         rel="noopener"
         >GitHub</a
@@ -164,4 +246,4 @@
 </footer>
 
 <!-- ===== PANEL (collapsible bottom) ===== -->
-<cli-panel [options]="options" [processors]="processors" [modules]="modules" />
+<cli-panel [options]="options" [modules]="modules" />

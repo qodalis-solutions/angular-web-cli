@@ -8,7 +8,7 @@
 [![npm version](https://img.shields.io/npm/v/@qodalis/angular-cli.svg?label=angular)](https://www.npmjs.com/package/@qodalis/angular-cli)
 [![npm version](https://img.shields.io/npm/v/@qodalis/react-cli.svg?label=react)](https://www.npmjs.com/package/@qodalis/react-cli)
 [![npm version](https://img.shields.io/npm/v/@qodalis/vue-cli.svg?label=vue)](https://www.npmjs.com/package/@qodalis/vue-cli)
-[![Build Status](https://github.com/qodalis-solutions/angular-web-cli/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/qodalis-solutions/angular-web-cli/actions)
+[![Build Status](https://github.com/qodalis-solutions/web-cli/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/qodalis-solutions/web-cli/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 </div>

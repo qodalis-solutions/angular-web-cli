@@ -1,6 +1,6 @@
 # @qodalis/cli-core
 
-Shared interfaces, models, types, themes, and utilities for the [Qodalis Web CLI](https://github.com/qodalis-solutions/angular-web-cli) framework.
+Shared interfaces, models, types, themes, and utilities for the [Qodalis Web CLI](https://github.com/qodalis-solutions/web-cli) framework.
 
 ## Installation
 
@@ -58,7 +58,7 @@ export class MyCommandProcessor implements ICliCommandProcessor {
 
 ## Documentation
 
-See the [main README](https://github.com/qodalis-solutions/angular-web-cli#readme) for full documentation, framework integration guides, and the complete command reference.
+See the [main README](https://github.com/qodalis-solutions/web-cli#readme) for full documentation, framework integration guides, and the complete command reference.
 
 ## License
 

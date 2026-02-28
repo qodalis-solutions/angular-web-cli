@@ -285,10 +285,85 @@ $radius-sm: 8px
     background: rgba(255, 255, 255, 0.08)
     color: $accent
 
+// ─── Framework Code Examples ───
+.frameworks-section
+  padding: 80px 0
+  background: $bg-surface
+
+.framework-tabs
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 4px
+  margin-bottom: 32px
+
+.framework-tab
+  appearance: none
+  background: transparent
+  border: 1px solid $border
+  color: $text-secondary
+  font-family: inherit
+  font-size: 0.82rem
+  font-weight: 600
+  padding: 8px 20px
+  border-radius: 6px
+  cursor: pointer
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s
+
+  &:hover
+    color: $text
+    border-color: $border-light
+
+  &.active
+    background: $accent
+    border-color: $accent
+    color: #fff
+
+.framework-panels
+  max-width: 720px
+  margin: 0 auto
+
+.code-panel
+  display: flex
+  flex-direction: column
+  gap: 16px
+
+.code-block
+  position: relative
+  background: $bg-card
+  border: 1px solid $border
+  border-radius: $radius-sm
+  overflow: hidden
+
+  pre
+    margin: 0
+    padding: 20px 24px
+    padding-top: 36px
+    overflow-x: auto
+
+  code
+    font-family: $mono
+    font-size: 0.8rem
+    line-height: 1.65
+    color: $text
+    white-space: pre
+
+.code-label
+  position: absolute
+  top: 10px
+  left: 16px
+  font-size: 0.65rem
+  font-weight: 600
+  text-transform: uppercase
+  letter-spacing: 0.08em
+  color: $accent
+  background: rgba(129, 140, 248, 0.1)
+  padding: 2px 8px
+  border-radius: 3px
+
 // ─── Features ───
 .features-section
   padding: 64px 0
-  background: $bg-surface
 
 .features-grid
   display: grid
@@ -336,6 +411,54 @@ $radius-sm: 8px
   color: $text-secondary
   margin: 0
 
+// ─── Built-in Commands ───
+.commands-section
+  padding: 80px 0
+  background: $bg-surface
+
+.command-groups
+  display: flex
+  flex-direction: column
+  gap: 20px
+  max-width: 800px
+  margin: 0 auto
+
+.command-group
+  display: flex
+  align-items: flex-start
+  gap: 16px
+
+  @media (max-width: 520px)
+    flex-direction: column
+    gap: 8px
+
+.command-group-label
+  font-size: 0.78rem
+  font-weight: 600
+  color: $text-secondary
+  min-width: 120px
+  padding-top: 5px
+  text-align: right
+  flex-shrink: 0
+
+  @media (max-width: 520px)
+    text-align: left
+
+.command-badges
+  display: flex
+  flex-wrap: wrap
+  gap: 8px
+
+.command-badge
+  font-family: $mono
+  font-size: 0.72rem
+  color: $accent
+  background: rgba(129, 140, 248, 0.1)
+  border: 1px solid rgba(129, 140, 248, 0.15)
+  padding: 4px 10px
+  border-radius: 4px
+  white-space: nowrap
+
 // ─── Terminal ───
 .terminal-section
   padding: 80px 0
@@ -379,10 +502,66 @@ $radius-sm: 8px
   background: #000
   min-height: 420px
 
+// ─── Advanced Features ───
+.advanced-section
+  padding: 80px 0
+  background: $bg-surface
+
+.advanced-grid
+  display: grid
+  grid-template-columns: repeat(2, 1fr)
+  gap: 20px
+
+  @media (max-width: 640px)
+    grid-template-columns: 1fr
+
+.advanced-card
+  background: $bg-card
+  border: 1px solid $border
+  border-radius: $radius
+  padding: 28px 24px
+  transition: border-color 0.2s, background-color 0.2s
+
+  &:hover
+    border-color: $border-light
+    background: $bg-card-hover
+
+.advanced-icon
+  font-size: 1.4rem
+  margin-bottom: 14px
+  width: 40px
+  height: 40px
+  display: flex
+  align-items: center
+  justify-content: center
+  background: $accent-glow
+  border-radius: 10px
+
+.advanced-title
+  font-size: 0.95rem
+  font-weight: 600
+  margin: 0 0 8px
+  color: #fff
+
+.advanced-desc
+  font-size: 0.82rem
+  line-height: 1.55
+  color: $text-secondary
+  margin: 0 0 14px
+
+.advanced-example
+  font-family: $mono
+  font-size: 0.72rem
+  color: $accent
+  background: rgba(129, 140, 248, 0.1)
+  border: 1px solid rgba(129, 140, 248, 0.15)
+  padding: 4px 10px
+  border-radius: 4px
+  display: inline-block
+
 // ─── Plugins ───
 .plugins-section
   padding: 80px 0
-  background: $bg-surface
 
 .plugins-grid
   display: grid

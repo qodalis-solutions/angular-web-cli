@@ -12,7 +12,7 @@ import {
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
 import { openLink } from '../../utils';
 
-const githubUrl = 'https://github.com/qodalis-solutions/angular-web-cli';
+const githubUrl = 'https://github.com/qodalis-solutions/web-cli';
 
 export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
     command = 'feedback';

@@ -1,6 +1,6 @@
 # @qodalis/cli
 
-Framework-agnostic terminal engine for the [Qodalis Web CLI](https://github.com/qodalis-solutions/angular-web-cli) — 50+ built-in commands, theming, runtime package installation, and extensible command processing.
+Framework-agnostic terminal engine for the [Qodalis Web CLI](https://github.com/qodalis-solutions/web-cli) — 50+ built-in commands, theming, runtime package installation, and extensible command processing.
 
 ## Installation
 
@@ -45,7 +45,7 @@ For framework-specific wrappers, use [`@qodalis/angular-cli`](https://www.npmjs.
 
 ## Documentation
 
-See the [main README](https://github.com/qodalis-solutions/angular-web-cli#readme) for the full command reference, extension guide, and configuration options.
+See the [main README](https://github.com/qodalis-solutions/web-cli#readme) for the full command reference, extension guide, and configuration options.
 
 ## License
 

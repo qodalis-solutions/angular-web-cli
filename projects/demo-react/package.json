@@ -27,7 +27,8 @@
     "@qodalis/cli-qr": "file:../../dist/qr",
     "@qodalis/cli-yesno": "file:../../dist/yesno",
     "@qodalis/cli-server-logs": "file:../../dist/server-logs",
-    "@qodalis/cli-users": "file:../../dist/users"
+    "@qodalis/cli-users": "file:../../dist/users",
+    "@qodalis/cli-files": "file:../../dist/files"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

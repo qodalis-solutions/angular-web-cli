@@ -39,7 +39,12 @@ export interface ICliInputReader {
      * Prompt the user to select from a list of options using arrow keys.
      * @param prompt The prompt text to display (e.g. "Pick one:")
      * @param options The list of options to choose from
+     * @param onChange Optional callback invoked each time the highlighted option changes
      * @returns The value of the selected option, or null if aborted
      */
-    readSelect(prompt: string, options: CliSelectOption[]): Promise<string | null>;
+    readSelect(
+        prompt: string,
+        options: CliSelectOption[],
+        onChange?: (value: string) => void,
+    ): Promise<string | null>;
 }

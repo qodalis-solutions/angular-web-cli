@@ -11,6 +11,7 @@ export interface ActiveInputRequest {
     defaultValue?: boolean;
     options?: CliSelectOption[];
     selectedIndex?: number;
+    onChange?: (value: string) => void;
 }
 
 export interface CliInputReaderHost {
@@ -52,7 +53,11 @@ export class CliInputReader implements ICliInputReader {
         });
     }
 
-    readSelect(prompt: string, options: CliSelectOption[]): Promise<string | null> {
+    readSelect(
+        prompt: string,
+        options: CliSelectOption[],
+        onChange?: (value: string) => void,
+    ): Promise<string | null> {
         if (!options || options.length === 0) {
             return Promise.reject(new Error('readSelect requires at least one option'));
         }
@@ -66,6 +71,9 @@ export class CliInputReader implements ICliInputReader {
             this.host.writeToTerminal(prompt + '\r\n');
             this.renderSelectOptions(options, 0);
 
+            // Fire onChange for the initial selection
+            onChange?.(options[0].value);
+
             this.host.setActiveInputRequest({
                 type: 'select',
                 promptText: prompt,
@@ -74,6 +82,7 @@ export class CliInputReader implements ICliInputReader {
                 cursorPosition: 0,
                 options,
                 selectedIndex: 0,
+                onChange,
             });
         });
     }

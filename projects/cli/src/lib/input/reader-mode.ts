@@ -178,11 +178,13 @@ export class ReaderMode implements IInputMode {
             if (selectedIndex > 0) {
                 request.selectedIndex = selectedIndex - 1;
                 this.redrawSelectOptions(request);
+                request.onChange?.(options[request.selectedIndex!].value);
             }
         } else if (data === '\u001B[B') {
             if (selectedIndex < options.length - 1) {
                 request.selectedIndex = selectedIndex + 1;
                 this.redrawSelectOptions(request);
+                request.onChange?.(options[request.selectedIndex!].value);
             }
         }
     }

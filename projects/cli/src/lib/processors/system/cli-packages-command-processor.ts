@@ -789,12 +789,35 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     },
                     {
                         command: 'set',
-                        description: 'Set the preferred package source',
-                        valueRequired: true,
+                        description: 'Set the preferred package source (interactive if no name given)',
                         allowUnlistedCommands: true,
                         async processCommand(command, context) {
-                            const value = (command.value || '').trim().toLowerCase();
+                            let value = (command.value || '').trim().toLowerCase();
                             const allSources = scriptsLoader.getSources();
+
+                            if (!value) {
+                                // Interactive selection
+                                const current = scriptsLoader.getCdnSource();
+                                const options = allSources.map((name) => {
+                                    const entry = scriptsLoader.getSource(name);
+                                    const active = name === current ? ' (active)' : '';
+                                    return {
+                                        label: `${name}${active}  ${entry?.url || ''}`,
+                                        value: name,
+                                    };
+                                });
+
+                                const selected = await context.reader.readSelect(
+                                    'Select package source:',
+                                    options,
+                                );
+
+                                if (!selected) {
+                                    context.writer.writeInfo('Source selection cancelled');
+                                    return;
+                                }
+                                value = selected;
+                            }
 
                             if (!allSources.includes(value)) {
                                 context.writer.writeError(

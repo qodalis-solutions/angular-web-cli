@@ -1,5 +1,4 @@
-import { ICliExecutionContext } from '../interfaces/execution-context';
-import { ICliCommandProcessorRegistry, ICliConfigurationOption } from '../interfaces';
+import { ICliStateStore, ICliCommandProcessorRegistry, ICliConfigurationOption } from '../interfaces';
 
 /**
  * Token for the configure command's state store.
@@ -7,29 +6,29 @@ import { ICliCommandProcessorRegistry, ICliConfigurationOption } from '../interf
 export const CLI_CONFIGURE_STORE_NAME = 'configure';
 
 /**
- * Retrieves a configuration value for a given processor and key.
- * Reads from the configure command's persisted state store.
+ * Retrieves a configuration value for a given category and key
+ * from a configuration state store.
  *
- * @param context The execution context
+ * @param state The state store to read from (should be the 'configure' store)
  * @param category The category (processor command name or 'system')
  * @param key The configuration key
  * @param defaultValue Fallback value if not configured
  * @returns The configured value or the default
  */
 export function getConfigValue<T = any>(
-    context: ICliExecutionContext,
+    state: ICliStateStore,
     category: string,
     key: string,
     defaultValue: T,
 ): T {
     try {
-        const state = context.state.getState<Record<string, any>>();
-        const bucket = category === 'system' ? state?.['system'] : state?.['plugins']?.[category];
+        const s = state.getState<Record<string, any>>();
+        const bucket = category === 'system' ? s?.['system'] : s?.['plugins']?.[category];
         if (bucket && key in bucket) {
             return bucket[key] as T;
         }
     } catch {
-        // State not initialized or not available — fall back
+        // State not initialized or not available
     }
     return defaultValue;
 }

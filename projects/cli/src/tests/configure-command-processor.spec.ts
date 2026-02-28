@@ -318,6 +318,42 @@ describe('CliConfigureCommandProcessor', () => {
             const output = writer.written.join('\n');
             expect(output).toContain('Invalid format');
         });
+
+        it('should coerce boolean values correctly', async () => {
+            // Register a plugin with a boolean config option
+            const boolPlugin: ICliCommandProcessor = {
+                command: 'test-bool',
+                description: 'A test plugin with boolean config',
+                configurationOptions: [
+                    {
+                        key: 'enabled',
+                        label: 'Enabled',
+                        description: 'Enable the plugin',
+                        type: 'boolean',
+                        defaultValue: false,
+                    },
+                ],
+                processCommand: async () => {},
+            };
+            registry.registerProcessor(boolPlugin);
+
+            const cmd: CliProcessCommand = {
+                command: 'set',
+                chainCommands: [],
+                rawCommand: 'configure set test-bool.enabled true',
+                value: 'test-bool.enabled true',
+                args: {},
+            };
+
+            await setProcessor.processCommand!(cmd, context);
+
+            const output = writer.written.join('\n');
+            expect(output).toContain('[success]');
+
+            // Verify the value was stored as boolean true, not string
+            const state = context.state.getState<any>();
+            expect(state.plugins['test-bool'].enabled).toBe(true);
+        });
     });
 
     // -----------------------------------------------------------------------
@@ -381,6 +417,35 @@ describe('CliConfigureCommandProcessor', () => {
             expect(context.reader.readConfirm).toHaveBeenCalled();
             const output = writer.written.join('\n');
             expect(output).toContain('cancelled');
+        });
+
+        it('should reset all configuration when confirmation is accepted', async () => {
+            // First change a system config value
+            const state = context.state.getState<any>();
+            state.system.logLevel = 'Debug';
+            context.state.updateState({ system: state.system });
+
+            // Mock readConfirm to return true
+            (context.reader.readConfirm as jasmine.Spy).and.returnValue(Promise.resolve(true));
+
+            const cmd: CliProcessCommand = {
+                command: 'reset',
+                chainCommands: [],
+                rawCommand: 'configure reset',
+                args: {},
+            };
+
+            await resetProcessor.processCommand!(cmd, context);
+
+            expect(context.reader.readConfirm).toHaveBeenCalled();
+            const output = writer.written.join('\n');
+            expect(output).toContain('[success]');
+            expect(output).toContain('All configuration reset to defaults');
+
+            // Verify state was reset to defaults
+            const resetState = context.state.getState<any>();
+            expect(resetState.system.logLevel).toBe('ERROR');
+            expect(resetState.system.welcomeMessage).toBe('always');
         });
     });
 

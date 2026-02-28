@@ -77,7 +77,7 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
 
     stateConfiguration?: CliStateConfiguration | undefined = {
         initialState: {
-            system: { logLevel: 'ERROR', welcomeMessage: 'always' },
+            system: CliConfigureCommandProcessor.buildDefaults(SYSTEM_OPTIONS),
             plugins: {},
         },
         storeName: 'configure',
@@ -523,52 +523,12 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                 }
 
                 // Coerce value based on type
-                let coerced: any = rawValue;
-
-                switch (match.option.type) {
-                    case 'number': {
-                        coerced = Number(rawValue);
-                        if (isNaN(coerced)) {
-                            context.writer.writeError(
-                                `Expected a number for ${path}, got: ${rawValue}`,
-                            );
-                            return;
-                        }
-                        break;
-                    }
-                    case 'boolean': {
-                        const lower = rawValue.toLowerCase();
-                        if (lower === 'true' || lower === '1' || lower === 'yes') {
-                            coerced = true;
-                        } else if (lower === 'false' || lower === '0' || lower === 'no') {
-                            coerced = false;
-                        } else {
-                            context.writer.writeError(
-                                `Expected a boolean for ${path}, got: ${rawValue}`,
-                            );
-                            return;
-                        }
-                        break;
-                    }
-                    case 'select': {
-                        if (match.option.options) {
-                            const validOption = match.option.options.find(
-                                (o) => o.value.toLowerCase() === rawValue.toLowerCase(),
-                            );
-                            if (!validOption) {
-                                const allowed = match.option.options
-                                    .map((o) => o.value)
-                                    .join(', ');
-                                context.writer.writeError(
-                                    `Invalid value for ${path}. Allowed: ${allowed}`,
-                                );
-                                return;
-                            }
-                            coerced = validOption.value;
-                        }
-                        break;
-                    }
+                const coerceResult = this.coerceValue(rawValue, match.option);
+                if (coerceResult.error) {
+                    context.writer.writeError(coerceResult.error);
+                    return;
                 }
+                const coerced = coerceResult.value;
 
                 // Validate if validator is defined
                 if (match.option.validator) {
@@ -605,10 +565,7 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                 if (category) {
                     // Reset a specific category
                     if (category === 'system') {
-                        const defaults: Record<string, any> = {};
-                        for (const opt of SYSTEM_OPTIONS) {
-                            defaults[opt.key] = opt.defaultValue;
-                        }
+                        const defaults = CliConfigureCommandProcessor.buildDefaults(SYSTEM_OPTIONS);
                         const state = context.state.getState<ConfigureState>();
                         context.state.updateState({
                             system: defaults,
@@ -632,10 +589,7 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                             return;
                         }
 
-                        const defaults: Record<string, any> = {};
-                        for (const opt of cat.options) {
-                            defaults[opt.key] = opt.defaultValue;
-                        }
+                        const defaults = CliConfigureCommandProcessor.buildDefaults(cat.options);
 
                         const state = context.state.getState<ConfigureState>();
                         const updatedPlugins = { ...state.plugins, [category]: defaults };
@@ -664,15 +618,54 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                     await context.state.persist();
 
                     // Re-apply system defaults
-                    const defaults: Record<string, any> = {};
-                    for (const opt of SYSTEM_OPTIONS) {
-                        defaults[opt.key] = opt.defaultValue;
-                    }
+                    const defaults = CliConfigureCommandProcessor.buildDefaults(SYSTEM_OPTIONS);
                     this.applySystemSettings(defaults, context);
 
                     context.writer.writeSuccess('All configuration reset to defaults');
                 }
             },
         };
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+
+    private coerceValue(
+        rawValue: string,
+        option: ICliConfigurationOption,
+    ): { value: any; error?: string } {
+        switch (option.type) {
+            case 'number': {
+                const num = Number(rawValue);
+                if (isNaN(num)) {
+                    return { value: null, error: `Invalid number: ${rawValue}` };
+                }
+                return { value: num };
+            }
+            case 'boolean':
+                return { value: ['true', '1', 'yes'].includes(rawValue.toLowerCase()) };
+            case 'select':
+                if (option.options) {
+                    const match = option.options.find(
+                        (o) => String(o.value).toLowerCase() === rawValue.toLowerCase(),
+                    );
+                    if (!match) {
+                        return {
+                            value: null,
+                            error: `Invalid value. Valid options: ${option.options.map((o) => o.value).join(', ')}`,
+                        };
+                    }
+                    return { value: match.value };
+                }
+                return { value: rawValue };
+            default:
+                return { value: rawValue };
+        }
+    }
+
+    private static buildDefaults(options: ICliConfigurationOption[]): Record<string, any> {
+        return options.reduce((acc, opt) => {
+            acc[opt.key] = opt.defaultValue;
+            return acc;
+        }, {} as Record<string, any>);
     }
 }

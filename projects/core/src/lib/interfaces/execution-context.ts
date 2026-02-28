@@ -95,7 +95,7 @@ export interface ICliExecutionContext {
      * @param silent Indicates if the setting should be silent, i.e. not write to the terminal
      */
     setContextProcessor: (
-        processor: ICliCommandProcessor,
+        processor: ICliCommandProcessor | undefined,
         silent?: boolean,
     ) => void;
 

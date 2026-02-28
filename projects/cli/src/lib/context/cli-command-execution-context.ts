@@ -34,7 +34,7 @@ export class CliCommandExecutionContext implements ICliExecutionContext {
     state: ICliStateStore;
     options?: CliOptions | undefined;
     setContextProcessor: (
-        processor: ICliCommandProcessor,
+        processor: ICliCommandProcessor | undefined,
         silent?: boolean,
     ) => void;
     process: ICliExecutionProcess;

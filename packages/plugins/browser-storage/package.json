@@ -22,7 +22,7 @@
   "unpkg": "./umd/index.js",
   "dependencies": {
     "tslib": "^2.3.0",
-    "@qodalis/cli-core": "^2.0.1"
+    "@qodalis/cli-core": "workspace:*"
   },
   "sideEffects": false,
   "scripts": {

@@ -21,7 +21,7 @@
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",
   "dependencies": {
-    "@qodalis/cli-core": "^2.0.1",
+    "@qodalis/cli-core": "workspace:*",
     "lodash": "^4.17.21",
     "@types/lodash": "^4.17.14",
     "tslib": "^2.3.0"

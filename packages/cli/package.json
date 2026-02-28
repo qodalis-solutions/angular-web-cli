@@ -18,8 +18,17 @@
     "xterm",
     "framework-agnostic"
   ],
+  "main": "./public-api.js",
+  "module": "./public-api.mjs",
+  "types": "./public-api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./public-api.d.ts",
+      "import": "./public-api.mjs",
+      "require": "./public-api.js"
+    }
+  },
   "dependencies": {
-    "tslib": "^2.3.0",
     "@qodalis/cli-core": "workspace:*",
     "@xterm/xterm": "^5.5.0",
     "@xterm/addon-fit": "^0.10.0",

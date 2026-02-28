@@ -56,3 +56,5 @@ package-lock.json
 
 # Worktrees
 .worktrees/
+packages/react-cli/dist
+packages/vue-cli/dist

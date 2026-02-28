@@ -8,36 +8,6 @@
     }
   },
   "projects": {
-    "cli": {
-      "projectType": "library",
-      "root": "packages/cli",
-      "sourceRoot": "packages/cli/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/cli/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/cli/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/cli/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/cli/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
     "angular-cli": {
       "projectType": "library",
       "root": "packages/angular-cli",
@@ -67,6 +37,77 @@
               "packages/angular-cli/**/*.html"
             ]
           }
+        }
+      }
+    },
+    "demo-angular": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "sass"
+        }
+      },
+      "root": "apps/demo-angular",
+      "sourceRoot": "apps/demo-angular/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/demo-angular",
+            "index": "apps/demo-angular/src/index.html",
+            "main": "apps/demo-angular/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "apps/demo-angular/tsconfig.app.json",
+            "inlineStyleLanguage": "sass",
+            "assets": [],
+            "styles": [
+              "apps/demo-angular/src/styles.sass",
+              "packages/angular-cli/src/assets/styles.sass"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "demo-angular:build:production"
+            },
+            "development": {
+              "browserTarget": "demo-angular:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
         }
       }
     },
@@ -161,536 +202,6 @@
             "styles": ["apps/docs/src/styles.sass"],
             "scripts": []
           }
-        }
-      }
-    },
-    "server-logs": {
-      "projectType": "library",
-      "root": "packages/plugins/server-logs",
-      "sourceRoot": "packages/plugins/server-logs/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/server-logs/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/server-logs/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/server-logs/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/server-logs/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "core": {
-      "projectType": "library",
-      "root": "packages/core",
-      "sourceRoot": "packages/core/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/core/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/core/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/core/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/core/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "guid": {
-      "projectType": "library",
-      "root": "packages/plugins/guid",
-      "sourceRoot": "packages/plugins/guid/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/guid/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/guid/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/guid/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/guid/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "text-to-image": {
-      "projectType": "library",
-      "root": "packages/plugins/text-to-image",
-      "sourceRoot": "packages/plugins/text-to-image/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/text-to-image/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/text-to-image/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/text-to-image/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/text-to-image/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "regex": {
-      "projectType": "library",
-      "root": "packages/plugins/regex",
-      "sourceRoot": "packages/plugins/regex/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/regex/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/regex/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/regex/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/regex/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "speed-test": {
-      "projectType": "library",
-      "root": "packages/plugins/speed-test",
-      "sourceRoot": "packages/plugins/speed-test/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/speed-test/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/speed-test/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/speed-test/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/speed-test/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "browser-storage": {
-      "projectType": "library",
-      "root": "packages/plugins/browser-storage",
-      "sourceRoot": "packages/plugins/browser-storage/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/browser-storage/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/browser-storage/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/browser-storage/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/browser-storage/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "string": {
-      "projectType": "library",
-      "root": "packages/plugins/string",
-      "sourceRoot": "packages/plugins/string/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/string/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/string/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/string/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/string/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "todo": {
-      "projectType": "library",
-      "root": "packages/plugins/todo",
-      "sourceRoot": "packages/plugins/todo/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/todo/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/todo/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/todo/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/todo/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "curl": {
-      "projectType": "library",
-      "root": "packages/plugins/curl",
-      "sourceRoot": "packages/plugins/curl/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/curl/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/curl/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/curl/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/curl/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "password-generator": {
-      "projectType": "library",
-      "root": "packages/plugins/password-generator",
-      "sourceRoot": "packages/plugins/password-generator/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/password-generator/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/password-generator/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/password-generator/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/password-generator/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        }
-      }
-    },
-    "qr": {
-      "projectType": "library",
-      "root": "packages/plugins/qr",
-      "sourceRoot": "packages/plugins/qr/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/qr/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/qr/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/qr/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/qr/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        }
-      }
-    },
-    "yesno": {
-      "projectType": "library",
-      "root": "packages/plugins/yesno",
-      "sourceRoot": "packages/plugins/yesno/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/yesno/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/yesno/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/yesno/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/yesno/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        }
-      }
-    },
-    "users": {
-      "projectType": "library",
-      "root": "packages/plugins/users",
-      "sourceRoot": "packages/plugins/users/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/users/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/users/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/users/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/users/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "files": {
-      "projectType": "library",
-      "root": "packages/plugins/files",
-      "sourceRoot": "packages/plugins/files/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "packages/plugins/files/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "packages/plugins/files/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "packages/plugins/files/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "packages/plugins/files/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
-          }
-        }
-      }
-    },
-    "demo-angular": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "sass"
-        }
-      },
-      "root": "apps/demo-angular",
-      "sourceRoot": "apps/demo-angular/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/demo-angular",
-            "index": "apps/demo-angular/src/index.html",
-            "main": "apps/demo-angular/src/main.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "apps/demo-angular/tsconfig.app.json",
-            "inlineStyleLanguage": "sass",
-            "assets": [],
-            "styles": [
-              "apps/demo-angular/src/styles.sass",
-              "packages/angular-cli/src/assets/styles.sass"
-            ],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "1MB",
-                  "maximumError": "2MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "proxyConfig": "proxy.conf.json"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "demo-angular:build:production"
-            },
-            "development": {
-              "browserTarget": "demo-angular:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
         }
       }
     }

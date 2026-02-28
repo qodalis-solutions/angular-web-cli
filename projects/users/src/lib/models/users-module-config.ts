@@ -3,6 +3,8 @@ import { ICliUser } from '@qodalis/cli-core';
 export const CliUsersModuleConfig_TOKEN = 'cli-users-module-config';
 
 export interface CliUsersModuleConfig {
+    /** Hide the username from the terminal prompt (default: false) */
+    hideUserName?: boolean;
     /** Default password for seeded users (default: 'root') */
     defaultPassword?: string;
     /** Users to seed on first boot (in addition to root) */

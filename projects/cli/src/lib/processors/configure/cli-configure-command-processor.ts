@@ -351,13 +351,9 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
             }
         }
 
-        // Apply welcome message
-        if (settings['welcomeMessage'] && context.options) {
-            if (!context.options.welcomeMessage) {
-                context.options.welcomeMessage = {};
-            }
-            context.options.welcomeMessage.show = settings['welcomeMessage'];
-        }
+        // Welcome message setting is persisted in state and read
+        // directly by the welcome module on next boot — no runtime
+        // mutation needed here.
     }
 
     // ── Child processor builders ────────────────────────────────────────

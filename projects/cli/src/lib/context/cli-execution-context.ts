@@ -326,9 +326,17 @@ export class CliExecutionContext
     // -- CommandLineModeHost interface --
 
     getPromptOptions(): PromptOptions {
+        let hideUserName = false;
+        try {
+            const config = this.services.get<any>('cli-users-module-config');
+            hideUserName = config?.hideUserName ?? false;
+        } catch {
+            // Users module not loaded — default to showing username
+        }
+
         return {
             userName: this.userSession?.displayName,
-            hideUserName: this.options?.usersModule?.hideUserName,
+            hideUserName,
             contextProcessor: this.contextProcessor?.command,
             pathProvider: this.promptPathProvider,
         };

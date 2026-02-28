@@ -59,9 +59,6 @@ export class AppComponent {
     ];
 
     options: CliOptions = {
-        welcomeMessage: {
-            show: 'always',
-        },
         logLevel: CliLogLevel.DEBUG,
     };
 

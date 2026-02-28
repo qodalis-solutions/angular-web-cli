@@ -227,37 +227,6 @@ export interface CliPackageSource {
  */
 export type CliOptions = Record<string, any> & {
     /**
-     * The welcome message options
-     */
-    welcomeMessage?: {
-        /**
-         * The message to display
-         */
-        message?: string;
-
-        /**
-         * When to show the welcome message
-         * @default 'always'
-         */
-        show?: 'always' | 'once' | 'daily' | 'never';
-    };
-
-    /**
-     * Users module options
-     */
-    usersModule?: {
-        /**
-         * Hide the prompt to display when the CLI is ready to accept input
-         */
-        hideUserName?: boolean;
-
-        /**
-         * Reload the page when the user changes
-         */
-        reloadPageOnUserChange?: boolean;
-    };
-
-    /**
      * Custom terminal options
      */
     terminalOptions?: ITerminalOptions & ITerminalInitOnlyOptions;

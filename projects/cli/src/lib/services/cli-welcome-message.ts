@@ -1,7 +1,9 @@
 import { LIBRARY_VERSION } from '../version';
 import { getCliNameArt } from '../constants';
-import { CliForegroundColor, ICliExecutionContext, ICliModule } from '@qodalis/cli-core';
+import { CliForegroundColor, ICliModule, CLI_CONFIGURE_STORE_NAME } from '@qodalis/cli-core';
 import { getGreetingBasedOnTime } from '../utils';
+import { CliStateStoreManager_TOKEN } from '../tokens';
+import { ICliStateStoreManager } from '../state/cli-state-store-manager';
 
 export interface CliWelcomeMessageConfig {
     /** Custom message to display instead of the default */
@@ -25,9 +27,19 @@ export const welcomeModule: ICliWelcomeModule = {
     async onAfterBoot(context) {
         const config = (this.config || {}) as CliWelcomeMessageConfig;
 
-        // Prefer the persisted setting from `configure` over the module-level config
-        const showOption = context.options?.welcomeMessage?.show
-            || config.show;
+        // Check the configure command's persisted state first, then fall back to module config
+        let showOption = config.show;
+        try {
+            const storeManager = context.services.get<ICliStateStoreManager>(CliStateStoreManager_TOKEN);
+            const configureStore = storeManager.getStateStore(CLI_CONFIGURE_STORE_NAME);
+            await configureStore.initialize();
+            const state = configureStore.getState<Record<string, any>>();
+            if (state?.['system']?.['welcomeMessage']) {
+                showOption = state['system']['welcomeMessage'];
+            }
+        } catch {
+            // Configure store not available — use module config
+        }
 
         if (showOption) {
             if (!shouldDisplayWelcomeMessage(showOption)) {

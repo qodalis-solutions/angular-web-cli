@@ -243,12 +243,6 @@ export type CliOptions = Record<string, any> & {
     };
 
     /**
-     * If true, the welcome message is hidden
-     * @default false
-     */
-    hideWelcomeMessage?: boolean;
-
-    /**
      * Users module options
      */
     usersModule?: {

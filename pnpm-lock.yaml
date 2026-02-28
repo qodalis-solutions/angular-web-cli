@@ -38,6 +38,9 @@ importers:
       '@xterm/addon-fit':
         specifier: ^0.10.0
         version: 0.10.0(@xterm/xterm@5.5.0)
+      '@xterm/addon-serialize':
+        specifier: ^0.14.0
+        version: 0.14.0
       '@xterm/addon-unicode11':
         specifier: ^0.8.0
         version: 0.8.0(@xterm/xterm@5.5.0)
@@ -2873,6 +2876,9 @@ packages:
     resolution: {integrity: sha512-UFYkDm4HUahf2lnEyHvio51TNGiLK66mqP2JoATy7hRZeXaGMRDr00JiSF7m63vR5WKATF605yEggJKsw0JpMQ==}
     peerDependencies:
       '@xterm/xterm': ^5.0.0
+
+  '@xterm/addon-serialize@0.14.0':
+    resolution: {integrity: sha512-uteyTU1EkrQa2Ux6P/uFl2fzmXI46jy5uoQMKEOM0fKTyiW7cSn0WrFenHm5vO5uEXX/GpwW/FgILvv3r0WbkA==}
 
   '@xterm/addon-unicode11@0.8.0':
     resolution: {integrity: sha512-LxinXu8SC4OmVa6FhgwsVCBZbr8WoSGzBl2+vqe8WcQ6hb1r6Gj9P99qTNdPiFPh4Ceiu2pC8xukZ6+2nnh49Q==}
@@ -6521,7 +6527,7 @@ snapshots:
     dependencies:
       '@ampproject/remapping': 2.2.1
       '@angular-devkit/architect': 0.1602.16(chokidar@3.5.3)
-      '@angular-devkit/build-webpack': 0.1602.16(chokidar@3.5.3)(webpack-dev-server@4.15.1(webpack@5.94.0))(webpack@5.94.0(esbuild@0.18.17))
+      '@angular-devkit/build-webpack': 0.1602.16(chokidar@3.5.3)(webpack-dev-server@4.15.1(webpack@5.94.0(esbuild@0.18.17)))(webpack@5.94.0(esbuild@0.18.17))
       '@angular-devkit/core': 16.2.16(chokidar@3.5.3)
       '@angular/compiler-cli': 16.2.12(@angular/compiler@16.2.12(@angular/core@16.2.12(rxjs@7.8.2)(zone.js@0.13.3)))(typescript@5.1.6)
       '@babel/core': 7.22.9
@@ -6580,9 +6586,9 @@ snapshots:
       tslib: 2.6.1
       typescript: 5.1.6
       vite: 4.5.5(@types/node@22.19.13)(less@4.1.3)(sass@1.97.3)(terser@5.19.2)
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
       webpack-dev-middleware: 6.1.2(webpack@5.94.0(esbuild@0.18.17))
-      webpack-dev-server: 4.15.1(webpack@5.94.0)
+      webpack-dev-server: 4.15.1(webpack@5.94.0(esbuild@0.18.17))
       webpack-merge: 5.9.0
       webpack-subresource-integrity: 5.1.0(webpack@5.94.0(esbuild@0.18.17))
     optionalDependencies:
@@ -6607,12 +6613,12 @@ snapshots:
       - utf-8-validate
       - webpack-cli
 
-  '@angular-devkit/build-webpack@0.1602.16(chokidar@3.5.3)(webpack-dev-server@4.15.1(webpack@5.94.0))(webpack@5.94.0(esbuild@0.18.17))':
+  '@angular-devkit/build-webpack@0.1602.16(chokidar@3.5.3)(webpack-dev-server@4.15.1(webpack@5.94.0(esbuild@0.18.17)))(webpack@5.94.0(esbuild@0.18.17))':
     dependencies:
       '@angular-devkit/architect': 0.1602.16(chokidar@3.5.3)
       rxjs: 7.8.1
-      webpack: 5.94.0(esbuild@0.18.17)
-      webpack-dev-server: 4.15.1(webpack@5.94.0)
+      webpack: 5.94.0(esbuild@0.27.3)
+      webpack-dev-server: 4.15.1(webpack@5.94.0(esbuild@0.18.17))
     transitivePeerDependencies:
       - chokidar
 
@@ -8680,7 +8686,7 @@ snapshots:
     dependencies:
       '@angular/compiler-cli': 16.2.12(@angular/compiler@16.2.12(@angular/core@16.2.12(rxjs@7.8.2)(zone.js@0.13.3)))(typescript@5.1.6)
       typescript: 5.1.6
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -9615,6 +9621,8 @@ snapshots:
     dependencies:
       '@xterm/xterm': 5.5.0
 
+  '@xterm/addon-serialize@0.14.0': {}
+
   '@xterm/addon-unicode11@0.8.0(@xterm/xterm@5.5.0)':
     dependencies:
       '@xterm/xterm': 5.5.0
@@ -9842,7 +9850,7 @@ snapshots:
       '@babel/core': 7.22.9
       find-cache-dir: 4.0.0
       schema-utils: 4.3.3
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   babel-plugin-const-enum@1.2.0(@babel/core@7.29.0):
     dependencies:
@@ -10251,7 +10259,7 @@ snapshots:
       normalize-path: 3.0.0
       schema-utils: 4.3.3
       serialize-javascript: 6.0.2
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   core-js-compat@3.48.0:
     dependencies:
@@ -10307,7 +10315,7 @@ snapshots:
       postcss-modules-values: 4.0.0(postcss@8.4.31)
       postcss-value-parser: 4.2.0
       semver: 7.5.4
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   css-select@5.2.2:
     dependencies:
@@ -11576,7 +11584,7 @@ snapshots:
     dependencies:
       klona: 2.0.6
       less: 4.1.3
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   less@4.1.3:
     dependencies:
@@ -11615,7 +11623,7 @@ snapshots:
     dependencies:
       webpack-sources: 3.3.4
     optionalDependencies:
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   lilconfig@3.1.3: {}
 
@@ -11805,7 +11813,7 @@ snapshots:
   mini-css-extract-plugin@2.7.6(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
       schema-utils: 4.3.3
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   minimalistic-assert@1.0.1: {}
 
@@ -12375,7 +12383,7 @@ snapshots:
       jiti: 1.21.7
       postcss: 8.4.31
       semver: 7.5.4
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
     transitivePeerDependencies:
       - typescript
 
@@ -12684,7 +12692,7 @@ snapshots:
   sass-loader@13.3.2(sass@1.64.1)(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
       neo-async: 2.6.2
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
     optionalDependencies:
       sass: 1.64.1
 
@@ -12907,7 +12915,7 @@ snapshots:
       abab: 2.0.6
       iconv-lite: 0.6.3
       source-map-js: 1.2.1
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   source-map-support@0.5.19:
     dependencies:
@@ -13059,14 +13067,14 @@ snapshots:
       mkdirp: 1.0.4
       yallist: 4.0.0
 
-  terser-webpack-plugin@5.3.16(esbuild@0.18.17)(webpack@5.94.0):
+  terser-webpack-plugin@5.3.16(esbuild@0.18.17)(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       serialize-javascript: 6.0.2
       terser: 5.46.0
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
     optionalDependencies:
       esbuild: 0.18.17
 
@@ -13404,14 +13412,14 @@ snapshots:
 
   webidl-conversions@6.1.0: {}
 
-  webpack-dev-middleware@5.3.4(webpack@5.94.0):
+  webpack-dev-middleware@5.3.4(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
       colorette: 2.0.20
       memfs: 3.5.3
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.3.3
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
   webpack-dev-middleware@6.1.2(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
@@ -13421,9 +13429,9 @@ snapshots:
       range-parser: 1.2.1
       schema-utils: 4.3.3
     optionalDependencies:
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
-  webpack-dev-server@4.15.1(webpack@5.94.0):
+  webpack-dev-server@4.15.1(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
       '@types/bonjour': 3.5.13
       '@types/connect-history-api-fallback': 1.5.4
@@ -13453,10 +13461,10 @@ snapshots:
       serve-index: 1.9.2
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack-dev-middleware: 5.3.4(webpack@5.94.0)
+      webpack-dev-middleware: 5.3.4(webpack@5.94.0(esbuild@0.18.17))
       ws: 8.19.0
     optionalDependencies:
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -13473,9 +13481,9 @@ snapshots:
   webpack-subresource-integrity@5.1.0(webpack@5.94.0(esbuild@0.18.17)):
     dependencies:
       typed-assert: 1.0.9
-      webpack: 5.94.0(esbuild@0.18.17)
+      webpack: 5.94.0(esbuild@0.27.3)
 
-  webpack@5.94.0(esbuild@0.18.17):
+  webpack@5.94.0(esbuild@0.27.3):
     dependencies:
       '@types/estree': 1.0.8
       '@webassemblyjs/ast': 1.14.1
@@ -13497,7 +13505,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.3.0
-      terser-webpack-plugin: 5.3.16(esbuild@0.18.17)(webpack@5.94.0)
+      terser-webpack-plugin: 5.3.16(esbuild@0.18.17)(webpack@5.94.0(esbuild@0.18.17))
       watchpack: 2.5.1
       webpack-sources: 3.3.4
     transitivePeerDependencies:

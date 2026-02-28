@@ -6,9 +6,11 @@ import {
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { SerializeAddon } from '@xterm/addon-serialize';
 import {
     CliOptions,
     CliProvider,
+    CliEngineSnapshot,
     ICliCommandProcessor,
     ICliModule,
     DefaultThemes,
@@ -21,7 +23,10 @@ import { CliExecutionContext } from '../context/cli-execution-context';
 import { CliServiceContainer } from '../services/cli-service-container';
 import { CliLogger } from '../services/cli-logger';
 import { CliCommandHistory } from '../services/cli-command-history';
-import { CliStateStoreManager } from '../state/cli-state-store-manager';
+import {
+    CliStateStoreManager,
+    ICliStateStoreManager,
+} from '../state/cli-state-store-manager';
 import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
 import { welcomeModule } from '../services/cli-welcome-message';
@@ -44,11 +49,14 @@ import { createServerModule } from '../server/cli-server-module';
 
 export interface CliEngineOptions extends CliOptions {
     terminalOptions?: Partial<ITerminalOptions & ITerminalInitOnlyOptions>;
+    /** Optional snapshot to restore on start() */
+    snapshot?: CliEngineSnapshot;
 }
 
 export class CliEngine {
     private terminal!: Terminal;
     private fitAddon!: FitAddon;
+    private serializeAddon!: SerializeAddon;
     private executionContext!: CliExecutionContext;
     private registry: CliCommandProcessorRegistry;
     private userModules: ICliModule[] = [];
@@ -202,7 +210,9 @@ export class CliEngine {
 
         // 6.5. Prepend welcome module and server module
         const serverModule = createServerModule();
-        const allModules = [welcomeModule, serverModule, ...this.userModules];
+        const allModules = this.options?.snapshot
+            ? [serverModule, ...this.userModules]
+            : [welcomeModule, serverModule, ...this.userModules];
 
         // 7. Boot all modules (core + welcome + user modules)
         await this.bootService.boot(this.executionContext, allModules);
@@ -244,6 +254,11 @@ export class CliEngine {
                     );
                 }
             }
+        }
+
+        // 10. Restore from snapshot if provided
+        if (this.options?.snapshot) {
+            await this.restoreSnapshot(this.options.snapshot);
         }
     }
 
@@ -304,6 +319,54 @@ export class CliEngine {
         }
     }
 
+    /**
+     * Capture a snapshot of the current engine state.
+     * Can only be called after start().
+     */
+    snapshot(): CliEngineSnapshot {
+        if (!this.executionContext) {
+            throw new Error('Cannot snapshot before engine has started');
+        }
+
+        const stateStoreManager = this.executionContext.services.get<ICliStateStoreManager>(
+            CliStateStoreManager_TOKEN,
+        );
+
+        return {
+            version: 1,
+            timestamp: Date.now(),
+            terminal: {
+                serializedBuffer: this.serializeAddon.serialize(),
+                cols: this.terminal.cols,
+                rows: this.terminal.rows,
+            },
+            commandHistory: this.executionContext.commandHistory.getHistory(),
+            stateStores: stateStoreManager.getStoreEntries(),
+        };
+    }
+
+    private async restoreSnapshot(snap: CliEngineSnapshot): Promise<void> {
+        // Restore terminal buffer
+        if (snap.terminal.serializedBuffer) {
+            this.terminal.write(snap.terminal.serializedBuffer);
+        }
+
+        // Restore command history
+        await this.executionContext.commandHistory.setHistory(snap.commandHistory);
+
+        // Restore state stores
+        const stateStoreManager = this.executionContext.services.get<ICliStateStoreManager>(
+            CliStateStoreManager_TOKEN,
+        );
+        for (const entry of snap.stateStores) {
+            const store = stateStoreManager.getStateStore(entry.name);
+            store.updateState(entry.state);
+        }
+
+        // Show prompt after restore
+        this.executionContext.showPrompt();
+    }
+
     private getTerminalOptions(): ITerminalOptions & ITerminalInitOnlyOptions {
         return {
             cursorBlink: true,
@@ -324,6 +387,8 @@ export class CliEngine {
         this.terminal.loadAddon(new WebLinksAddon());
         this.terminal.loadAddon(new OverlayAddon());
         this.terminal.loadAddon(new Unicode11Addon());
+        this.serializeAddon = new SerializeAddon();
+        this.terminal.loadAddon(this.serializeAddon);
 
         this.terminal.open(this.container);
         this.fitAddon.fit();

@@ -24,7 +24,7 @@ export class NanoEditorRenderer {
 
     /** Get the number of content rows available (total rows minus title and status bars). */
     get contentHeight(): number {
-        return this.terminal.rows - 2;
+        return this.terminal.rows - 3;
     }
 
     /** Full redraw of the editor screen. */
@@ -39,7 +39,7 @@ export class NanoEditorRenderer {
         output += '\x1b[H';
         output += this.renderTitleBar(fileName, buffer.dirty, cols);
 
-        // Content area (rows 2 to rows-1)
+        // Content area (rows 2 to rows-2)
         for (let i = 0; i < this.contentHeight; i++) {
             const lineIdx = buffer.scrollOffset + i;
             output += `\x1b[${i + 2};1H`;
@@ -51,7 +51,9 @@ export class NanoEditorRenderer {
             }
         }
 
-        // Status bar (last row)
+        // Shortcut bar (row rows-1) and status bar (row rows)
+        output += `\x1b[${rows - 1};1H`;
+        output += this.renderShortcutBar(cols);
         output += `\x1b[${rows};1H`;
         output += this.renderStatusBar(statusMessage, cols);
 
@@ -78,14 +80,68 @@ export class NanoEditorRenderer {
         this.terminal.write(output);
     }
 
+    /** Render the help screen. */
+    renderHelp(): void {
+        const { rows, cols } = this.terminal;
+
+        const helpLines = [
+            '',
+            '  CLI Nano Help',
+            '',
+            '  Main shortcuts:',
+            '',
+            '  ^G  Help        ^O  Write Out   ^W  Where Is     ^K  Cut Line',
+            '  ^X  Exit        ^R  Read File    ^\\  Replace      ^U  Paste Line',
+            '',
+            '  Navigation:',
+            '',
+            '  ^A  Home        ^E  End          ^Y  Page Up      ^V  Page Down',
+            '  ^P  Prev Line   ^N  Next Line    ^F  Forward      ^B  Backward',
+            '',
+            '  Other:',
+            '',
+            '  ^C  Cur Pos     ^S  Save (alt)   ^J  Justify      ^T  To Spell',
+            '',
+            '  Arrow keys, Home, End, Page Up, Page Down also work.',
+            '',
+            '',
+            '  [ Press any key to return ]',
+        ];
+
+        let output = '\x1b[?25l\x1b[H';
+
+        // Title
+        const title = '  CLI Nano Help';
+        output += `\x1b[7m${title.padEnd(cols)}\x1b[0m`;
+
+        for (let i = 0; i < rows - 2; i++) {
+            output += `\x1b[${i + 2};1H\x1b[2K`;
+            if (i < helpLines.length) {
+                output += helpLines[i].slice(0, cols);
+            }
+        }
+
+        // Bottom bar
+        output += `\x1b[${rows};1H`;
+        output += `\x1b[7m${'  [ Press any key to return ]'.padEnd(cols)}\x1b[0m`;
+
+        this.terminal.write(output);
+    }
+
     private renderTitleBar(fileName: string, dirty: boolean, cols: number): string {
         const title = `  CLI Nano  ${fileName || 'New Buffer'}${dirty ? ' (modified)' : ''}`;
         const padded = title.padEnd(cols);
         return `\x1b[7m${padded}\x1b[0m`;
     }
 
+    private renderShortcutBar(cols: number): string {
+        const shortcuts = '^G Help  ^O Write Out  ^W Where Is  ^K Cut     ^C Cur Pos';
+        const padded = shortcuts.padEnd(cols);
+        return `\x1b[7m${padded}\x1b[0m`;
+    }
+
     private renderStatusBar(statusMessage: string | undefined, cols: number): string {
-        const text = statusMessage || '  ^S Save  ^Q Quit  ^K Cut Line';
+        const text = statusMessage || '^X Exit  ^R Read File  ^\\  Replace   ^U Paste   ^S Save';
         const padded = text.padEnd(cols);
         return `\x1b[7m${padded}\x1b[0m`;
     }

@@ -7,6 +7,7 @@ import { IFileSystemService } from '../interfaces/i-file-system-service';
 /** Commands that accept file/directory path arguments. */
 const FILE_COMMANDS = new Set([
     'ls', 'cd', 'cat', 'cp', 'mv', 'rm', 'touch', 'mkdir', 'rmdir', 'tree', 'echo',
+    'nano', 'edit',
 ]);
 
 /**

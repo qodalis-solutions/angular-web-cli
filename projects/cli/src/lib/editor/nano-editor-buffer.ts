@@ -9,6 +9,9 @@ export class NanoEditorBuffer {
     scrollOffset = 0;
     dirty = false;
 
+    /** Clipboard for cut/uncut (Ctrl+K / Ctrl+U). */
+    clipboard: string[] = [];
+
     /** Load content into the buffer, replacing existing content. */
     load(content: string): void {
         this.lines = content.split('\n');
@@ -80,8 +83,11 @@ export class NanoEditorBuffer {
         }
     }
 
-    /** Delete the entire current line (Ctrl+K). */
+    /** Cut the entire current line (Ctrl+K), storing it in the clipboard. */
     deleteLine(): void {
+        const cut = this.lines[this.cursorRow];
+        this.clipboard.push(cut);
+
         if (this.lines.length === 1) {
             this.lines[0] = '';
             this.cursorCol = 0;
@@ -96,6 +102,22 @@ export class NanoEditorBuffer {
             );
         }
         this.dirty = true;
+    }
+
+    /** Paste (uncut) clipboard contents at the current cursor row. */
+    uncutLines(): boolean {
+        if (this.clipboard.length === 0) {
+            return false;
+        }
+        this.lines.splice(this.cursorRow, 0, ...this.clipboard);
+        this.cursorRow += this.clipboard.length;
+        this.cursorCol = Math.min(
+            this.cursorCol,
+            this.lines[this.cursorRow].length,
+        );
+        this.clipboard = [];
+        this.dirty = true;
+        return true;
     }
 
     /** Move cursor up one line. */
@@ -148,6 +170,148 @@ export class NanoEditorBuffer {
     /** Move cursor to the end of the current line. */
     moveEnd(): void {
         this.cursorCol = this.lines[this.cursorRow].length;
+    }
+
+    /** Move cursor up by a page (viewport height). */
+    pageUp(viewportHeight: number): void {
+        this.cursorRow = Math.max(0, this.cursorRow - viewportHeight);
+        this.cursorCol = Math.min(
+            this.cursorCol,
+            this.lines[this.cursorRow].length,
+        );
+    }
+
+    /** Move cursor down by a page (viewport height). */
+    pageDown(viewportHeight: number): void {
+        this.cursorRow = Math.min(
+            this.lines.length - 1,
+            this.cursorRow + viewportHeight,
+        );
+        this.cursorCol = Math.min(
+            this.cursorCol,
+            this.lines[this.cursorRow].length,
+        );
+    }
+
+    /** Move cursor to the very first position in the buffer. */
+    moveToStart(): void {
+        this.cursorRow = 0;
+        this.cursorCol = 0;
+    }
+
+    /** Move cursor to the very last position in the buffer. */
+    moveToEnd(): void {
+        this.cursorRow = this.lines.length - 1;
+        this.cursorCol = this.lines[this.cursorRow].length;
+    }
+
+    /**
+     * Search forward for `needle` starting from the current cursor position.
+     * Returns true if found (and moves cursor there), false otherwise.
+     */
+    searchForward(needle: string, caseSensitive = false): boolean {
+        if (!needle) return false;
+
+        const search = caseSensitive ? needle : needle.toLowerCase();
+
+        // Search from current position to end
+        for (let row = this.cursorRow; row < this.lines.length; row++) {
+            const line = caseSensitive
+                ? this.lines[row]
+                : this.lines[row].toLowerCase();
+            const startCol = row === this.cursorRow ? this.cursorCol + 1 : 0;
+            const idx = line.indexOf(search, startCol);
+            if (idx !== -1) {
+                this.cursorRow = row;
+                this.cursorCol = idx;
+                return true;
+            }
+        }
+
+        // Wrap around from the beginning
+        for (let row = 0; row <= this.cursorRow; row++) {
+            const line = caseSensitive
+                ? this.lines[row]
+                : this.lines[row].toLowerCase();
+            const endCol =
+                row === this.cursorRow ? this.cursorCol : line.length;
+            const idx = line.indexOf(search);
+            if (idx !== -1 && idx < endCol) {
+                this.cursorRow = row;
+                this.cursorCol = idx;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Replace the next occurrence of `needle` with `replacement`.
+     * Returns true if a replacement was made.
+     */
+    replaceNext(
+        needle: string,
+        replacement: string,
+        caseSensitive = false,
+    ): boolean {
+        if (!needle) return false;
+
+        const line = this.lines[this.cursorRow];
+        const search = caseSensitive ? needle : needle.toLowerCase();
+        const haystack = caseSensitive ? line : line.toLowerCase();
+
+        if (haystack.startsWith(search, this.cursorCol)) {
+            this.lines[this.cursorRow] =
+                line.slice(0, this.cursorCol) +
+                replacement +
+                line.slice(this.cursorCol + needle.length);
+            this.cursorCol += replacement.length;
+            this.dirty = true;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Replace all occurrences of `needle` with `replacement`.
+     * Returns the number of replacements made.
+     */
+    replaceAll(
+        needle: string,
+        replacement: string,
+        caseSensitive = false,
+    ): number {
+        if (!needle) return 0;
+
+        let count = 0;
+        for (let row = 0; row < this.lines.length; row++) {
+            let line = this.lines[row];
+            let newLine = '';
+            let searchFrom = 0;
+
+            while (searchFrom <= line.length) {
+                const haystack = caseSensitive ? line : line.toLowerCase();
+                const search = caseSensitive ? needle : needle.toLowerCase();
+                const idx = haystack.indexOf(search, searchFrom);
+                if (idx === -1) {
+                    newLine += line.slice(searchFrom);
+                    break;
+                }
+                newLine += line.slice(searchFrom, idx) + replacement;
+                searchFrom = idx + needle.length;
+                count++;
+            }
+
+            if (this.lines[row] !== newLine) {
+                this.lines[row] = newLine;
+            }
+        }
+
+        if (count > 0) {
+            this.dirty = true;
+        }
+        return count;
     }
 
     /**

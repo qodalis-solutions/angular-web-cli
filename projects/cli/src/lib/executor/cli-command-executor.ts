@@ -9,7 +9,7 @@ import {
     CliForegroundColor,
     ICliCommandProcessorRegistry,
 } from '@qodalis/cli-core';
-import { CommandParser } from '../parsers';
+import { CommandParser, CommandPart } from '../parsers';
 import { CliExecutionProcess } from '../context/cli-execution-process';
 import { CliArgsParser } from '../parsers/args-parser';
 import { ProcessExitedError } from '../errors';
@@ -34,9 +34,7 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
         command: string,
         context: ICliExecutionContext,
     ): Promise<void> {
-        // Split commands by logical operators
-        const parts = command.split(/(&&|\|\|)/).map((part) => part.trim());
-        let shouldRunNextCommand = true; // Tracks whether to execute the next command
+        const parts = CommandParser.splitByOperators(command);
 
         let rootContext: ICliExecutionHost;
         if (context instanceof CliCommandExecutionContext) {
@@ -45,43 +43,108 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
             rootContext = context as ICliExecutionHost;
         }
 
+        // Track the last *executed* command's success — skipped commands don't change this.
+        let lastExitSuccess = true;
+        // Whether the next command part should be executed.
+        let shouldRunNext = true;
+        // Data flowing through the pipeline — explicitly tracked so it survives
+        // process.start() resets and failed commands.
+        let pipelineData: any = undefined;
+
         for (let i = 0; i < parts.length; i++) {
-            const current = parts[i];
+            const part = parts[i];
 
-            // If the current part is a logical operator, adjust the shouldRunNextCommand flag
-            if (current === '&&') {
-                // Run next only if previous succeeded
+            if (part.type === '&&') {
+                shouldRunNext = lastExitSuccess;
                 continue;
-            } else if (current === '||') {
-                // Run next only if previous failed
-                shouldRunNextCommand = !shouldRunNextCommand;
+            } else if (part.type === '||') {
+                shouldRunNext = !lastExitSuccess;
+                continue;
+            } else if (part.type === '|') {
+                // Pipe: always run next command with previous output
+                shouldRunNext = true;
+                continue;
+            } else if (part.type === '>>') {
+                const nextPart = parts[i + 1];
+                i++;
+                if (!nextPart || nextPart.type !== 'command') {
+                    context.writer.writeError('Missing file path after >>');
+                    lastExitSuccess = false;
+                    continue;
+                }
+                if (shouldRunNext) {
+                    await this.appendOutputToFile(nextPart.value, context);
+                    // Data was consumed by the redirect — clear it
+                    pipelineData = undefined;
+                }
                 continue;
             }
 
-            // Skip execution based on previous command's result and operator
-            if (!shouldRunNextCommand) {
-                shouldRunNextCommand = true; // Reset for next iteration
+            // Command part — only execute if shouldRunNext
+            if (!shouldRunNext) {
+                // Skipped: do NOT update lastExitSuccess or pipelineData
                 continue;
             }
 
-            // Execute the command
-            let commandSuccess = true;
             try {
-                const data = context.process.data;
-                const command = current;
+                await this.executeSingleCommand(
+                    part.value,
+                    pipelineData,
+                    rootContext,
+                );
 
-                await this.executeSingleCommand(command, data, rootContext);
-
-                commandSuccess =
+                lastExitSuccess =
                     context.process.exitCode === undefined ||
                     context.process.exitCode === 0;
-            } catch (e) {
-                commandSuccess = false;
 
-                context.writer.writeError(`Command ${current} failed: ${e}`);
+                // Capture output for the next command in the chain
+                pipelineData = context.process.data;
+            } catch (e) {
+                lastExitSuccess = false;
+                // Failed command didn't produce usable output — preserve
+                // whatever data was available before the failure so that
+                // a >> redirect after || can still access it.
+
+                context.writer.writeError(`Command ${part.value} failed: ${e}`);
             }
 
-            shouldRunNextCommand = commandSuccess;
+            // Default: next command runs unless an operator says otherwise
+            shouldRunNext = true;
+        }
+    }
+
+    private async appendOutputToFile(
+        filePath: string,
+        context: ICliExecutionContext,
+    ): Promise<void> {
+        const FS_TOKEN = 'cli-file-system-service';
+
+        let fs: any;
+        try {
+            fs = context.services.get(FS_TOKEN);
+        } catch {
+            context.writer.writeError(
+                '>> redirect requires @qodalis/cli-files plugin',
+            );
+            return;
+        }
+
+        const output = context.process.data;
+        if (output === undefined || output === null) {
+            return;
+        }
+
+        try {
+            const resolved = fs.resolvePath(filePath.trim());
+            const content = typeof output === 'string' ? output : JSON.stringify(output);
+            if (fs.exists(resolved)) {
+                fs.writeFile(resolved, content, true); // append
+            } else {
+                fs.createFile(resolved, content);
+            }
+            await fs.persist();
+        } catch (e: any) {
+            context.writer.writeError(`>> failed: ${e.message || e}`);
         }
     }
 
@@ -112,17 +175,14 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
         );
 
         if (!processor) {
-            const aliases =
-                (
-                    this.registry.findProcessor(
-                        'alias',
-                        [],
-                    ) as CliAliasCommandProcessor
-                ).userAliases ?? {};
+            const aliasProcessor = this.registry.findProcessor(
+                'alias',
+                [],
+            ) as CliAliasCommandProcessor | undefined;
+            const aliases = aliasProcessor?.userAliases ?? {};
 
             if (aliases[mainCommand]) {
-                const alias = aliases[mainCommand];
-                return await this.executeSingleCommand(alias, data, context);
+                return await this.executeSingleCommand(aliases[mainCommand], data, context);
             }
 
             context.writer.writeError(

@@ -94,8 +94,8 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
             this.filePath = null;
         }
 
-        // Enter editor mode
-        this.renderer.enterAlternateScreen();
+        // Enter full-screen editor mode
+        context.enterFullScreenMode(this);
         this.renderer.render(this.buffer, this.filePath || 'New Buffer');
 
         // Handle terminal resize
@@ -106,9 +106,6 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
                 this.statusMessage,
             );
         });
-
-        // Set as context processor to intercept all input
-        context.setContextProcessor(this, true);
     }
 
     async onData(data: string, context: ICliExecutionContext): Promise<void> {
@@ -335,8 +332,6 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
             clearTimeout(this.statusTimeout);
         }
         this.resizeDisposable?.dispose();
-        this.renderer.leaveAlternateScreen();
-        this.context.setContextProcessor(undefined);
-        this.context.showPrompt();
+        this.context.exitFullScreenMode();
     }
 }

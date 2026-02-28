@@ -32,14 +32,16 @@ export class CliArgsParser {
                 let value = arg.value;
 
                 switch (parameter.type) {
-                    case 'array':
-                        const previousValue = Array.isArray(result[arg.name])
-                            ? result[arg.name]
+                    case 'array': {
+                        const previousValue = Array.isArray(result[parameter.name])
+                            ? result[parameter.name]
                             : [];
                         value = [...previousValue, arg.value];
                         break;
+                    }
                     case 'boolean':
                         value =
+                            value === true ||
                             value === 'true' ||
                             value === '1' ||
                             value === 'yes' ||

@@ -282,6 +282,19 @@ export class CliExecutionContext
         return !!this.contextProcessor?.onData;
     }
 
+    public enterFullScreenMode(processor: ICliCommandProcessor): void {
+        this.terminal.write('\x1b[?1049h'); // alternate screen buffer
+        this.terminal.write('\x1b[?25l');   // hide cursor
+        this.setContextProcessor(processor, true);
+    }
+
+    public exitFullScreenMode(): void {
+        this.terminal.write('\x1b[?25h');   // show cursor
+        this.terminal.write('\x1b[?1049l'); // leave alternate screen buffer
+        this.setContextProcessor(undefined);
+        this.showPrompt();
+    }
+
     public isProgressRunning(): boolean {
         return (
             this.progressBar.isRunning ||

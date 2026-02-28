@@ -159,4 +159,18 @@ export interface ICliExecutionContext {
      * Return null to fall back to the default `~`.
      */
     promptPathProvider?: () => string | null;
+
+    /**
+     * Enter full-screen mode: switches to the alternate screen buffer,
+     * hides the cursor, and sets the given processor as the context processor
+     * so that all terminal input is routed to its `onData` method.
+     * @param processor The processor that will handle all input in full-screen mode
+     */
+    enterFullScreenMode: (processor: ICliCommandProcessor) => void;
+
+    /**
+     * Exit full-screen mode: restores the cursor, leaves the alternate screen buffer,
+     * clears the context processor, and re-displays the prompt.
+     */
+    exitFullScreenMode: () => void;
 }

@@ -72,6 +72,8 @@ export class CliCommandExecutionContext implements ICliExecutionContext {
     }) => void;
     clearCurrentLine: () => void;
     refreshCurrentLine: () => void;
+    enterFullScreenMode: (processor: ICliCommandProcessor) => void;
+    exitFullScreenMode: () => void;
 
     constructor(
         public readonly context: ICliExecutionContext,
@@ -96,6 +98,9 @@ export class CliCommandExecutionContext implements ICliExecutionContext {
         this.logger = context.logger;
         this.services = context.services;
         this.reader = context.reader;
+
+        this.enterFullScreenMode = (p) => context.enterFullScreenMode(p);
+        this.exitFullScreenMode = () => context.exitFullScreenMode();
 
         this.state = context.services
             .get<ICliStateStoreManager>(CliStateStoreManager_TOKEN)

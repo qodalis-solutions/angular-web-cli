@@ -1,19 +1,18 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule, CliPanelConfig } from '@qodalis/cli-core';
 import { CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
 import { CliContext } from './CliContext';
 import { useCliConfig } from './CliConfigContext';
 
-export interface CliPanelOptions extends CliEngineOptions {
-    isCollapsed?: boolean;
-}
+export interface CliPanelOptions extends CliEngineOptions, CliPanelConfig {}
 
 export interface CliPanelProps {
     options?: CliPanelOptions;
     modules?: ICliModule[];
     processors?: ICliCommandProcessor[];
     services?: Record<string, any>;
+    onClose?: () => void;
     style?: React.CSSProperties;
     className?: string;
 }
@@ -68,18 +67,6 @@ const RestoreIcon = () => (
     </svg>
 );
 
-const ChevronUpIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="18 15 12 9 6 15" />
-    </svg>
-);
-
-const ChevronDownIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="6 9 12 15 18 9" />
-    </svg>
-);
-
 const CloseIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <line x1="18" y1="6" x2="6" y2="18" />
@@ -87,19 +74,48 @@ const CloseIcon = () => (
     </svg>
 );
 
+function CollapseChevron({ position, isCollapsed }: { position: string; isCollapsed: boolean }) {
+    let points: string;
+    switch (position) {
+        case 'top':
+            points = isCollapsed ? '6 9 12 15 18 9' : '18 15 12 9 6 15';
+            break;
+        case 'left':
+            points = isCollapsed ? '9 18 15 12 9 6' : '15 6 9 12 15 18';
+            break;
+        case 'right':
+            points = isCollapsed ? '15 6 9 12 15 18' : '9 18 15 12 9 6';
+            break;
+        default: // bottom
+            points = isCollapsed ? '18 15 12 9 6 15' : '6 9 12 15 18 9';
+            break;
+    }
+    return (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points={points} />
+        </svg>
+    );
+}
+
 /* ─── Component ──────────────────────────────────────────── */
 
-export function CliPanel({ options: optionsProp, modules: modulesProp, processors: processorsProp, services: servicesProp, style, className }: CliPanelProps) {
+export function CliPanel({ options: optionsProp, modules: modulesProp, processors: processorsProp, services: servicesProp, onClose, style, className }: CliPanelProps) {
     const config = useCliConfig();
     const options = optionsProp ?? config.options as CliPanelOptions | undefined;
     const modules = modulesProp ?? config.modules;
     const processors = processorsProp ?? config.processors;
     const services = servicesProp ?? config.services;
 
+    const position = options?.position ?? 'bottom';
+    const closable = options?.closable ?? true;
+    const resizable = options?.resizable ?? true;
+    const isHorizontal = position === 'left' || position === 'right';
+
     const [visible, setVisible] = useState(true);
     const [collapsed, setCollapsed] = useState(options?.isCollapsed ?? true);
     const [maximized, setMaximized] = useState(false);
     const [panelHeight, setPanelHeight] = useState(600);
+    const [panelWidth, setPanelWidth] = useState(400);
     const [initialized, setInitialized] = useState(false);
 
     const [tabs, setTabs] = useState<TerminalTab[]>([]);
@@ -115,10 +131,13 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
 
     // Panel resize state
     const [panelResizing, setPanelResizing] = useState(false);
-    const panelResizeRef = useRef({ startY: 0, startHeight: 0 });
+    const panelResizeRef = useRef({ startY: 0, startHeight: 0, startX: 0, startWidth: 0 });
     const prevHeightRef = useRef(600);
+    const prevWidthRef = useRef(400);
 
-    const terminalHeight = `${panelHeight - HEADER_HEIGHT - TAB_BAR_HEIGHT}px`;
+    const terminalHeight = isHorizontal
+        ? `${panelHeight - TAB_BAR_HEIGHT}px`
+        : `${panelHeight - HEADER_HEIGHT - TAB_BAR_HEIGHT}px`;
 
     /* ─── Tab management ─────────────────────────────────── */
 
@@ -280,27 +299,44 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
     /* ─── Panel resize ───────────────────────────────────── */
 
     const onPanelResizeStart = useCallback((e: React.MouseEvent) => {
+        if (!resizable) return;
         e.preventDefault();
         if (collapsed) {
             toggle();
         }
         setPanelResizing(true);
-        panelResizeRef.current = { startY: e.clientY, startHeight: panelHeight };
-    }, [collapsed, toggle, panelHeight]);
+        panelResizeRef.current = {
+            startY: e.clientY,
+            startHeight: panelHeight,
+            startX: e.clientX,
+            startWidth: panelWidth,
+        };
+    }, [collapsed, toggle, panelHeight, panelWidth, resizable]);
 
     useEffect(() => {
         if (!panelResizing) return;
         const onMove = (e: MouseEvent) => {
-            const deltaY = panelResizeRef.current.startY - e.clientY;
-            let next = Math.max(100, panelResizeRef.current.startHeight + deltaY);
-            if (next > window.innerHeight) next = window.innerHeight;
-            setPanelHeight(next);
+            if (isHorizontal) {
+                const deltaX = position === 'left'
+                    ? e.clientX - panelResizeRef.current.startX
+                    : panelResizeRef.current.startX - e.clientX;
+                let next = Math.max(100, panelResizeRef.current.startWidth + deltaX);
+                if (next > window.innerWidth) next = window.innerWidth;
+                setPanelWidth(next);
+            } else {
+                const deltaY = position === 'top'
+                    ? e.clientY - panelResizeRef.current.startY
+                    : panelResizeRef.current.startY - e.clientY;
+                let next = Math.max(100, panelResizeRef.current.startHeight + deltaY);
+                if (next > window.innerHeight) next = window.innerHeight;
+                setPanelHeight(next);
+            }
         };
         const onUp = () => setPanelResizing(false);
         document.addEventListener('mousemove', onMove);
         document.addEventListener('mouseup', onUp);
         return () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-    }, [panelResizing]);
+    }, [panelResizing, isHorizontal, position]);
 
     /* ─── Pane resize ────────────────────────────────────── */
 
@@ -364,24 +400,47 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
     const toggleMaximize = useCallback(() => {
         setMaximized(prev => {
             if (!prev) {
-                prevHeightRef.current = panelHeight;
-                setPanelHeight(window.innerHeight);
+                if (isHorizontal) {
+                    prevWidthRef.current = panelWidth;
+                    setPanelWidth(window.innerWidth);
+                } else {
+                    prevHeightRef.current = panelHeight;
+                    setPanelHeight(window.innerHeight);
+                }
             } else {
-                setPanelHeight(prevHeightRef.current);
+                if (isHorizontal) {
+                    setPanelWidth(prevWidthRef.current);
+                } else {
+                    setPanelHeight(prevHeightRef.current);
+                }
             }
             return !prev;
         });
-    }, [panelHeight]);
+    }, [panelHeight, panelWidth, isHorizontal]);
+
+    /* ─── Close handler ──────────────────────────────────── */
+
+    const handleClose = useCallback(() => {
+        setVisible(false);
+        onClose?.();
+    }, [onClose]);
 
     /* ─── Render ─────────────────────────────────────────── */
 
     if (!visible) return null;
 
+    const wrapperStyle: React.CSSProperties = isHorizontal
+        ? { width: `${panelWidth}px`, ...style }
+        : { height: `${panelHeight}px`, ...style };
+
     return (
         <>
             <div
                 className={`cli-panel-wrapper ${collapsed ? 'collapsed' : ''} ${maximized ? 'maximized' : ''} ${panelResizing ? 'resizing' : ''} ${className ?? ''}`}
-                style={{ height: `${panelHeight}px`, ...style }}
+                style={wrapperStyle}
+                data-position={position}
+                data-resizable={String(resizable)}
+                data-closable={String(closable)}
             >
                 {/* Header */}
                 <div className="cli-panel-header">
@@ -398,11 +457,13 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
                                 {maximized ? <RestoreIcon /> : <MaximizeIcon />}
                             </button>
                             <button className="cli-panel-btn" title={collapsed ? 'Expand' : 'Collapse'} onClick={toggle}>
-                                {collapsed ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                                <CollapseChevron position={position} isCollapsed={collapsed} />
                             </button>
-                            <button className="cli-panel-btn" title="Close" onClick={() => setVisible(false)}>
-                                <CloseIcon />
-                            </button>
+                            {closable && (
+                                <button className="cli-panel-btn cli-panel-btn-close" title="Close" onClick={handleClose}>
+                                    <CloseIcon />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

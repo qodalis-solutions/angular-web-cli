@@ -1,14 +1,17 @@
 import {
     Component,
     ElementRef,
+    EventEmitter,
     HostListener,
     Input,
+    Output,
     QueryList,
     ViewChild,
     ViewChildren,
 } from '@angular/core';
 import {
     CliOptions,
+    CliPanelConfig,
     ICliCommandProcessor,
     ICliModule,
 } from '@qodalis/cli-core';
@@ -34,12 +37,7 @@ export interface TabContextMenu {
     tabId: number;
 }
 
-export type CliPanelOptions = CliOptions & {
-    /**
-     * Whether the CLI should be collapsed by default. Defaults to `true`.
-     */
-    isCollapsed?: boolean;
-};
+export type CliPanelOptions = CliOptions & CliPanelConfig;
 
 /**
  * A component that displays the CLI on the bottom of page.
@@ -66,6 +64,8 @@ export class CliPanelComponent {
      * @deprecated Use modules instead.
      */
     @Input() processors?: ICliCommandProcessor[];
+
+    @Output() onClose = new EventEmitter<void>();
 
     @ViewChild(CollapsableContentComponent)
     collapsableContent!: CollapsableContentComponent;

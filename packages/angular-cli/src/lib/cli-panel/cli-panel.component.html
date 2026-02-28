@@ -1,7 +1,11 @@
 <collapsable-content
   [isCollapsed]="options?.isCollapsed ?? true"
+  [position]="options?.position ?? 'bottom'"
+  [closable]="options?.closable ?? true"
+  [resizable]="options?.resizable ?? true"
   (onToggle)="onToggle($event)"
   (onContentSizeChange)="onContentSizeChange($event)"
+  (onClose)="onClose.emit()"
   *ngIf="visible"
 >
   <ng-container *ngIf="initialized">

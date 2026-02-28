@@ -435,6 +435,177 @@
   background-color: var(--cli-panel-text, rgba(255, 255, 255, 0.87));
 }
 
+/* ─── Position: top ─────────────────────────────────────── */
+
+/* Header at BOTTOM (column-reverse) so it stays visible when collapsed upward */
+.cli-panel-wrapper[data-position="top"] {
+  bottom: auto;
+  top: 0;
+  border-top: none;
+  border-bottom: 1px solid var(--cli-panel-border, #374151);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  flex-direction: column-reverse;
+}
+
+.cli-panel-wrapper[data-position="top"].collapsed {
+  transform: translateY(calc(-100% + 60px));
+}
+
+.cli-panel-wrapper[data-position="top"] .cli-panel-header-content {
+  border-bottom: none;
+  border-top: 1px solid var(--cli-panel-border, #374151);
+}
+
+.cli-panel-wrapper[data-position="top"] .cli-panel-resize-bar {
+  top: auto;
+  bottom: -6px;
+  cursor: ns-resize;
+}
+
+/* ─── Position: left ────────────────────────────────────── */
+
+/* Header at RIGHT (row-reverse) so it stays visible when collapsed leftward */
+.cli-panel-wrapper[data-position="left"] {
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: auto;
+  width: auto;
+  height: 100vh !important;
+  border-top: none;
+  border-right: 1px solid var(--cli-panel-border, #374151);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+  flex-direction: row-reverse;
+}
+
+.cli-panel-wrapper[data-position="left"].collapsed {
+  transform: translateX(calc(-100% + 60px));
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-header {
+  width: 60px;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-header-content {
+  height: auto;
+  flex: 1;
+  flex-direction: column;
+  padding: 1rem 0;
+  border-bottom: none;
+  border-left: 1px solid var(--cli-panel-border, #374151);
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-title {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-action-buttons {
+  flex-direction: column;
+  margin-left: 0;
+  margin-top: auto;
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-resize-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: auto;
+  right: -6px;
+  width: 12px;
+  height: auto;
+  cursor: ew-resize;
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-resize-grip {
+  width: 4px;
+  height: 32px;
+}
+
+.cli-panel-wrapper[data-position="left"] .cli-panel-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─── Position: right ───────────────────────────────────── */
+
+/* Header at LEFT (row) so it stays visible when collapsed rightward */
+.cli-panel-wrapper[data-position="right"] {
+  bottom: 0;
+  top: 0;
+  left: auto;
+  right: 0;
+  width: auto;
+  height: 100vh !important;
+  border-top: none;
+  border-left: 1px solid var(--cli-panel-border, #374151);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.25);
+  flex-direction: row;
+}
+
+.cli-panel-wrapper[data-position="right"].collapsed {
+  transform: translateX(calc(100% - 60px));
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-header {
+  width: 60px;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-header-content {
+  height: auto;
+  flex: 1;
+  flex-direction: column;
+  padding: 1rem 0;
+  border-bottom: none;
+  border-right: 1px solid var(--cli-panel-border, #374151);
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-title {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-action-buttons {
+  flex-direction: column;
+  margin-left: 0;
+  margin-top: auto;
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-resize-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: auto;
+  left: -6px;
+  width: 12px;
+  height: auto;
+  cursor: ew-resize;
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-resize-grip {
+  width: 4px;
+  height: 32px;
+}
+
+.cli-panel-wrapper[data-position="right"] .cli-panel-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─── Resizable / Closable data-attribute toggles ───────── */
+
+.cli-panel-wrapper[data-resizable="false"] .cli-panel-resize-bar {
+  display: none;
+}
+
+.cli-panel-wrapper[data-closable="false"] .cli-panel-btn-close {
+  display: none;
+}
+
 /* ─── Global helper ──────────────────────────────────────── */
 
 body.cli-pane-resizing {

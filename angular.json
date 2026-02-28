@@ -62,7 +62,13 @@
             ],
             "tsConfig": "apps/demo-angular/tsconfig.app.json",
             "inlineStyleLanguage": "sass",
-            "assets": [],
+            "assets": [
+              {
+                "glob": "qodalis.svg",
+                "input": "apps/demo-angular/src",
+                "output": "/"
+              }
+            ],
             "styles": [
               "apps/demo-angular/src/styles.sass",
               "packages/angular-cli/src/assets/styles.sass"

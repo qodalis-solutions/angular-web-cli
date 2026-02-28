@@ -6,10 +6,8 @@ import {
     h,
     onMounted,
     onBeforeUnmount,
-    watch,
-    nextTick,
 } from 'vue';
-import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule, CliPanelConfig, CliPanelPosition } from '@qodalis/cli-core';
 import { CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
 
@@ -77,15 +75,30 @@ const restoreIcon = () =>
         h('line', { x1: '14', y1: '10', x2: '21', y2: '3' }),
         h('line', { x1: '3', y1: '21', x2: '10', y2: '14' }),
     ]);
-const chevronUp = () =>
-    h('svg', svgAttrs, [h('polyline', { points: '18 15 12 9 6 15' })]);
-const chevronDown = () =>
-    h('svg', svgAttrs, [h('polyline', { points: '6 9 12 15 18 9' })]);
 const closeIcon = () =>
     h('svg', svgAttrs, [
         h('line', { x1: '18', y1: '6', x2: '6', y2: '18' }),
         h('line', { x1: '6', y1: '6', x2: '18', y2: '18' }),
     ]);
+
+function collapseChevron(position: CliPanelPosition, isCollapsed: boolean) {
+    let points: string;
+    switch (position) {
+        case 'top':
+            points = isCollapsed ? '6 9 12 15 18 9' : '18 15 12 9 6 15';
+            break;
+        case 'left':
+            points = isCollapsed ? '9 18 15 12 9 6' : '15 6 9 12 15 18';
+            break;
+        case 'right':
+            points = isCollapsed ? '15 6 9 12 15 18' : '9 18 15 12 9 6';
+            break;
+        default: // bottom
+            points = isCollapsed ? '18 15 12 9 6 15' : '6 9 12 15 18 9';
+            break;
+    }
+    return h('svg', svgAttrs, [h('polyline', { points })]);
+}
 
 /* ─── Component ──────────────────────────────────────────── */
 
@@ -94,7 +107,7 @@ export const CliPanel = defineComponent({
     props: {
         options: {
             type: Object as PropType<
-                CliEngineOptions & { isCollapsed?: boolean }
+                CliEngineOptions & CliPanelConfig
             >,
             default: undefined,
         },
@@ -105,6 +118,10 @@ export const CliPanel = defineComponent({
         },
         services: {
             type: Object as PropType<Record<string, any>>,
+            default: undefined,
+        },
+        onClose: {
+            type: Function as PropType<() => void>,
             default: undefined,
         },
         style: {
@@ -118,8 +135,15 @@ export const CliPanel = defineComponent({
         const collapsed = ref(props.options?.isCollapsed ?? true);
         const maximized = ref(false);
         const panelHeight = ref(600);
+        const panelWidth = ref(400);
         const prevHeight = ref(600);
+        const prevWidth = ref(400);
         const initialized = ref(false);
+
+        const position = computed<CliPanelPosition>(() => props.options?.position ?? 'bottom');
+        const closable = computed(() => props.options?.closable ?? true);
+        const resizable = computed(() => props.options?.resizable ?? true);
+        const isHorizontal = computed(() => position.value === 'left' || position.value === 'right');
 
         const tabs = ref<TerminalTab[]>([]);
         const activeTabId = ref(0);
@@ -144,11 +168,14 @@ export const CliPanel = defineComponent({
         };
 
         const panelResizing = ref(false);
-        let panelResizeState = { startY: 0, startHeight: 0 };
+        let panelResizeState = { startY: 0, startHeight: 0, startX: 0, startWidth: 0 };
 
-        const terminalHeight = computed(
-            () => `${panelHeight.value - HEADER_HEIGHT - TAB_BAR_HEIGHT}px`,
-        );
+        const terminalHeight = computed(() => {
+            if (isHorizontal.value) {
+                return `${panelHeight.value - TAB_BAR_HEIGHT}px`;
+            }
+            return `${panelHeight.value - HEADER_HEIGHT - TAB_BAR_HEIGHT}px`;
+        });
 
         /* ─── Tab management ─────────────────────────────── */
 
@@ -245,15 +272,6 @@ export const CliPanel = defineComponent({
             tabs.value.forEach((t) => {
                 t.isEditing = t.id === tabId;
             });
-            nextTick(() => {
-                const input = document.querySelector(
-                    '.cli-panel-tab-rename-input',
-                ) as HTMLInputElement | null;
-                if (input) {
-                    input.focus();
-                    input.select();
-                }
-            });
         }
 
         function commitRename(tabId: number, value: string) {
@@ -282,21 +300,35 @@ export const CliPanel = defineComponent({
         /* ─── Panel resize ───────────────────────────────── */
 
         function onPanelResizeStart(e: MouseEvent) {
+            if (!resizable.value) return;
             e.preventDefault();
             if (collapsed.value) toggle();
             panelResizing.value = true;
             panelResizeState = {
                 startY: e.clientY,
                 startHeight: panelHeight.value,
+                startX: e.clientX,
+                startWidth: panelWidth.value,
             };
         }
 
         function onPanelResizeMove(e: MouseEvent) {
             if (!panelResizing.value) return;
-            const deltaY = panelResizeState.startY - e.clientY;
-            let next = Math.max(100, panelResizeState.startHeight + deltaY);
-            if (next > window.innerHeight) next = window.innerHeight;
-            panelHeight.value = next;
+            if (isHorizontal.value) {
+                const deltaX = position.value === 'left'
+                    ? e.clientX - panelResizeState.startX
+                    : panelResizeState.startX - e.clientX;
+                let next = Math.max(100, panelResizeState.startWidth + deltaX);
+                if (next > window.innerWidth) next = window.innerWidth;
+                panelWidth.value = next;
+            } else {
+                const deltaY = position.value === 'top'
+                    ? e.clientY - panelResizeState.startY
+                    : panelResizeState.startY - e.clientY;
+                let next = Math.max(100, panelResizeState.startHeight + deltaY);
+                if (next > window.innerHeight) next = window.innerHeight;
+                panelHeight.value = next;
+            }
         }
 
         function onPanelResizeEnd() {
@@ -383,12 +415,28 @@ export const CliPanel = defineComponent({
 
         function toggleMaximize() {
             if (!maximized.value) {
-                prevHeight.value = panelHeight.value;
-                panelHeight.value = window.innerHeight;
+                if (isHorizontal.value) {
+                    prevWidth.value = panelWidth.value;
+                    panelWidth.value = window.innerWidth;
+                } else {
+                    prevHeight.value = panelHeight.value;
+                    panelHeight.value = window.innerHeight;
+                }
             } else {
-                panelHeight.value = prevHeight.value;
+                if (isHorizontal.value) {
+                    panelWidth.value = prevWidth.value;
+                } else {
+                    panelHeight.value = prevHeight.value;
+                }
             }
             maximized.value = !maximized.value;
+        }
+
+        /* ─── Close handler ──────────────────────────────── */
+
+        function handleClose() {
+            visible.value = false;
+            props.onClose?.();
         }
 
         /* ─── Render ─────────────────────────────────────── */
@@ -405,6 +453,10 @@ export const CliPanel = defineComponent({
             ]
                 .filter(Boolean)
                 .join(' ');
+
+            const wrapperStyle = isHorizontal.value
+                ? { width: `${panelWidth.value}px`, ...props.style }
+                : { height: `${panelHeight.value}px`, ...props.style };
 
             const headerEl = h('div', { class: 'cli-panel-header' }, [
                 h(
@@ -440,19 +492,19 @@ export const CliPanel = defineComponent({
                                 title: collapsed.value ? 'Expand' : 'Collapse',
                                 onClick: toggle,
                             },
-                            [collapsed.value ? chevronUp() : chevronDown()],
+                            [collapseChevron(position.value, collapsed.value)],
                         ),
-                        h(
-                            'button',
-                            {
-                                class: 'cli-panel-btn',
-                                title: 'Close',
-                                onClick: () => {
-                                    visible.value = false;
-                                },
-                            },
-                            [closeIcon()],
-                        ),
+                        closable.value
+                            ? h(
+                                  'button',
+                                  {
+                                      class: 'cli-panel-btn cli-panel-btn-close',
+                                      title: 'Close',
+                                      onClick: handleClose,
+                                  },
+                                  [closeIcon()],
+                              )
+                            : null,
                     ]),
                 ]),
             ]);
@@ -841,10 +893,10 @@ export const CliPanel = defineComponent({
                     'div',
                     {
                         class: wrapperClass,
-                        style: {
-                            height: `${panelHeight.value}px`,
-                            ...props.style,
-                        },
+                        style: wrapperStyle,
+                        'data-position': position.value,
+                        'data-resizable': String(resizable.value),
+                        'data-closable': String(closable.value),
                     },
                     [headerEl, contentEl],
                 ),

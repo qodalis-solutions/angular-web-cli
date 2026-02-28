@@ -4,9 +4,12 @@
   [class.collapsed]="isCollapsed"
   [class.maximized]="isMaximized"
   [class.resizing]="isResizing"
-  [style]="{
-    height: panelHeight + 'px',
-  }"
+  [attr.data-position]="position"
+  [attr.data-resizable]="resizable"
+  [attr.data-closable]="closable"
+  [style]="isHorizontal
+    ? { width: panelWidth + 'px' }
+    : { height: panelHeight + 'px' }"
 >
   <div class="terminal-header">
     <div class="resize-bar" (mousedown)="onResizeStart($event)">
@@ -86,12 +89,22 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <polyline *ngIf="isCollapsed" points="18 15 12 9 6 15" />
-            <polyline *ngIf="!isCollapsed" points="6 9 12 15 18 9" />
+            <!-- bottom: up/down chevrons -->
+            <polyline *ngIf="position === 'bottom' && isCollapsed" points="18 15 12 9 6 15" />
+            <polyline *ngIf="position === 'bottom' && !isCollapsed" points="6 9 12 15 18 9" />
+            <!-- top: down/up chevrons -->
+            <polyline *ngIf="position === 'top' && isCollapsed" points="6 9 12 15 18 9" />
+            <polyline *ngIf="position === 'top' && !isCollapsed" points="18 15 12 9 6 15" />
+            <!-- left: right/left chevrons -->
+            <polyline *ngIf="position === 'left' && isCollapsed" points="9 18 15 12 9 6" />
+            <polyline *ngIf="position === 'left' && !isCollapsed" points="15 6 9 12 15 18" />
+            <!-- right: left/right chevrons -->
+            <polyline *ngIf="position === 'right' && isCollapsed" points="15 6 9 12 15 18" />
+            <polyline *ngIf="position === 'right' && !isCollapsed" points="9 18 15 12 9 6" />
           </svg>
         </button>
 
-        <button class="panel-btn" title="Close" (click)="closeTerminal()">
+        <button class="panel-btn panel-btn-close" title="Close" (click)="closeTerminal()">
           <svg
             width="20"
             height="20"

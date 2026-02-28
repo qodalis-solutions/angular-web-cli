@@ -423,6 +423,40 @@ export enum CliLogLevel {
 
 export type CliState = Record<string, any>;
 
+/**
+ * Position of the CLI panel relative to the viewport edge.
+ */
+export type CliPanelPosition = 'bottom' | 'top' | 'left' | 'right';
+
+/**
+ * Configuration for the CLI panel component.
+ */
+export interface CliPanelConfig {
+    /**
+     * Whether the CLI should be collapsed by default.
+     * @default true
+     */
+    isCollapsed?: boolean;
+
+    /**
+     * Position of the panel relative to the viewport.
+     * @default 'bottom'
+     */
+    position?: CliPanelPosition;
+
+    /**
+     * Whether the close button is shown.
+     * @default true
+     */
+    closable?: boolean;
+
+    /**
+     * Whether the panel can be resized by dragging.
+     * @default true
+     */
+    resizable?: boolean;
+}
+
 export const enums = {
     CliForegroundColor,
     CliBackgroundColor,

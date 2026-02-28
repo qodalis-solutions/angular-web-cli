@@ -10,17 +10,19 @@ import {
     ViewChildren,
 } from '@angular/core';
 import {
+    CliEngineSnapshot,
     CliPanelConfig,
     ICliCommandProcessor,
     ICliModule,
 } from '@qodalis/cli-core';
-import { CliEngineOptions } from '@qodalis/cli';
+import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { CliComponent } from '../cli/cli.component';
 import { CollapsableContentComponent } from '../collapsable-content/collapsable-content.component';
 
 export interface TerminalPane {
     id: number;
     widthPercent: number;
+    snapshot?: CliEngineSnapshot;
 }
 
 export interface TerminalTab {
@@ -251,9 +253,12 @@ export class CliPanelComponent {
         const sourceTab = this.findTab(this.contextMenu.tabId);
         this.closeContextMenu();
         if (sourceTab) {
+            const snapshot = this.getEngineForTab(sourceTab)?.snapshot();
+
             const pane: TerminalPane = {
                 id: this.nextPaneId++,
                 widthPercent: 100,
+                snapshot,
             };
             const tab: TerminalTab = {
                 id: this.nextTabId++,
@@ -442,6 +447,22 @@ export class CliPanelComponent {
 
     private findTab(id: number): TerminalTab | undefined {
         return this.tabs.find((t) => t.id === id);
+    }
+
+    private getEngineForTab(tab: TerminalTab): CliEngine | undefined {
+        if (!this.cliComponents) return undefined;
+
+        let flatIndex = 0;
+        for (const t of this.tabs) {
+            for (const _pane of t.panes) {
+                if (t.id === tab.id) {
+                    const component = this.cliComponents.toArray()[flatIndex];
+                    return component?.getEngine();
+                }
+                flatIndex++;
+            }
+        }
+        return undefined;
     }
 
     private cancelAllEditing(): void {

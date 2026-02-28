@@ -2,14 +2,17 @@ import {
     AfterViewInit,
     Component,
     ElementRef,
+    EventEmitter,
     Inject,
     Input,
     OnDestroy,
     Optional,
+    Output,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
 import {
+    CliEngineSnapshot,
     ICliCommandProcessor,
     ICliModule,
     ICliPingServerService,
@@ -36,6 +39,9 @@ export class CliComponent implements AfterViewInit, OnDestroy {
     @Input() processors?: ICliCommandProcessor[];
     @Input() modules?: ICliModule[];
     @Input() height?: string;
+    @Input() snapshot?: CliEngineSnapshot;
+
+    @Output() engineReady = new EventEmitter<CliEngine>();
 
     @ViewChild('terminal', { static: true }) terminalDiv!: ElementRef;
 
@@ -56,6 +62,7 @@ export class CliComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         const engineOptions: CliEngineOptions = {
             ...(this.options ?? {}),
+            ...(this.snapshot ? { snapshot: this.snapshot } : {}),
         };
 
         this.engine = new CliEngine(
@@ -94,7 +101,9 @@ export class CliComponent implements AfterViewInit, OnDestroy {
             this.engine.registerModules(this.modules);
         }
 
-        this.engine.start();
+        this.engine.start().then(() => {
+            this.engineReady.emit(this.engine!);
+        });
     }
 
     ngOnDestroy(): void {
@@ -103,5 +112,9 @@ export class CliComponent implements AfterViewInit, OnDestroy {
 
     public focus(): void {
         this.engine?.focus();
+    }
+
+    public getEngine(): CliEngine | undefined {
+        return this.engine;
     }
 }

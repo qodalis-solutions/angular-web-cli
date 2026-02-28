@@ -457,6 +457,8 @@ export interface ICliServiceProvider {
 
 export * from './input-reader';
 
+export * from './completion';
+
 export * from './execution-context';
 
 export * from './command-processor';

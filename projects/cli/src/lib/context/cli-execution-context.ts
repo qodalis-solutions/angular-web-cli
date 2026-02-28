@@ -30,6 +30,7 @@ import { CliCommandHistory } from '../services/cli-command-history';
 import { CliExecutionProcess } from './cli-execution-process';
 import { CliStateStoreManager } from '../state/cli-state-store-manager';
 import { CliInputReader, ActiveInputRequest, CliInputReaderHost } from '../services/cli-input-reader';
+import { CliCompletionEngine } from '../completion/cli-completion-engine';
 
 export interface CliExecutionContextDeps {
     services: ICliServiceProvider;
@@ -66,6 +67,10 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
     public readonly logger: ICliLogger;
 
     public readonly services: ICliServiceProvider;
+
+    public promptPathProvider?: () => string | null;
+
+    public readonly completionEngine = new CliCompletionEngine();
 
     public promptLength: number = 0;
 
@@ -342,7 +347,11 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
             promptStartMessage = `${this.contextProcessor.command}`;
         }
 
-        const promptEndMessage = '\x1b[34m~\x1b[0m$ ';
+        const path = this.promptPathProvider?.() ?? null;
+        const pathSegment = path !== null
+            ? `\x1b[34m${path}\x1b[0m`
+            : '\x1b[34m~\x1b[0m';
+        const promptEndMessage = `${pathSegment}$ `;
         return `${promptStartMessage}${promptEndMessage}`;
     }
 
@@ -386,6 +395,15 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
             return;
         }
 
+        if (data === '\u0009') {
+            // Tab key — trigger completion
+            await this.handleTabCompletion();
+            return;
+        }
+
+        // Any non-tab key resets completion state
+        this.completionEngine.resetState();
+
         if (data === '\r') {
             this.terminal.write('\r\n');
 
@@ -422,10 +440,7 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
     }
 
     private normalizeText(text: string): string {
-        if (text === '\u0009') {
-            return '    ';
-        }
-        return text.replace(/[\r\n]+/g, '');
+        return text.replace(/[\r\n\t]+/g, '');
     }
 
     private handleInputText(text: string): void {
@@ -438,6 +453,67 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
 
         this.cursorPosition += text.length;
         this.refreshCurrentLine();
+    }
+
+    private async handleTabCompletion(): Promise<void> {
+        const result = await this.completionEngine.complete(
+            this._currentLine,
+            this.cursorPosition,
+        );
+
+        switch (result.action) {
+            case 'complete': {
+                const { replacement, tokenStart, token } = result;
+                if (replacement === undefined || tokenStart === undefined || token === undefined) {
+                    break;
+                }
+
+                // Replace the token in the current line
+                const before = this._currentLine.slice(0, tokenStart);
+                const after = this._currentLine.slice(tokenStart + token.length);
+
+                // Add trailing space for single-match completions
+                const suffix = after.length === 0 && !replacement.endsWith('/') ? ' ' : '';
+                this._currentLine = before + replacement + suffix + after;
+                this.cursorPosition = tokenStart + replacement.length + suffix.length;
+                this.refreshCurrentLine();
+                break;
+            }
+            case 'show-candidates': {
+                const candidates = result.candidates ?? [];
+                if (candidates.length === 0) break;
+
+                // Print candidates below the current line, then reprint prompt
+                this.terminal.write('\r\n');
+
+                // Format candidates in columns
+                const maxLen = Math.max(...candidates.map((c) => c.length));
+                const cols = Math.max(1, Math.floor((this.terminal.cols || 80) / (maxLen + 2)));
+                let line = '';
+                for (let i = 0; i < candidates.length; i++) {
+                    line += candidates[i].padEnd(maxLen + 2);
+                    if ((i + 1) % cols === 0) {
+                        this.terminal.write(line + '\r\n');
+                        line = '';
+                    }
+                }
+                if (line) {
+                    this.terminal.write(line + '\r\n');
+                }
+
+                // Reprint prompt and current line
+                this.terminal.write(this.getPromptString());
+                this.promptLength = this.terminal.buffer.active.cursorX;
+                this.terminal.write(this._currentLine);
+
+                // Reposition cursor if not at end
+                const charsAfterCursor = this._currentLine.length - this.cursorPosition;
+                if (charsAfterCursor > 0) {
+                    this.terminal.write(`\x1b[${charsAfterCursor}D`);
+                }
+                break;
+            }
+        }
     }
 
     private handleReaderInput(data: string): void {

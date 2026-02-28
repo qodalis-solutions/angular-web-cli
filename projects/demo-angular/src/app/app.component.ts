@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
-import {
-    ICliModule,
-    CliOptions,
-    CliLogLevel,
-} from '@qodalis/cli-core';
+import { ICliModule, CliOptions, CliLogLevel } from '@qodalis/cli-core';
 import { guidModule } from '@qodalis/cli-guid';
 import { regexModule } from '@qodalis/cli-regex';
 import { textToImageModule } from '@qodalis/cli-text-to-image';
@@ -17,6 +13,7 @@ import { qrModule } from '@qodalis/cli-qr';
 import { yesnoModule } from '@qodalis/cli-yesno';
 import { serverLogsModule } from '@qodalis/cli-server-logs';
 import { usersModule } from '@qodalis/cli-users';
+import { filesModule } from '@qodalis/cli-files';
 import { CliInputDemoCommandProcessor } from './processors/cli-input-demo-command-processor';
 
 @Component({
@@ -26,6 +23,7 @@ import { CliInputDemoCommandProcessor } from './processors/cli-input-demo-comman
 })
 export class AppComponent {
     modules: ICliModule[] = [
+        filesModule,
         guidModule,
         regexModule,
         textToImageModule,
@@ -43,6 +41,8 @@ export class AppComponent {
                 { name: 'root1', email: 'root1@root.com', groups: ['admin'] },
             ],
             defaultPassword: 'root',
+            requirePassword: true,
+            //requirePasswordOnBoot: true,
         }),
         {
             name: 'input-demo',

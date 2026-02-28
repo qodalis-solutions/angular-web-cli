@@ -32,11 +32,11 @@ export class CliTerminalTextAnimator implements ICliTextAnimator {
         this.showText(text || '');
     }
 
-    showText(text: string, options?: CliTextAnimatorOptions) {
+    showText(text: string, options?: CliTextAnimatorOptions): Promise<void> {
         const { speed, removeAfterTyping } = options || {};
 
         if (this.isRunning) {
-            return; // Prevent multiple animations
+            return Promise.resolve();
         }
 
         this.isRunning = true;
@@ -48,45 +48,48 @@ export class CliTerminalTextAnimator implements ICliTextAnimator {
 
         const RESET = '\x1b[0m';
 
-        this.animationInterval = setInterval(() => {
-            if (isTyping) {
-                // Write text character by character with wave color
-                const color = this.waveColors[index % this.waveColors.length];
-                const ch = this.text[index];
-                this.terminal.write(`${color}${ch}${RESET}`);
-                index++;
+        return new Promise<void>((resolve) => {
+            this.animationInterval = setInterval(() => {
+                if (isTyping) {
+                    // Write text character by character with wave color
+                    const color = this.waveColors[index % this.waveColors.length];
+                    const ch = this.text[index];
+                    this.terminal.write(`${color}${ch}${RESET}`);
+                    index++;
 
-                // Switch to erasing mode once typing is done
-                if (index === this.text.length) {
-                    isTyping = false;
-                }
-            } else if (removeAfterTyping) {
-                clearInterval(this.animationInterval!);
-                this.animationInterval = null;
-
-                delay(1000).then(() => {
-                    if (this.context) {
-                        this.context.setCurrentLine(
-                            savedCurrentLine + this.text,
-                        );
-                        this.context.clearCurrentLine();
+                    // Switch to erasing mode once typing is done
+                    if (index === this.text.length) {
+                        isTyping = false;
                     }
-                });
-
-                this.isRunning = false;
-            } else {
-                // Erase text character by character
-                this.terminal.write('\b \b');
-                index--;
-
-                // Stop animation once all characters are erased
-                if (index < 0) {
+                } else if (removeAfterTyping) {
                     clearInterval(this.animationInterval!);
                     this.animationInterval = null;
-                    this.isRunning = false;
+
+                    delay(1000).then(() => {
+                        if (this.context) {
+                            this.context.setCurrentLine(
+                                savedCurrentLine + this.text,
+                            );
+                            this.context.clearCurrentLine();
+                        }
+                        this.isRunning = false;
+                        resolve();
+                    });
+                } else {
+                    // Erase text character by character
+                    this.terminal.write('\b \b');
+                    index--;
+
+                    // Stop animation once all characters are erased
+                    if (index < 0) {
+                        clearInterval(this.animationInterval!);
+                        this.animationInterval = null;
+                        this.isRunning = false;
+                        resolve();
+                    }
                 }
-            }
-        }, speed || 100);
+            }, speed || 100);
+        });
     }
 
     /**

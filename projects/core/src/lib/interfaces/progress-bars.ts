@@ -81,5 +81,5 @@ export interface ICliTextAnimator extends ICliProgressBar {
      * @param options
      * @returns
      */
-    showText: (text: string, options?: CliTextAnimatorOptions) => void;
+    showText: (text: string, options?: CliTextAnimatorOptions) => Promise<void>;
 }

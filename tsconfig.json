@@ -32,7 +32,8 @@
       ],
       "@qodalis/cli-users": [
         "dist/users"
-      ]
+      ],
+      "@qodalis/cli-files": ["dist/files"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

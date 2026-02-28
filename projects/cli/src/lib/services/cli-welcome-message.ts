@@ -53,7 +53,7 @@ export const welcomeModule: ICliWelcomeModule = {
 
         recordWelcomeMessageDisplay();
         context.showPrompt();
-        context.textAnimator?.showText(getGreetingBasedOnTime(), {
+        await context.textAnimator?.showText(getGreetingBasedOnTime(), {
             speed: 60,
             removeAfterTyping: true,
         });

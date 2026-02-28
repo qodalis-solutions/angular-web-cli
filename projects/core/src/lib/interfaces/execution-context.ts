@@ -150,4 +150,13 @@ export interface ICliExecutionContext {
      * The services to use for the CLI context
      */
     services: ICliServiceProvider;
+
+    /**
+     * Optional callback that returns the current path to display in the prompt.
+     * Any plugin can set this to customize the path segment of the prompt
+     * (e.g. a filesystem plugin showing the current working directory).
+     * When set, the returned path replaces the default `~` in the prompt.
+     * Return null to fall back to the default `~`.
+     */
+    promptPathProvider?: () => string | null;
 }

@@ -6,6 +6,7 @@ import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import {
     CliOptions, CliProvider, ICliCommandProcessor, ICliModule, DefaultThemes,
+    ICliCompletionProvider, ICliCompletionProvider_TOKEN,
 } from '@qodalis/cli-core';
 import { CliCommandExecutor } from '../executor/cli-command-executor';
 import { CliCommandProcessorRegistry } from '../registry/cli-command-processor-registry';
@@ -20,6 +21,8 @@ import { welcomeModule } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
 import { CliCommandHistory_TOKEN, CliModuleRegistry_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN } from '../tokens';
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
+import { CliCommandCompletionProvider } from '../completion/cli-command-completion-provider';
+import { CliParameterCompletionProvider } from '../completion/cli-parameter-completion-provider';
 
 export interface CliEngineOptions extends CliOptions {
     terminalOptions?: Partial<ITerminalOptions & ITerminalInitOnlyOptions>;
@@ -158,7 +161,26 @@ export class CliEngine {
         // 7. Boot all modules (core + welcome + user modules)
         await this.bootService.boot(this.executionContext, allModules);
 
-        // 8. Run onAfterBoot hooks sorted by priority (lower first)
+        // 8. Set up tab-completion providers
+        const defaultProviders: ICliCompletionProvider[] = [
+            new CliCommandCompletionProvider(this.registry),
+            new CliParameterCompletionProvider(this.registry),
+        ];
+
+        // Collect plugin-registered providers (multi-service)
+        let pluginProviders: ICliCompletionProvider[] = [];
+        try {
+            pluginProviders = services.get<ICliCompletionProvider[]>(ICliCompletionProvider_TOKEN) ?? [];
+        } catch {
+            // No plugin providers registered — that's fine
+        }
+
+        this.executionContext.completionEngine.setProviders([
+            ...pluginProviders,
+            ...defaultProviders,
+        ]);
+
+        // 9. Run onAfterBoot hooks sorted by priority (lower first)
         const sorted = [...allModules].sort(
             (a, b) => (a.priority ?? 0) - (b.priority ?? 0),
         );

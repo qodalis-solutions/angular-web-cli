@@ -7,6 +7,12 @@ export class CliExecutionProcess implements ICliExecutionProcess {
     running: boolean = false;
     data: any | undefined;
 
+    /**
+     * Whether `output()` was explicitly called during this command's execution.
+     * Used by the executor to decide whether to auto-capture terminal output.
+     */
+    outputCalled = false;
+
     constructor(private readonly context: ICliExecutionContext) {}
 
     exit(
@@ -27,12 +33,14 @@ export class CliExecutionProcess implements ICliExecutionProcess {
 
     output(data: any) {
         this.data = data;
+        this.outputCalled = true;
     }
 
     start() {
         this.exited = undefined;
         this.exitCode = undefined;
         this.data = undefined;
+        this.outputCalled = false;
         this.running = true;
     }
 

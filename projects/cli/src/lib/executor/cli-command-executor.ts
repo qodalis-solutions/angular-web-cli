@@ -15,6 +15,7 @@ import { CliArgsParser } from '../parsers/args-parser';
 import { ProcessExitedError } from '../errors';
 import { CliCommandExecutionContext } from '../context/cli-command-execution-context';
 import { CliAliasCommandProcessor } from '../processors';
+import { CapturingTerminalWriter } from '../services/capturing-terminal-writer';
 
 /**
  * Extended execution context interface used internally by the command executor.
@@ -279,6 +280,14 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
             processor,
         );
 
+        // Wrap the writer to capture stdout-equivalent output.
+        // If the command doesn't call process.output() explicitly,
+        // the captured text becomes the implicit pipeline data.
+        const capturingWriter = new CapturingTerminalWriter(
+            commandContext.writer,
+        );
+        commandContext.writer = capturingWriter;
+
         try {
             const hooks = processor.hooks ?? [];
 
@@ -303,6 +312,12 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
 
             for (const hook of hooks.filter((h) => h.when === 'after')) {
                 await hook.execute(commandContext);
+            }
+
+            // Auto-capture: if the command didn't call process.output()
+            // but did write to the terminal, use that output as pipeline data.
+            if (!process.outputCalled && capturingWriter.hasOutput()) {
+                process.data = capturingWriter.getCapturedData();
             }
 
             process.end();

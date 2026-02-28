@@ -176,6 +176,15 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
                     return true;
                 }
 
+                // If context processor handles raw input, bypass default key handling
+                if (this.contextProcessor?.onData) {
+                    // Prevent browser defaults for editor shortcuts
+                    if (event.ctrlKey) {
+                        event.preventDefault();
+                    }
+                    return true; // Let all keys pass through to onData
+                }
+
                 if (event.code === 'KeyC' && event.ctrlKey) {
                     this.abort();
                     this.setContextProcessor(undefined);
@@ -392,6 +401,12 @@ export class CliExecutionContext implements ICliExecutionContext, CliInputReader
 
         if (this._activeInputRequest) {
             this.handleReaderInput(data);
+            return;
+        }
+
+        // If context processor handles raw input, delegate everything to it
+        if (this.contextProcessor?.onData) {
+            await this.contextProcessor.onData(data, this);
             return;
         }
 

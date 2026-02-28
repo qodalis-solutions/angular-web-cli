@@ -9,6 +9,7 @@ export const CliServerManager_TOKEN = 'cli-server-manager';
 
 export class CliServerManager {
     readonly connections = new Map<string, CliServerConnection>();
+    private _logger?: { warn(msg: string): void; info(msg: string): void };
 
     constructor(private readonly registry: ICliCommandProcessorRegistry) {}
 
@@ -16,11 +17,17 @@ export class CliServerManager {
         servers: CliServerConfig[],
         logger?: { warn(msg: string): void; info(msg: string): void },
     ): Promise<void> {
+        this._logger = logger;
+
         for (const config of servers) {
             if (config.enabled === false) continue;
 
             const connection = new CliServerConnection(config);
             this.connections.set(config.name, connection);
+
+            connection.onDisconnect = () => {
+                this.handleDisconnect(config.name);
+            };
 
             await connection.connect();
 
@@ -47,21 +54,11 @@ export class CliServerManager {
             return { success: false, commandCount: 0 };
         }
 
-        // Unregister existing proxy processors for this server
-        const prefix = `${name}:`;
-        const existing = this.registry.processors.filter((p) =>
-            p.command.startsWith(prefix),
-        );
-        for (const p of existing) {
-            this.registry.unregisterProcessor(p);
-        }
+        this.unregisterServerProcessors(name);
 
-        // Also unregister bare aliases
-        for (const p of [...this.registry.processors]) {
-            if (p.metadata?.module === `server:${name}`) {
-                this.registry.unregisterProcessor(p);
-            }
-        }
+        connection.onDisconnect = () => {
+            this.handleDisconnect(name);
+        };
 
         await connection.connect();
 
@@ -76,6 +73,31 @@ export class CliServerManager {
 
     getConnection(name: string): CliServerConnection | undefined {
         return this.connections.get(name);
+    }
+
+    private handleDisconnect(name: string): void {
+        this._logger?.warn(
+            `Server '${name}' disconnected. Its commands are no longer available. Run 'server reconnect ${name}' to retry.`,
+        );
+        this.unregisterServerProcessors(name);
+    }
+
+    private unregisterServerProcessors(name: string): void {
+        // Unregister namespaced processors
+        const prefix = `${name}:`;
+        const namespaced = this.registry.processors.filter((p) =>
+            p.command.startsWith(prefix),
+        );
+        for (const p of namespaced) {
+            this.registry.unregisterProcessor(p);
+        }
+
+        // Unregister bare aliases
+        for (const p of [...this.registry.processors]) {
+            if (p.metadata?.module === `server:${name}`) {
+                this.registry.unregisterProcessor(p);
+            }
+        }
     }
 
     private registerProxyProcessors(

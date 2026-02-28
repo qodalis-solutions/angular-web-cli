@@ -21,6 +21,7 @@ import {
 import { CliCommandHistory } from '../../services/cli-command-history';
 import { CliStateStoreManager } from '../../state/cli-state-store-manager';
 import { CliServiceContainer } from '../../services/cli-service-container';
+import { CliServerManager, CliServerManager_TOKEN } from '../../server/cli-server-manager';
 
 export class CliDebugCommandProcessor implements ICliCommandProcessor {
     command = 'debug';
@@ -343,7 +344,66 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
                     report['services'] = container.getRegisteredTokens();
                 }
 
+                try {
+                    const serverManager = context.services.get<CliServerManager>(CliServerManager_TOKEN);
+                    if (serverManager && serverManager.connections.size > 0) {
+                        report['servers'] = Array.from(serverManager.connections.entries()).map(([name, conn]) => ({
+                            name,
+                            url: conn.config.url,
+                            connected: conn.connected,
+                            commands: conn.connected ? conn.commands.length : 0,
+                        }));
+                    }
+                } catch {
+                    // skip
+                }
+
                 writer.writeJson(report);
+            },
+        } as ICliCommandProcessor,
+        {
+            command: 'servers',
+            description: 'List configured servers and their connection status',
+            metadata: { icon: CliIcon.Server, module: 'system' },
+            processCommand: async (_: CliProcessCommand, context: ICliExecutionContext) => {
+                const { writer } = context;
+
+                let manager: CliServerManager | undefined;
+                try {
+                    manager = context.services.get<CliServerManager>(CliServerManager_TOKEN);
+                } catch {
+                    // not available
+                }
+
+                if (!manager || manager.connections.size === 0) {
+                    writer.writeInfo('No servers configured.');
+                    return;
+                }
+
+                writer.writeln(writer.wrapInColor('Configured Servers:', CliForegroundColor.Yellow));
+                writer.writeln();
+
+                const rows: string[][] = [];
+                for (const [name, connection] of manager.connections) {
+                    rows.push([
+                        name,
+                        connection.config.url,
+                        connection.connected ? 'Connected' : 'Disconnected',
+                        connection.connected ? String(connection.commands.length) : '-',
+                        connection.config.timeout ? `${connection.config.timeout}ms` : 'default',
+                    ]);
+                }
+
+                writer.writeTable(
+                    ['Name', 'URL', 'Status', 'Commands', 'Timeout'],
+                    rows,
+                );
+
+                writer.writeln();
+
+                const connected = Array.from(manager.connections.values()).filter(c => c.connected).length;
+                const total = manager.connections.size;
+                writer.writeln(`Total: ${writer.wrapInColor(String(total), CliForegroundColor.Cyan)} servers (${writer.wrapInColor(String(connected), CliForegroundColor.Green)} connected)`);
             },
         } as ICliCommandProcessor,
     ];
@@ -378,6 +438,16 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
             // skip
         }
 
+        try {
+            const serverManager = context.services.get<CliServerManager>(CliServerManager_TOKEN);
+            if (serverManager && serverManager.connections.size > 0) {
+                const connected = Array.from(serverManager.connections.values()).filter(c => c.connected).length;
+                writer.writeln(`  ${writer.wrapInColor('Servers:', CliForegroundColor.Cyan)} ${connected}/${serverManager.connections.size} connected`);
+            }
+        } catch {
+            // skip
+        }
+
         const history = context.services.get<CliCommandHistory>(CliCommandHistory_TOKEN);
         writer.writeln(`  ${writer.wrapInColor('History:', CliForegroundColor.Cyan)} ${history.getHistory().length} commands`);
 
@@ -404,6 +474,7 @@ export class CliDebugCommandProcessor implements ICliCommandProcessor {
         writer.writeln(`  ${writer.wrapInColor('debug history', CliForegroundColor.Cyan)}          Command history stats`);
         writer.writeln(`  ${writer.wrapInColor('debug health', CliForegroundColor.Cyan)}           System health check`);
         writer.writeln(`  ${writer.wrapInColor('debug export', CliForegroundColor.Cyan)}           Export all as JSON`);
+        writer.writeln(`  ${writer.wrapInColor('debug servers', CliForegroundColor.Cyan)}          Server connections`);
     }
 
     private countProcessors(processors: ICliCommandProcessor[]): number {

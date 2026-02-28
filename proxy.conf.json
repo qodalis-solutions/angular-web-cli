@@ -20,5 +20,12 @@
     "changeOrigin": true,
     "secure": false,
     "logLevel": "debug"
+  },
+  "/ws/cli/*": {
+    "target": "http://localhost:8046",
+    "changeOrigin": true,
+    "secure": false,
+    "ws": true,
+    "logLevel": "debug"
   }
 }

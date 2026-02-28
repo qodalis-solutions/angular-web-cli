@@ -14,9 +14,12 @@ import { qrModule } from '@qodalis/cli-qr';
 import { yesnoModule } from '@qodalis/cli-yesno';
 import { serverLogsModule } from '@qodalis/cli-server-logs';
 import { usersModule } from '@qodalis/cli-users';
-import { CliLogLevel, type ICliModule } from '@qodalis/cli-core';
+import { filesModule } from '@qodalis/cli-files';
+import { CliLogLevel, type CliOptions, type ICliModule } from '@qodalis/cli-core';
+import { CliInputDemoCommandProcessor } from './processors/cli-input-demo-command-processor';
 
 const modules: ICliModule[] = [
+    filesModule,
     guidModule,
     regexModule,
     textToImageModule,
@@ -34,10 +37,15 @@ const modules: ICliModule[] = [
             { name: 'root1', email: 'root1@root.com', groups: ['admin'] },
         ],
         defaultPassword: 'root',
+        requirePassword: true,
     }),
+    {
+        name: 'input-demo',
+        processors: [new CliInputDemoCommandProcessor()],
+    },
 ];
 
-const options = {
+const options: CliOptions = {
     logLevel: CliLogLevel.DEBUG,
     packageSources: {
         primary: 'local',
@@ -45,6 +53,9 @@ const options = {
             { name: 'local', url: 'http://localhost:3000/', kind: 'file' },
         ],
     },
+    servers: [
+        { name: 'local', url: '' },
+    ],
 };
 </script>
 

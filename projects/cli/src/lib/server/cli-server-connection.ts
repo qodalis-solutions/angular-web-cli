@@ -8,6 +8,9 @@ import {
 export class CliServerConnection {
     private _connected = false;
     private _commands: CliServerCommandDescriptor[] = [];
+    private _eventSocket: WebSocket | null = null;
+
+    onDisconnect?: () => void;
 
     constructor(private readonly _config: CliServerConfig) {}
 
@@ -27,18 +30,27 @@ export class CliServerConnection {
         try {
             this._commands = await this.fetchCommands();
             this._connected = true;
+            this.connectEventSocket();
         } catch {
             this._connected = false;
             this._commands = [];
         }
     }
 
+    disconnect(): void {
+        this._connected = false;
+        this._commands = [];
+        this.closeEventSocket();
+    }
+
     async fetchCommands(): Promise<CliServerCommandDescriptor[]> {
         const url = `${this.normalizeUrl(this._config.url)}/api/cli/commands`;
-        const response = await this.fetch(url);
+        const response = await this.httpFetch(url);
 
         if (!response.ok) {
-            throw new Error(`Server ${this._config.name} returned ${response.status}`);
+            throw new Error(
+                `Server ${this._config.name} returned ${response.status}`,
+            );
         }
 
         return response.json();
@@ -46,7 +58,7 @@ export class CliServerConnection {
 
     async execute(command: CliProcessCommand): Promise<CliServerResponse> {
         const url = `${this.normalizeUrl(this._config.url)}/api/cli/execute`;
-        const response = await this.fetch(url, {
+        const response = await this.httpFetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(command),
@@ -71,14 +83,67 @@ export class CliServerConnection {
     async ping(): Promise<boolean> {
         try {
             const url = `${this.normalizeUrl(this._config.url)}/api/cli/version`;
-            const response = await this.fetch(url);
+            const response = await this.httpFetch(url);
             return response.ok;
         } catch {
             return false;
         }
     }
 
-    private fetch(url: string, init?: RequestInit): Promise<Response> {
+    private connectEventSocket(): void {
+        try {
+            const baseUrl = this.normalizeUrl(this._config.url);
+            const wsUrl = this.toWebSocketUrl(baseUrl) + '/ws/cli/events';
+            this._eventSocket = new WebSocket(wsUrl);
+
+            this._eventSocket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'disconnect') {
+                        this.handleServerDisconnect();
+                    }
+                } catch {
+                    // Ignore malformed messages
+                }
+            };
+
+            this._eventSocket.onclose = () => {
+                if (this._connected) {
+                    this.handleServerDisconnect();
+                }
+            };
+
+            this._eventSocket.onerror = () => {
+                // onclose will fire after onerror
+            };
+        } catch {
+            // WebSocket not available or URL invalid — fall back to no events
+        }
+    }
+
+    private handleServerDisconnect(): void {
+        this._connected = false;
+        this._commands = [];
+        this.closeEventSocket();
+        this.onDisconnect?.();
+    }
+
+    private closeEventSocket(): void {
+        if (this._eventSocket) {
+            this._eventSocket.onclose = null;
+            this._eventSocket.onmessage = null;
+            this._eventSocket.onerror = null;
+            if (
+                this._eventSocket.readyState === WebSocket.OPEN ||
+                this._eventSocket.readyState === WebSocket.CONNECTING
+            ) {
+                this._eventSocket.close();
+            }
+            this._eventSocket = null;
+        }
+    }
+
+    private httpFetch(url: string, init?: RequestInit): Promise<Response> {
         const timeout = this._config.timeout ?? 30000;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeout);
@@ -97,5 +162,22 @@ export class CliServerConnection {
 
     private normalizeUrl(url: string): string {
         return url.endsWith('/') ? url.slice(0, -1) : url;
+    }
+
+    private toWebSocketUrl(httpUrl: string): string {
+        if (!httpUrl || httpUrl.startsWith('/')) {
+            // Relative URL — derive from current location
+            const protocol =
+                typeof location !== 'undefined' &&
+                location.protocol === 'https:'
+                    ? 'wss:'
+                    : 'ws:';
+            const host =
+                typeof location !== 'undefined' ? location.host : 'localhost';
+            return `${protocol}//${host}`;
+        }
+        return httpUrl
+            .replace(/^https:/, 'wss:')
+            .replace(/^http:/, 'ws:');
     }
 }

@@ -18,7 +18,7 @@
     "watch cli": "ng build cli --watch --configuration development",
     "watch angular-cli": "npm run build:styles:watch & ng build angular-cli --watch --configuration development",
     "start docs": "ng serve docs --port 4300",
-    "start angular-demo": "ng serve demo-angular --port 4303",
+    "start angular-demo": "ng serve demo-angular --port 4303 --proxy-config proxy.conf.json",
     "start react-demo": "cd projects/demo-react && npx vite --port 4301",
     "start vue-demo": "cd projects/demo-vue && npx vite --port 4302",
     "test": "ng test --watch=false --browsers=ChromeHeadless",

@@ -345,10 +345,17 @@ export class CliEngine {
         };
     }
 
+    /**
+     * Restore engine state from a snapshot.
+     * Note: If the target terminal has different dimensions than the snapshot
+     * source, the restored content may reflow differently.
+     */
     private async restoreSnapshot(snap: CliEngineSnapshot): Promise<void> {
-        // Restore terminal buffer
+        // Restore terminal buffer (await the write to ensure buffer is fully applied)
         if (snap.terminal.serializedBuffer) {
-            this.terminal.write(snap.terminal.serializedBuffer);
+            await new Promise<void>((resolve) => {
+                this.terminal.write(snap.terminal.serializedBuffer, resolve);
+            });
         }
 
         // Restore command history

@@ -11,6 +11,7 @@ export default defineConfig({
         '@xterm/addon-fit',
         '@xterm/addon-web-links',
         '@xterm/addon-unicode11',
+        '@xterm/addon-serialize',
         'rxjs',
     ],
 });

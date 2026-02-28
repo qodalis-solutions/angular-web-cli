@@ -122,7 +122,7 @@ export class CommandLineMode implements IInputMode {
             event.preventDefault();
             this.host.lineBuffer.clear();
             this.host.terminal.clear();
-            this.host.showPrompt();
+            this.host.showPrompt({ reset: true });
             return false;
         }
 

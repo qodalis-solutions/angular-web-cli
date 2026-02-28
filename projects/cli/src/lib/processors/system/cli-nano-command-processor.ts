@@ -41,7 +41,7 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
     aliases = ['edit'];
     description = 'Open the built-in text editor';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     metadata: CliProcessorMetadata = {
         icon: '📝',
         module: 'system',

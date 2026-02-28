@@ -16,6 +16,6 @@ describe('CliYesnoModule', () => {
     it('should allow unlisted commands for question input', () => {
         const processor = new CliYesnoCommandProcessor();
 
-        expect(processor.allowUnlistedCommands).toBe(true);
+        expect(processor.acceptsRawInput).toBe(true);
     });
 });

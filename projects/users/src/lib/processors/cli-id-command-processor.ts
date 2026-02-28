@@ -16,7 +16,7 @@ export class CliIdCommandProcessor implements ICliCommandProcessor {
     command = 'id';
     description = 'Display user identity information';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = false;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

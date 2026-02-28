@@ -14,7 +14,7 @@ export class CliEchoCommandProcessor implements ICliCommandProcessor {
 
     description = 'Prints the specified text';
 
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     author = DefaultLibraryAuthor;
 

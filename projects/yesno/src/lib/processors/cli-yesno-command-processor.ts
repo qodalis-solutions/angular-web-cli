@@ -23,7 +23,7 @@ export class CliYesnoCommandProcessor implements ICliCommandProcessor {
 
     description = 'Generate a random yes/no answer with animation';
 
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     author = DefaultLibraryAuthor;
 

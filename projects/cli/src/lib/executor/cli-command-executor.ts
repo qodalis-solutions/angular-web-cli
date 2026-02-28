@@ -237,13 +237,13 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
         }
 
         const value =
-            processor.allowUnlistedCommands || processor.valueRequired
+            processor.acceptsRawInput || processor.valueRequired
                 ? getRightOfWord(commandName, processor.command)
                 : undefined;
 
         commandToProcess.value = value;
 
-        const missingValue = processor.valueRequired && !value;
+        const missingValue = processor.valueRequired && !value && !data;
 
         if (missingValue) {
             context.writer.writeError(

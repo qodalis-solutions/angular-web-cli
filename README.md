@@ -227,7 +227,7 @@ import {
 export class GreetCommandProcessor implements ICliCommandProcessor {
   command = 'greet';
   description = 'Greet someone by name';
-  allowUnlistedCommands = true;
+  acceptsRawInput = true;
   valueRequired = true;
 
   async processCommand(

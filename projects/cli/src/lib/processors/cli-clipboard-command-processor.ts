@@ -29,7 +29,7 @@ export class CliClipboardCommandProcessor implements ICliCommandProcessor {
                 command: 'copy',
                 aliases: ['cp'],
                 description: 'Copy text to clipboard',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,

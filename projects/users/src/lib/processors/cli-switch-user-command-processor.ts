@@ -26,7 +26,7 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
 
     description?: string | undefined = 'Switch user';
 
-    allowUnlistedCommands?: boolean | undefined = true;
+    acceptsRawInput?: boolean | undefined = true;
 
     parameters?: ICliCommandParameterDescriptor[] | undefined = [];
 

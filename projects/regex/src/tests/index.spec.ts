@@ -56,9 +56,9 @@ describe('CliRegexCommandProcessor', () => {
             expect(sub!.description!.length).toBeGreaterThan(0);
         });
 
-        it('"match" sub-processor should have allowUnlistedCommands = true', () => {
+        it('"match" sub-processor should have acceptsRawInput = true', () => {
             const sub = processor.processors!.find(p => p.command === 'match');
-            expect(sub!.allowUnlistedCommands).toBe(true);
+            expect(sub!.acceptsRawInput).toBe(true);
         });
 
         it('"match" sub-processor should have processCommand as a function', () => {

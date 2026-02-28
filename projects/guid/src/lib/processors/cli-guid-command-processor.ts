@@ -76,7 +76,7 @@ export class CliGuidCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'validate',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Validate a GUID',
                 processCommand: async (command, context) => {
                     if (!command.value) {

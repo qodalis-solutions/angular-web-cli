@@ -13,7 +13,7 @@ export class CliLsCommandProcessor implements ICliCommandProcessor {
     description = 'List directory contents';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     metadata = { icon: '📋', module: 'file management' };
 
     parameters = [

@@ -37,7 +37,7 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'report-bug',
                 description: 'Reports a bug on GitHub',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 async processCommand(
                     { value }: CliProcessCommand,
                     context: ICliExecutionContext,
@@ -56,7 +56,7 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'request-feature',
                 description: 'Requests a new feature on GitHub',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 async processCommand(
                     { value }: CliProcessCommand,
                     context: ICliExecutionContext,
@@ -75,7 +75,7 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'request-command',
                 description: 'Requests a new command on GitHub',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 async processCommand(
                     { value }: CliProcessCommand,
                     context: ICliExecutionContext,

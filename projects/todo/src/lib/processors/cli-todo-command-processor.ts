@@ -115,7 +115,7 @@ export class CliTodoCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'add',
                 description: 'Add a new TODO item',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (command, context) => {
                     const text = command.value;
@@ -144,7 +144,7 @@ export class CliTodoCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'rm',
                 description: 'Remove a TODO item by ID',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 parameters: [
                     {
                         name: 'all',
@@ -189,7 +189,7 @@ export class CliTodoCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'complete',
                 description: 'Mark a TODO item as completed by ID',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (command, context) => {
                     const id = parseInt(command.value || '', 10);

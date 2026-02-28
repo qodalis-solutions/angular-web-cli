@@ -27,7 +27,7 @@ export class CliUrlCommandProcessor implements ICliCommandProcessor {
                 command: 'encode',
                 aliases: ['enc'],
                 description: 'URL-encode a string',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -57,7 +57,7 @@ export class CliUrlCommandProcessor implements ICliCommandProcessor {
                 command: 'decode',
                 aliases: ['dec'],
                 description: 'URL-decode a string',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -91,7 +91,7 @@ export class CliUrlCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'parse',
                 description: 'Parse a URL into its components',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,

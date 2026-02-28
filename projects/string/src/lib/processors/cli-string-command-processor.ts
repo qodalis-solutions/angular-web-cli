@@ -27,7 +27,7 @@ function stringTransform(
         command,
         aliases: options?.aliases,
         description,
-        allowUnlistedCommands: true,
+        acceptsRawInput: true,
         valueRequired: true,
         processCommand: async (
             cmd: CliProcessCommand,
@@ -152,7 +152,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'repeat',
                 description: 'Repeat a string N times',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -206,7 +206,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'replace',
                 description: 'Replace occurrences in a string',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -268,7 +268,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 command: 'truncate',
                 aliases: ['trunc'],
                 description: 'Truncate a string to a max length',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -315,7 +315,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'pad',
                 description: 'Pad a string to a target length',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -397,7 +397,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'split',
                 description: 'Split a string by a delimiter',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -444,7 +444,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'words',
                 description: 'Split a string into words',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -483,7 +483,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 command: 'length',
                 aliases: ['len'],
                 description: 'Get the length of a string',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -509,7 +509,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 command: 'wc',
                 aliases: ['wordcount', 'count'],
                 description: 'Count lines, words, characters, and bytes',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -552,7 +552,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 command: 'includes',
                 aliases: ['contains', 'has'],
                 description: 'Check if a string contains a substring',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -592,7 +592,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'startsWith',
                 description: 'Check if a string starts with a prefix',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {
@@ -630,7 +630,7 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'endsWith',
                 description: 'Check if a string ends with a suffix',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {

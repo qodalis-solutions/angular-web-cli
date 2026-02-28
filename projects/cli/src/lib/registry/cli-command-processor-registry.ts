@@ -118,7 +118,7 @@ export class CliCommandProcessorRegistry
                 chainCommands.slice(1),
                 processor.processors,
             );
-        } else if (processor.allowUnlistedCommands || processor.valueRequired) {
+        } else if (processor.acceptsRawInput || processor.valueRequired) {
             return processor;
         }
 

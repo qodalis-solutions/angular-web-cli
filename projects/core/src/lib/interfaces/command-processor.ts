@@ -95,12 +95,13 @@ export interface ICliCommandProcessor {
     author?: ICliCommandAuthor;
 
     /**
-     * If true, the processor can handle unlisted commands
+     * If true, the processor accepts raw text input after the command name as its value.
+     * The captured text is available via `command.value` in `processCommand`.
      * @default false
-     * @remarks If true, the processor can handle unlisted commands. If false, the processor will only handle commands that are explicitly listed in the processors property
-     * @remarks Optional if valueRequired is true
+     * @remarks When true, any text following the command name is extracted as the command value
+     * rather than being interpreted as sub-commands. Use `valueRequired` instead if the value is mandatory.
      */
-    allowUnlistedCommands?: boolean;
+    acceptsRawInput?: boolean;
 
     /**
      * If true, the value is required

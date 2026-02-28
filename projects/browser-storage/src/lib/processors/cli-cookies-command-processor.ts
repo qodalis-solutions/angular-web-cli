@@ -30,7 +30,7 @@ export class CliCookiesCommandProcessor implements ICliCommandProcessor {
         this.processors = [
             {
                 command: 'list',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'List all cookies',
                 processCommand: async (
                     command: CliProcessCommand,
@@ -54,7 +54,7 @@ export class CliCookiesCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'get',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Get the value of a key',
                 processCommand: async (
                     command: CliProcessCommand,
@@ -80,7 +80,7 @@ export class CliCookiesCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'set',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Set the value of a key',
                 processCommand: async (
                     command: CliProcessCommand,
@@ -97,7 +97,7 @@ export class CliCookiesCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'remove',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Remove a key',
                 processCommand: async (
                     command: CliProcessCommand,

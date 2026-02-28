@@ -12,7 +12,7 @@ export class CliEchoCommandProcessor implements ICliCommandProcessor {
     description = 'Display text or redirect output to a file';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     extendsProcessor = true;
     originalProcessor?: ICliCommandProcessor;
     metadata = { icon: '💬', module: 'file management' };

@@ -30,7 +30,7 @@ export class CliLocalStorageCommandProcessor implements ICliCommandProcessor {
         this.processors = [
             {
                 command: 'get',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Get the value of a key',
                 processCommand: async (
                     command: CliProcessCommand,
@@ -44,7 +44,7 @@ export class CliLocalStorageCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'set',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Set the value of a key',
                 processCommand: async (
                     command: CliProcessCommand,
@@ -58,7 +58,7 @@ export class CliLocalStorageCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'remove',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Remove a key',
                 processCommand: async (
                     command: CliProcessCommand,

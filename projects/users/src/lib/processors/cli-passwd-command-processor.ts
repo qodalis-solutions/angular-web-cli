@@ -19,7 +19,7 @@ export class CliPasswdCommandProcessor implements ICliCommandProcessor {
     command = 'passwd';
     description = 'Change user password';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = false;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

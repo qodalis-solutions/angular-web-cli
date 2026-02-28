@@ -13,7 +13,7 @@ export class CliTreeCommandProcessor implements ICliCommandProcessor {
     description = 'Display directory tree structure';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     metadata = { icon: '🌳', module: 'file management' };
 
     parameters = [

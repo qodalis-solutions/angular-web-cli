@@ -12,7 +12,7 @@ export class CliCatCommandProcessor implements ICliCommandProcessor {
     description = 'Display file contents';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata = { icon: '📖', module: 'file management' };
 

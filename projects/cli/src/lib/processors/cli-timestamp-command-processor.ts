@@ -50,7 +50,7 @@ export class CliTimestampCommandProcessor implements ICliCommandProcessor {
                 command: 'to-date',
                 aliases: ['todate', 'parse'],
                 description: 'Convert a Unix timestamp to a date',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -98,7 +98,7 @@ export class CliTimestampCommandProcessor implements ICliCommandProcessor {
                 command: 'from-date',
                 aliases: ['fromdate'],
                 description: 'Convert a date string to a Unix timestamp',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,

@@ -18,7 +18,7 @@ export class CliGroupdelCommandProcessor implements ICliCommandProcessor {
     aliases = ['delgroup'];
     description = 'Delete a group';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

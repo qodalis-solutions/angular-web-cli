@@ -27,7 +27,7 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                 command: 'encode',
                 aliases: ['enc'],
                 description: 'Encode text to hexadecimal',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -54,7 +54,7 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                 command: 'decode',
                 aliases: ['dec'],
                 description: 'Decode hexadecimal to text',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -89,7 +89,7 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                 command: 'convert',
                 aliases: ['conv'],
                 description: 'Convert a number between bases',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {

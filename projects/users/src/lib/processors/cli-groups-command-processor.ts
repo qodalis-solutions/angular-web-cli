@@ -16,7 +16,7 @@ export class CliGroupsCommandProcessor implements ICliCommandProcessor {
     command = 'groups';
     description = 'Show group memberships for a user';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = false;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

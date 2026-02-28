@@ -54,7 +54,7 @@ export class ObjectDescriber {
             const processor: ICliCommandProcessor = {
                 command: func,
                 description: `A command that executes the function ${func} with the provided arguments`,
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 parameters: [
                     {

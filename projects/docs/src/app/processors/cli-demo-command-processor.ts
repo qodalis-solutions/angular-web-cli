@@ -36,7 +36,7 @@ export class CliDemoCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'input',
                 description: 'Show input',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 processCommand: async (
                     command: CliProcessCommand,
                     context: ICliExecutionContext,

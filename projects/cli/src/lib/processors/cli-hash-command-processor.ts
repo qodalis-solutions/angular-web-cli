@@ -33,7 +33,7 @@ export class CliHashCommandProcessor implements ICliCommandProcessor {
             command,
             aliases,
             description: `Generate ${algo} hash`,
-            allowUnlistedCommands: true,
+            acceptsRawInput: true,
             valueRequired: true,
             processCommand: async (
                 cmd: CliProcessCommand,

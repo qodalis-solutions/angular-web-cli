@@ -60,7 +60,7 @@ export class CliTextToImageCommandProcessor implements ICliCommandProcessor {
         },
     ];
 
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     version = LIBRARY_VERSION;
 

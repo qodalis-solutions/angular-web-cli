@@ -16,7 +16,7 @@ export class CliSeqCommandProcessor implements ICliCommandProcessor {
 
     author = DefaultLibraryAuthor;
 
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     valueRequired = true;
 

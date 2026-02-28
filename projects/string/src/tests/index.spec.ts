@@ -160,10 +160,10 @@ describe('CliStringCommandProcessor', () => {
             expect(sub).toBeDefined();
         });
 
-        it('should have all sub-processors with allowUnlistedCommands = true', () => {
+        it('should have all sub-processors with acceptsRawInput = true', () => {
             for (const sub of processor.processors!) {
-                expect(sub.allowUnlistedCommands)
-                    .withContext(`Sub-processor "${sub.command}" should have allowUnlistedCommands = true`)
+                expect(sub.acceptsRawInput)
+                    .withContext(`Sub-processor "${sub.command}" should have acceptsRawInput = true`)
                     .toBe(true);
             }
         });

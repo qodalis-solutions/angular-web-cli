@@ -14,7 +14,7 @@ export class CliYesCommandProcessor implements ICliCommandProcessor {
 
     author = DefaultLibraryAuthor;
 
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     metadata?: CliProcessorMetadata = {
         icon: '✅',

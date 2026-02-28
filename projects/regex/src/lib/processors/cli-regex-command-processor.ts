@@ -33,7 +33,7 @@ export class CliRegexCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'match',
                 description: 'Match a regular expression against a string',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 async processCommand(command, context) {
                     const [pattern, text] = command.command.split(' ').slice(2);
 

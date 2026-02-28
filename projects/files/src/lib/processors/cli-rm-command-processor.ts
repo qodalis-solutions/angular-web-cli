@@ -12,7 +12,7 @@ export class CliRmCommandProcessor implements ICliCommandProcessor {
     description = 'Remove files or directories';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata = { icon: '🗑', module: 'file management' };
 

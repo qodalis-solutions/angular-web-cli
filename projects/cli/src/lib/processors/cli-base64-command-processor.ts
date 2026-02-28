@@ -29,7 +29,7 @@ export class CliBase64CommandProcessor implements ICliCommandProcessor {
                 command: 'encode',
                 aliases: ['enc', 'e'],
                 description: 'Encode text to Base64',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -67,7 +67,7 @@ export class CliBase64CommandProcessor implements ICliCommandProcessor {
                 command: 'decode',
                 aliases: ['dec', 'd'],
                 description: 'Decode a Base64 string',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,

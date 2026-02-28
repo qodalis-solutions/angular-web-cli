@@ -18,7 +18,7 @@ export class CliGroupaddCommandProcessor implements ICliCommandProcessor {
     aliases = ['addgroup'];
     description = 'Create a new group';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

@@ -12,7 +12,7 @@ export class CliRmdirCommandProcessor implements ICliCommandProcessor {
     description = 'Remove empty directories';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata = { icon: '🗑', module: 'file management' };
 

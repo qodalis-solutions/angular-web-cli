@@ -99,19 +99,19 @@ describe('CliTodoCommandProcessor', () => {
             expect(sub!.valueRequired).toBe(true);
         });
 
-        it('"add" sub-processor should have allowUnlistedCommands = true', () => {
+        it('"add" sub-processor should have acceptsRawInput = true', () => {
             const sub = processor.processors!.find(p => p.command === 'add');
-            expect(sub!.allowUnlistedCommands).toBe(true);
+            expect(sub!.acceptsRawInput).toBe(true);
         });
 
-        it('"complete" sub-processor should have allowUnlistedCommands = true', () => {
+        it('"complete" sub-processor should have acceptsRawInput = true', () => {
             const sub = processor.processors!.find(p => p.command === 'complete');
-            expect(sub!.allowUnlistedCommands).toBe(true);
+            expect(sub!.acceptsRawInput).toBe(true);
         });
 
-        it('"rm" sub-processor should have allowUnlistedCommands = true', () => {
+        it('"rm" sub-processor should have acceptsRawInput = true', () => {
             const sub = processor.processors!.find(p => p.command === 'rm');
-            expect(sub!.allowUnlistedCommands).toBe(true);
+            expect(sub!.acceptsRawInput).toBe(true);
         });
 
         it('"rm" sub-processor should have an "all" parameter', () => {

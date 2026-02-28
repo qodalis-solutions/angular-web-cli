@@ -12,7 +12,7 @@ export class CliTouchCommandProcessor implements ICliCommandProcessor {
     description = 'Create an empty file or update its timestamp';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata = { icon: '📄', module: 'file management' };
 

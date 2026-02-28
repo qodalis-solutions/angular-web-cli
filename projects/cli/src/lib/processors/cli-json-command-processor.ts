@@ -27,7 +27,7 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                 command: 'format',
                 aliases: ['fmt', 'pretty'],
                 description: 'Pretty-print JSON with indentation',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -58,7 +58,7 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                 command: 'minify',
                 aliases: ['min'],
                 description: 'Minify JSON by removing whitespace',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -89,7 +89,7 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                 command: 'validate',
                 aliases: ['check'],
                 description: 'Validate whether a string is valid JSON',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,

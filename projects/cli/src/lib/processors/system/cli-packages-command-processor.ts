@@ -411,7 +411,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 description:
                     'Show all published versions of a package',
                 valueRequired: true,
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 async processCommand(command, context) {
                     const { progressBar, writer } = context;
                     const { signal, cleanup } =
@@ -698,7 +698,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 command: 'update',
                 description:
                     'Update a package in the cli to the latest version or update all packages',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: false,
                 async processCommand(command, context) {
                     const { signal, cleanup } =
@@ -766,7 +766,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 command: 'source',
                 description:
                     'Get or set the package source for downloads',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 processors: [
                     {
                         command: 'get',
@@ -790,7 +790,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     {
                         command: 'set',
                         description: 'Set the preferred package source (interactive if no name given)',
-                        allowUnlistedCommands: true,
+                        acceptsRawInput: true,
                         async processCommand(command, context) {
                             let value = (command.value || '').trim().toLowerCase();
                             const allSources = scriptsLoader.getSources();

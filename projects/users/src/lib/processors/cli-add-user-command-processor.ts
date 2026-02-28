@@ -34,7 +34,7 @@ export class CliAddUserCommandProcessor implements ICliCommandProcessor {
         storeName: 'users',
     };
 
-    allowUnlistedCommands?: boolean | undefined = true;
+    acceptsRawInput?: boolean | undefined = true;
 
     valueRequired?: boolean | undefined = true;
 

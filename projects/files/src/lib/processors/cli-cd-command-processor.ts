@@ -12,7 +12,7 @@ export class CliCdCommandProcessor implements ICliCommandProcessor {
     description = 'Change the current working directory';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     metadata = { icon: '📁', module: 'file management' };
 
     async processCommand(

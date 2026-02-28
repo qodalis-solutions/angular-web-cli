@@ -14,7 +14,7 @@ export class CliOpenCommandProcessor implements ICliCommandProcessor {
 
     author = DefaultLibraryAuthor;
 
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     valueRequired = true;
 

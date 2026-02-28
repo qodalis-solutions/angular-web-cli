@@ -12,7 +12,7 @@ export class CliMvCommandProcessor implements ICliCommandProcessor {
     description = 'Move or rename files and directories';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     metadata = { icon: '📦', module: 'file management' };
 
     async processCommand(

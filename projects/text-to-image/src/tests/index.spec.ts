@@ -25,8 +25,8 @@ describe('CliTextToImageCommandProcessor', () => {
             expect(processor.valueRequired).toBe(true);
         });
 
-        it('should have allowUnlistedCommands set to true', () => {
-            expect(processor.allowUnlistedCommands).toBe(true);
+        it('should have acceptsRawInput set to true', () => {
+            expect(processor.acceptsRawInput).toBe(true);
         });
 
         it('should have an author', () => {

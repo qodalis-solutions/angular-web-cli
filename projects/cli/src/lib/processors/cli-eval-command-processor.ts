@@ -14,7 +14,7 @@ export class CliEvalCommandProcessor implements ICliCommandProcessor {
     aliases = ['calc', 'js'];
     description = 'Evaluate a JavaScript expression';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
 
     metadata?: CliProcessorMetadata | undefined = {
         icon: '🧮',

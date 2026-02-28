@@ -194,7 +194,7 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
             {
                 command: 'apply',
                 description: 'Apply a theme (interactive with live preview if no name given)',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 processCommand: async (
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
@@ -257,7 +257,7 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'set',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 description: 'Set a theme variable',
                 parameters: [
                     {

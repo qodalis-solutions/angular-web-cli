@@ -12,7 +12,7 @@ export class CliCpCommandProcessor implements ICliCommandProcessor {
     description = 'Copy files and directories';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     metadata = { icon: '📋', module: 'file management' };
 
     parameters = [

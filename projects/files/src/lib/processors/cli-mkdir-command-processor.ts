@@ -12,7 +12,7 @@ export class CliMkdirCommandProcessor implements ICliCommandProcessor {
     description = 'Create directories';
     author = DefaultLibraryAuthor;
     version = LIBRARY_VERSION;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata = { icon: '📁', module: 'file management' };
 

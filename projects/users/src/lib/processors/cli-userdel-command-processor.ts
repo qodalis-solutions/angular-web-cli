@@ -21,7 +21,7 @@ export class CliUserdelCommandProcessor implements ICliCommandProcessor {
     aliases = ['deluser'];
     description = 'Delete a user from the system';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = true;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

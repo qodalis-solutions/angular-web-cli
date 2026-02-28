@@ -21,7 +21,7 @@ export class CliLoginCommandProcessor implements ICliCommandProcessor {
     command = 'login';
     description = 'Log in as a user';
     author = DefaultLibraryAuthor;
-    allowUnlistedCommands = true;
+    acceptsRawInput = true;
     valueRequired = false;
     metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
     stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };

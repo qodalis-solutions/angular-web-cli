@@ -27,7 +27,7 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
                 command: 'decode',
                 aliases: ['d'],
                 description: 'Decode a JWT token',
-                allowUnlistedCommands: true,
+                acceptsRawInput: true,
                 valueRequired: true,
                 processCommand: async (
                     command: CliProcessCommand,

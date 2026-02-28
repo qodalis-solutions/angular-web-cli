@@ -8,8 +8,8 @@ import {
     onMounted,
     onBeforeUnmount,
 } from 'vue';
-import { ICliCommandProcessor, ICliModule, CliPanelConfig, CliPanelPosition } from '@qodalis/cli-core';
-import { CliEngineOptions } from '@qodalis/cli';
+import { ICliCommandProcessor, ICliModule, CliPanelConfig, CliPanelPosition, CliEngineSnapshot } from '@qodalis/cli-core';
+import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
 import { CliConfigKey } from './CliConfigProvider';
 
@@ -18,6 +18,7 @@ export type CliPanelOptions = CliEngineOptions & CliPanelConfig;
 interface TerminalPane {
     id: number;
     widthPercent: number;
+    snapshot?: CliEngineSnapshot;
 }
 
 interface TerminalTab {
@@ -165,6 +166,8 @@ export const CliPanel = defineComponent({
             y: 0,
             tabId: 0,
         });
+
+        const engineMap = new Map<number, CliEngine>();
 
         const paneResizing = ref(false);
         let paneResizeState = {
@@ -743,8 +746,12 @@ export const CliPanel = defineComponent({
                                                                       mergedProcessors.value,
                                                                   services:
                                                                       mergedServices.value,
+                                                                  snapshot: pane.snapshot,
                                                                   style: {
                                                                       height: '100%',
+                                                                  },
+                                                                  onReady: (engine: CliEngine) => {
+                                                                      engineMap.set(pane.id, engine);
                                                                   },
                                                               }),
                                                           ],
@@ -794,6 +801,10 @@ export const CliPanel = defineComponent({
                                       );
                                       closeContextMenu();
                                       if (!tab) return;
+
+                                      const sourceEngine = engineMap.get(tab.panes[0]?.id);
+                                      const snapshot = sourceEngine?.snapshot();
+
                                       const paneId = nextPaneId++;
                                       const tabId = nextTabId++;
                                       const idx = tabs.value.indexOf(tab);
@@ -802,7 +813,7 @@ export const CliPanel = defineComponent({
                                           title: `${tab.title} (copy)`,
                                           isEditing: false,
                                           panes: [
-                                              { id: paneId, widthPercent: 100 },
+                                              { id: paneId, widthPercent: 100, snapshot },
                                           ],
                                       });
                                       activeTabId.value = tabId;

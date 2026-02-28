@@ -7,7 +7,7 @@ import {
     h,
     inject,
 } from 'vue';
-import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
+import { ICliCommandProcessor, ICliModule, CliEngineSnapshot } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { CliInjectionKey } from './cliInjection';
 import { CliConfigKey } from './CliConfigProvider';
@@ -29,6 +29,10 @@ export const Cli = defineComponent({
         },
         services: {
             type: Object as PropType<Record<string, any>>,
+            default: undefined,
+        },
+        snapshot: {
+            type: Object as PropType<CliEngineSnapshot>,
             default: undefined,
         },
         style: {
@@ -61,7 +65,10 @@ export const Cli = defineComponent({
         onMounted(async () => {
             if (!containerRef.value) return;
 
-            engine = new CliEngine(containerRef.value, options);
+            const engineOptions = props.snapshot
+                ? { ...options, snapshot: props.snapshot }
+                : options;
+            engine = new CliEngine(containerRef.value, engineOptions);
 
             engine.registerService('cli-framework', 'Vue');
 

@@ -71,6 +71,52 @@ export interface ICliCommandParameterDescriptor {
 }
 
 /**
+ * Represents a configuration option that a command processor exposes
+ * for management via the `configure` command.
+ */
+export interface ICliConfigurationOption {
+    /**
+     * The key used to store and retrieve this option, e.g. 'maxItems'
+     */
+    key: string;
+
+    /**
+     * Human-readable label shown in the interactive menu
+     */
+    label: string;
+
+    /**
+     * Description of what this option controls
+     */
+    description: string;
+
+    /**
+     * The data type of the option
+     */
+    type: 'string' | 'number' | 'boolean' | 'select';
+
+    /**
+     * The default value when no configuration has been set
+     */
+    defaultValue: any;
+
+    /**
+     * Available choices for 'select' type options
+     */
+    options?: { label: string; value: any }[];
+
+    /**
+     * Optional validator function
+     */
+    validator?: (value: any) => { valid: boolean; message?: string };
+
+    /**
+     * Override the category grouping (defaults to the processor command name)
+     */
+    category?: string;
+}
+
+/**
  * Represents a command processor
  */
 export interface ICliCommandProcessor {
@@ -141,6 +187,13 @@ export interface ICliCommandProcessor {
      * @remarks The state configuration is used only for root command processors and not for child command processors
      */
     stateConfiguration?: CliStateConfiguration;
+
+    /**
+     * Configuration options exposed by this processor for the `configure` command.
+     * When defined, these options appear in the interactive configuration menu
+     * and can be managed via `configure get/set` subcommands.
+     */
+    configurationOptions?: ICliConfigurationOption[];
 
     /**
      * When true, this processor extends (wraps) an existing processor with the same

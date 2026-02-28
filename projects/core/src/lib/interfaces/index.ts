@@ -112,6 +112,36 @@ export interface ICliTerminalWriter {
         length?: number;
         char?: string;
     }): void;
+
+    /**
+     * Write a list of items to the terminal with bullet, numbered, or custom prefix.
+     * @param items The list items to display
+     * @param options Optional: ordered (numbered), prefix (custom marker), color
+     */
+    writeList(
+        items: string[],
+        options?: { ordered?: boolean; prefix?: string; color?: CliForegroundColor },
+    ): void;
+
+    /**
+     * Write aligned key-value pairs to the terminal.
+     * @param entries Key-value pairs as a Record or array of tuples
+     * @param options Optional: separator string, key color
+     */
+    writeKeyValue(
+        entries: Record<string, string> | [string, string][],
+        options?: { separator?: string; keyColor?: CliForegroundColor },
+    ): void;
+
+    /**
+     * Write items in a multi-column layout.
+     * @param items The items to arrange in columns
+     * @param options Optional: number of columns, padding between columns
+     */
+    writeColumns(
+        items: string[],
+        options?: { columns?: number; padding?: number },
+    ): void;
 }
 
 /**

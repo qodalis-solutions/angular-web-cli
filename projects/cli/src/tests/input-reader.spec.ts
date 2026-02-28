@@ -172,4 +172,114 @@ describe('CliInputReader', () => {
             expect(result).toBeNull();
         });
     });
+
+    describe('readSelectInline', () => {
+        const options = [
+            { label: 'Option A', value: 'a' },
+            { label: 'Option B', value: 'b' },
+            { label: 'Option C', value: 'c' },
+        ];
+
+        it('should set an active input request of type select-inline', () => {
+            reader.readSelectInline('Pick one:', options);
+            expect(host.activeInputRequest).not.toBeNull();
+            expect(host.activeInputRequest!.type).toBe('select-inline');
+        });
+
+        it('should store options and initialize selectedIndex to 0', () => {
+            reader.readSelectInline('Pick one:', options);
+            expect(host.activeInputRequest!.options).toBe(options);
+            expect(host.activeInputRequest!.selectedIndex).toBe(0);
+        });
+
+        it('should reject with error for empty options', async () => {
+            await expectAsync(reader.readSelectInline('Pick:', [])).toBeRejectedWithError('readSelectInline requires at least one option');
+        });
+
+        it('should write prompt and inline options on one line', () => {
+            reader.readSelectInline('Pick one:', options);
+            // Should write prompt + inline options (single write containing prompt)
+            const allText = host.writtenText.join('');
+            expect(allText).toContain('Pick one:');
+            expect(allText).toContain('Option A');
+        });
+
+        it('should fire onChange with initial value', () => {
+            const onChange = jasmine.createSpy('onChange');
+            reader.readSelectInline('Pick one:', options, onChange);
+            expect(onChange).toHaveBeenCalledTimes(1);
+            expect(onChange).toHaveBeenCalledWith('a');
+        });
+
+        it('should store onChange callback on the request', () => {
+            const onChange = jasmine.createSpy('onChange');
+            reader.readSelectInline('Pick one:', options, onChange);
+            expect(host.activeInputRequest!.onChange).toBe(onChange);
+        });
+    });
+
+    describe('readMultiSelect', () => {
+        const options = [
+            { label: 'Option A', value: 'a' },
+            { label: 'Option B', value: 'b', checked: true },
+            { label: 'Option C', value: 'c' },
+        ];
+
+        it('should set an active input request of type multi-select', () => {
+            reader.readMultiSelect('Select items:', options);
+            expect(host.activeInputRequest).not.toBeNull();
+            expect(host.activeInputRequest!.type).toBe('multi-select');
+        });
+
+        it('should store options and initialize selectedIndex to 0', () => {
+            reader.readMultiSelect('Select items:', options);
+            expect(host.activeInputRequest!.options).toBe(options);
+            expect(host.activeInputRequest!.selectedIndex).toBe(0);
+        });
+
+        it('should initialize checkedIndices from options with checked: true', () => {
+            reader.readMultiSelect('Select items:', options);
+            const checked = host.activeInputRequest!.checkedIndices!;
+            expect(checked.has(0)).toBe(false);
+            expect(checked.has(1)).toBe(true);
+            expect(checked.has(2)).toBe(false);
+        });
+
+        it('should reject with error for empty options', async () => {
+            await expectAsync(reader.readMultiSelect('Select:', [])).toBeRejectedWithError('readMultiSelect requires at least one option');
+        });
+
+        it('should write prompt and render checkbox options', () => {
+            reader.readMultiSelect('Select items:', options);
+            const allText = host.writtenText.join('');
+            expect(allText).toContain('Select items:');
+            expect(allText).toContain('Option A');
+        });
+    });
+
+    describe('readNumber', () => {
+        it('should set an active input request of type number', () => {
+            reader.readNumber('Enter count');
+            expect(host.activeInputRequest).not.toBeNull();
+            expect(host.activeInputRequest!.type).toBe('number');
+        });
+
+        it('should write prompt with bounds hint when min/max provided', () => {
+            reader.readNumber('Enter count', { min: 5, max: 100 });
+            const allText = host.writtenText.join('');
+            expect(allText).toContain('5-100');
+        });
+
+        it('should store numberOptions on request', () => {
+            const opts = { min: 1, max: 10, default: 5 };
+            reader.readNumber('Enter count', opts);
+            expect(host.activeInputRequest!.numberOptions).toBe(opts);
+        });
+
+        it('should include default hint in prompt', () => {
+            reader.readNumber('Enter count', { default: 10 });
+            const allText = host.writtenText.join('');
+            expect(allText).toContain('default: 10');
+        });
+    });
 });

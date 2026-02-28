@@ -103,6 +103,45 @@ export class CliTerminalWriter implements ICliTerminalWriter {
         this.writeTable(headers, rows);
     }
 
+    public writeList(
+        items: string[],
+        options?: { ordered?: boolean; prefix?: string; color?: CliForegroundColor },
+    ): void {
+        const { ordered, prefix, color } = options || {};
+        items.forEach((item, i) => {
+            const marker = prefix ?? (ordered ? `${i + 1}.` : '\u2022');
+            const text = `  ${marker} ${item}`;
+            this.writeln(color ? this.wrapInColor(text, color) : text);
+        });
+    }
+
+    public writeKeyValue(
+        entries: Record<string, string> | [string, string][],
+        options?: { separator?: string; keyColor?: CliForegroundColor },
+    ): void {
+        const pairs = Array.isArray(entries) ? entries : Object.entries(entries);
+        const maxKeyLen = Math.max(...pairs.map(([k]) => k.length));
+        const sep = options?.separator ?? ':';
+        const keyColor = options?.keyColor ?? CliForegroundColor.Yellow;
+        for (const [key, value] of pairs) {
+            const paddedKey = key.padEnd(maxKeyLen);
+            this.writeln(`  ${this.wrapInColor(paddedKey, keyColor)} ${sep} ${value}`);
+        }
+    }
+
+    public writeColumns(
+        items: string[],
+        options?: { columns?: number; padding?: number },
+    ): void {
+        const cols = options?.columns ?? 3;
+        const pad = options?.padding ?? 2;
+        const colWidth = Math.max(...items.map((s) => s.length)) + pad;
+        for (let i = 0; i < items.length; i += cols) {
+            const row = items.slice(i, i + cols);
+            this.writeln(row.map((item) => item.padEnd(colWidth)).join(''));
+        }
+    }
+
     public writeTable(headers: string[], rows: string[][]): void {
         // Calculate column widths
         const colWidths = headers.map((header, colIndex) =>

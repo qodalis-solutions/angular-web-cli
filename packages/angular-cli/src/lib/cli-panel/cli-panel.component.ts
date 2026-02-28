@@ -10,11 +10,11 @@ import {
     ViewChildren,
 } from '@angular/core';
 import {
-    CliOptions,
     CliPanelConfig,
     ICliCommandProcessor,
     ICliModule,
 } from '@qodalis/cli-core';
+import { CliEngineOptions } from '@qodalis/cli';
 import { CliComponent } from '../cli/cli.component';
 import { CollapsableContentComponent } from '../collapsable-content/collapsable-content.component';
 
@@ -37,7 +37,7 @@ export interface TabContextMenu {
     tabId: number;
 }
 
-export type CliPanelOptions = CliOptions & CliPanelConfig;
+export type CliPanelOptions = CliEngineOptions & CliPanelConfig;
 
 /**
  * A component that displays the CLI on the bottom of page.
@@ -95,11 +95,9 @@ export class CliPanelComponent {
 
     private static readonly MIN_PANE_WIDTH_PERCENT = 10;
 
-    protected terminalHeight: string = `${600 - 60 - 38}px`;
+    protected terminalHeight: string = '100%';
 
     protected initialized: boolean = false;
-
-    private static readonly TAB_BAR_HEIGHT = 38;
 
     constructor(private readonly elementRef: ElementRef) {}
 
@@ -125,9 +123,8 @@ export class CliPanelComponent {
         }
     }
 
-    onContentSizeChange($event: number) {
-        const available = $event - CliPanelComponent.TAB_BAR_HEIGHT;
-        this.terminalHeight = `${available}px`;
+    onContentSizeChange(_event: number) {
+        // Terminal height is handled via CSS flex layout
     }
 
     // --- Tab management ---

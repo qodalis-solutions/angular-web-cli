@@ -1,4 +1,9 @@
-import { Cli, CliConfigProvider, CliPanel } from "@qodalis/react-cli";
+import {
+  Cli,
+  CliConfigProvider,
+  CliPanel,
+  type CliPanelOptions,
+} from "@qodalis/react-cli";
 import "@qodalis/cli/assets/cli-panel.css";
 import { guidModule } from "@qodalis/cli-guid";
 import { regexModule } from "@qodalis/cli-regex";
@@ -55,11 +60,15 @@ const options: CliOptions = {
   servers: [{ name: "local", url: "" }],
 };
 
+const panelOptions: CliPanelOptions = {
+  position: "bottom",
+};
+
 function App() {
   return (
     <CliConfigProvider modules={modules} options={options}>
       <Cli />
-      <CliPanel />
+      <CliPanel options={panelOptions} />
     </CliConfigProvider>
   );
 }

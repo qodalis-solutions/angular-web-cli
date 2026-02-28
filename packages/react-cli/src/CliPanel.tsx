@@ -36,8 +36,6 @@ interface TabContextMenu {
     tabId: number;
 }
 
-const HEADER_HEIGHT = 60;
-const TAB_BAR_HEIGHT = 38;
 const MIN_PANE_WIDTH_PERCENT = 10;
 
 /* ─── SVG icons ──────────────────────────────────────────── */
@@ -135,9 +133,7 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
     const prevHeightRef = useRef(600);
     const prevWidthRef = useRef(400);
 
-    const terminalHeight = isHorizontal
-        ? `${panelHeight - TAB_BAR_HEIGHT}px`
-        : `${panelHeight - HEADER_HEIGHT - TAB_BAR_HEIGHT}px`;
+    // Terminal height is handled via CSS flex layout (height: 100% default in Cli)
 
     /* ─── Tab management ─────────────────────────────────── */
 
@@ -541,7 +537,7 @@ export function CliPanel({ options: optionsProp, modules: modulesProp, processor
                                                         >&times;</button>
                                                     )}
                                                     <CliContext.Provider value={{ engine: null }}>
-                                                        <Cli options={options} modules={modules} processors={processors} services={services} style={{ height: terminalHeight }} />
+                                                        <Cli options={options} modules={modules} processors={processors} services={services} />
                                                     </CliContext.Provider>
                                                 </div>
                                             </React.Fragment>

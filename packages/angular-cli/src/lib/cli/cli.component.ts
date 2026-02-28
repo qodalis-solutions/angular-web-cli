@@ -13,7 +13,6 @@ import {
     ICliCommandProcessor,
     ICliModule,
     ICliPingServerService,
-    CliOptions,
 } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import {
@@ -33,7 +32,7 @@ import {
     encapsulation: ViewEncapsulation.None,
 })
 export class CliComponent implements AfterViewInit, OnDestroy {
-    @Input() options?: CliOptions;
+    @Input() options?: CliEngineOptions;
     @Input() processors?: ICliCommandProcessor[];
     @Input() modules?: ICliModule[];
     @Input() height?: string;

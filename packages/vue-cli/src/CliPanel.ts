@@ -11,6 +11,8 @@ import { ICliCommandProcessor, ICliModule, CliPanelConfig, CliPanelPosition } fr
 import { CliEngineOptions } from '@qodalis/cli';
 import { Cli } from './Cli';
 
+export type CliPanelOptions = CliEngineOptions & CliPanelConfig;
+
 interface TerminalPane {
     id: number;
     widthPercent: number;
@@ -30,8 +32,6 @@ interface TabContextMenu {
     tabId: number;
 }
 
-const HEADER_HEIGHT = 60;
-const TAB_BAR_HEIGHT = 38;
 const MIN_PANE_WIDTH_PERCENT = 10;
 
 function normalizePanes(panes: TerminalPane[]) {
@@ -106,9 +106,7 @@ export const CliPanel = defineComponent({
     name: 'CliPanel',
     props: {
         options: {
-            type: Object as PropType<
-                CliEngineOptions & CliPanelConfig
-            >,
+            type: Object as PropType<CliPanelOptions>,
             default: undefined,
         },
         modules: { type: Array as PropType<ICliModule[]>, default: undefined },
@@ -170,12 +168,7 @@ export const CliPanel = defineComponent({
         const panelResizing = ref(false);
         let panelResizeState = { startY: 0, startHeight: 0, startX: 0, startWidth: 0 };
 
-        const terminalHeight = computed(() => {
-            if (isHorizontal.value) {
-                return `${panelHeight.value - TAB_BAR_HEIGHT}px`;
-            }
-            return `${panelHeight.value - HEADER_HEIGHT - TAB_BAR_HEIGHT}px`;
-        });
+        // Terminal height is handled via CSS flex layout (height: 100% default in Cli)
 
         /* ─── Tab management ─────────────────────────────── */
 
@@ -741,7 +734,7 @@ export const CliPanel = defineComponent({
                                                                   services:
                                                                       props.services,
                                                                   style: {
-                                                                      height: terminalHeight.value,
+                                                                      height: '100%',
                                                                   },
                                                               }),
                                                           ],

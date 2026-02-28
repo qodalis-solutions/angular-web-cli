@@ -45,6 +45,6 @@ export class AppComponent {
     };
 
     panelOptions: CliPanelOptions = {
-        position: 'top',
+        position: 'bottom',
     };
 }

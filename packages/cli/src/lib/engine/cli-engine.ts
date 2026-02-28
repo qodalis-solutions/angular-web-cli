@@ -266,7 +266,7 @@ export class CliEngine {
      */
     focus(): void {
         requestAnimationFrame(() => {
-            this.fitAddon?.fit();
+            this.safeFit();
             this.terminal?.focus();
         });
     }
@@ -328,6 +328,11 @@ export class CliEngine {
         this.terminal.open(this.container);
         this.fitAddon.fit();
 
+        // Mark the container so the theme processor can update its background
+        // when the theme changes, and set the initial background to match.
+        this.container.classList.add('terminal-container');
+        this.container.style.background = opts.theme?.background ?? '#000';
+
         // Prevent wheel events from scrolling the host page
         this.wheelListener = (e: WheelEvent) => e.preventDefault();
         this.container.addEventListener('wheel', this.wheelListener, {
@@ -339,11 +344,25 @@ export class CliEngine {
     }
 
     private handleResize(): void {
-        this.resizeListener = () => this.fitAddon.fit();
+        this.resizeListener = () => this.safeFit();
         window.addEventListener('resize', this.resizeListener);
 
-        this.resizeObserver = new ResizeObserver(() => this.fitAddon.fit());
+        this.resizeObserver = new ResizeObserver(() => this.safeFit());
         this.resizeObserver.observe(this.container);
+    }
+
+    /**
+     * Call fitAddon.fit() only when the container has non-zero dimensions.
+     * Prevents xterm from reflowing to minimal columns when the container
+     * is hidden (e.g., via [hidden] or display:none on an ancestor).
+     */
+    private safeFit(): void {
+        if (
+            this.container.offsetWidth > 0 &&
+            this.container.offsetHeight > 0
+        ) {
+            this.fitAddon.fit();
+        }
     }
 
     /**

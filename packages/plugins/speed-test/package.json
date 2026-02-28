@@ -20,7 +20,8 @@
   "umd": "./umd/index.js",
   "unpkg": "./umd/index.js",
   "dependencies": {
-    "@qodalis/cli-core": "workspace:*"
+    "@qodalis/cli-core": "workspace:*",
+    "axios": "^1.7.9"
   },
   "sideEffects": false,
   "cliDependencies": [

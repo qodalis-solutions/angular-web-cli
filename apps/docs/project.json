@@ -4,6 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/docs/src",
   "prefix": "app",
+  "implicitDependencies": ["angular-cli", "cli"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",

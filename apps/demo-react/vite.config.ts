@@ -24,13 +24,11 @@ export default defineConfig({
         // are found correctly.
         preserveSymlinks: false,
         alias: {
-            '@qodalis/cli-core': path.resolve(
+            '@qodalis/cli-core': path.resolve(__dirname, '../../dist/core'),
+            '@qodalis/cli': path.resolve(__dirname, '../../dist/cli'),
+            '@qodalis/react-cli': path.resolve(
                 __dirname,
-                'node_modules/@qodalis/cli-core',
-            ),
-            '@qodalis/cli': path.resolve(
-                __dirname,
-                'node_modules/@qodalis/cli',
+                '../../packages/react-cli',
             ),
         },
     },

@@ -9,7 +9,7 @@
         "commands": [
           "tsup",
           "cp package.json ../../dist/cli/package.json",
-          "cp -r src/assets ../../dist/cli/assets 2>/dev/null || true"
+          "mkdir -p ../../dist/cli/assets && cp -r src/assets/* ../../dist/cli/assets/ 2>/dev/null || true"
         ],
         "cwd": "packages/cli",
         "parallel": false

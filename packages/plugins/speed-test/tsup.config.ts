@@ -6,7 +6,7 @@ export default defineConfig([
         ...sharedConfig,
         entry: ['src/public-api.ts'],
         outDir: '../../../dist/speed-test',
-        external: ['@qodalis/cli-core'],
+        external: ['@qodalis/cli-core', 'axios'],
     },
     {
         entry: ['src/cli-entrypoint.ts'],

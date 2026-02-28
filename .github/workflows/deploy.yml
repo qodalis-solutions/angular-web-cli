@@ -13,24 +13,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "npm"
+          cache: "pnpm"
           registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Install projects deps
-        run: npm run "install projects deps"
+      - name: Inject versions
+        run: node tools/inject-versions.js
 
       - name: Build all projects
-        run: npm run "build all"
+        run: pnpm exec nx run-many -t build
 
-      - name: Copy tsup builds into dist for publishing
+      - name: Copy tsup wrapper builds into dist for publishing
         run: |
           mkdir -p dist/react-cli dist/vue-cli
           cp -r packages/react-cli/dist/* dist/react-cli/ 2>/dev/null || true
@@ -50,7 +57,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          EXCLUDED=("docs")
+          EXCLUDED=("docs" "demo-angular")
 
           LIBRARIES=($(ls dist | grep -v -E "$(IFS=\|; echo "${EXCLUDED[*]}")"))
 

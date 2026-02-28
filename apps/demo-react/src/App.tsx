@@ -1,5 +1,5 @@
 import { CliPanel, CliProvider } from "@qodalis/react-cli";
-import "@qodalis/cli/src/assets/cli-panel.css";
+import "@qodalis/cli/assets/cli-panel.css";
 import { guidModule } from "@qodalis/cli-guid";
 import { regexModule } from "@qodalis/cli-regex";
 import { textToImageModule } from "@qodalis/cli-text-to-image";

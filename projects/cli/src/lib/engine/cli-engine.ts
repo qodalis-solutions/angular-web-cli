@@ -23,6 +23,8 @@ import { CliCommandHistory_TOKEN, CliModuleRegistry_TOKEN, CliProcessorsRegistry
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
 import { CliCommandCompletionProvider } from '../completion/cli-command-completion-provider';
 import { CliParameterCompletionProvider } from '../completion/cli-parameter-completion-provider';
+import { CliServerManager, CliServerManager_TOKEN } from '../server/cli-server-manager';
+import { createServerModule } from '../server/cli-server-module';
 
 export interface CliEngineOptions extends CliOptions {
     terminalOptions?: Partial<ITerminalOptions & ITerminalInitOnlyOptions>;
@@ -155,8 +157,22 @@ export class CliEngine {
 
         this.executionContext.initializeTerminalListeners();
 
-        // 6. Prepend welcome module (users can override via configure)
-        const allModules = [welcomeModule, ...this.userModules];
+        // 6. Connect to configured servers (if any)
+        const serverManager = new CliServerManager(this.registry);
+        services.set([
+            { provide: CliServerManager_TOKEN, useValue: serverManager },
+        ]);
+
+        if (this.options?.servers && this.options.servers.length > 0) {
+            await serverManager.connectAll(this.options.servers, {
+                warn: (msg) => console.warn(msg),
+                info: (msg) => console.log(msg),
+            });
+        }
+
+        // 6.5. Prepend welcome module and server module
+        const serverModule = createServerModule();
+        const allModules = [welcomeModule, serverModule, ...this.userModules];
 
         // 7. Boot all modules (core + welcome + user modules)
         await this.bootService.boot(this.executionContext, allModules);

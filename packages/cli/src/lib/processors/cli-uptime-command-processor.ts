@@ -30,7 +30,8 @@ export class CliUptimeCommandProcessor implements ICliCommandProcessor {
         _: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const startTime = this.sessionStartTimes.get(context.terminal) ?? Date.now();
+        const startTime =
+            this.sessionStartTimes.get(context.terminal) ?? Date.now();
         const elapsed = Date.now() - startTime;
         const { writer } = context;
 
@@ -58,7 +59,9 @@ export class CliUptimeCommandProcessor implements ICliCommandProcessor {
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Show how long the current terminal session has been active');
+        writer.writeln(
+            'Show how long the current terminal session has been active',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
         writer.writeln(

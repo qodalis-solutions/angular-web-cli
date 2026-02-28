@@ -65,7 +65,10 @@ export class CliStateStore implements ICliStateStore {
                 this.state$.next(state);
             }
         } catch (e) {
-            console.error(`CliStateStore: Failed to load state for "${this.name}":`, e);
+            console.error(
+                `CliStateStore: Failed to load state for "${this.name}":`,
+                e,
+            );
         }
     }
 }

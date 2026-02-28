@@ -2,7 +2,11 @@ import { ICliCommandParameterDescriptor } from '../interfaces';
 import { CliBackgroundColor, CliForegroundColor } from '../models';
 import { delay } from './delay';
 import { ObjectDescriber } from './object-describer';
-import { getConfigValue, resolveConfigurationCategories, CLI_CONFIGURE_STORE_NAME } from './config-utils';
+import {
+    getConfigValue,
+    resolveConfigurationCategories,
+    CLI_CONFIGURE_STORE_NAME,
+} from './config-utils';
 
 export const getParameterValue = (
     p: ICliCommandParameterDescriptor,

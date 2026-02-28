@@ -1,4 +1,8 @@
-import { ICliStateStore, ICliCommandProcessorRegistry, ICliConfigurationOption } from '../interfaces';
+import {
+    ICliStateStore,
+    ICliCommandProcessorRegistry,
+    ICliConfigurationOption,
+} from '../interfaces';
 
 /**
  * Token for the configure command's state store.
@@ -23,7 +27,8 @@ export function getConfigValue<T = any>(
 ): T {
     try {
         const s = state.getState<Record<string, any>>();
-        const bucket = category === 'system' ? s?.['system'] : s?.['plugins']?.[category];
+        const bucket =
+            category === 'system' ? s?.['system'] : s?.['plugins']?.[category];
         if (bucket && key in bucket) {
             return bucket[key] as T;
         }
@@ -39,11 +44,20 @@ export function getConfigValue<T = any>(
  */
 export function resolveConfigurationCategories(
     registry: ICliCommandProcessorRegistry,
-): Map<string, { processorCommand: string; options: ICliConfigurationOption[] }> {
-    const categories = new Map<string, { processorCommand: string; options: ICliConfigurationOption[] }>();
+): Map<
+    string,
+    { processorCommand: string; options: ICliConfigurationOption[] }
+> {
+    const categories = new Map<
+        string,
+        { processorCommand: string; options: ICliConfigurationOption[] }
+    >();
 
     for (const processor of registry.processors) {
-        if (processor.configurationOptions && processor.configurationOptions.length > 0) {
+        if (
+            processor.configurationOptions &&
+            processor.configurationOptions.length > 0
+        ) {
             for (const option of processor.configurationOptions) {
                 const cat = option.category || processor.command;
                 if (!categories.has(cat)) {

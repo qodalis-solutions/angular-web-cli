@@ -80,8 +80,14 @@ describe('CliDefaultAuthService', () => {
         });
 
         it('should produce consistent hash for same input', async () => {
-            const hash1 = await authService.hashPassword('mypassword', 'salt123');
-            const hash2 = await authService.hashPassword('mypassword', 'salt123');
+            const hash1 = await authService.hashPassword(
+                'mypassword',
+                'salt123',
+            );
+            const hash2 = await authService.hashPassword(
+                'mypassword',
+                'salt123',
+            );
             expect(hash1).toBe(hash2);
         });
 
@@ -92,8 +98,14 @@ describe('CliDefaultAuthService', () => {
         });
 
         it('should produce different hash for different password', async () => {
-            const hash1 = await authService.hashPassword('password1', 'samesalt');
-            const hash2 = await authService.hashPassword('password2', 'samesalt');
+            const hash1 = await authService.hashPassword(
+                'password1',
+                'samesalt',
+            );
+            const hash2 = await authService.hashPassword(
+                'password2',
+                'samesalt',
+            );
             expect(hash1).not.toBe(hash2);
         });
 
@@ -137,7 +149,10 @@ describe('CliDefaultAuthService', () => {
         });
 
         it('should return false for unknown user', async () => {
-            const valid = await authService.verifyPassword('nonexistent', 'anything');
+            const valid = await authService.verifyPassword(
+                'nonexistent',
+                'anything',
+            );
             expect(valid).toBe(false);
         });
 
@@ -151,8 +166,12 @@ describe('CliDefaultAuthService', () => {
             await authService.setPassword(user.id, 'oldpass');
             await authService.setPassword(user.id, 'newpass');
 
-            expect(await authService.verifyPassword(user.id, 'oldpass')).toBe(false);
-            expect(await authService.verifyPassword(user.id, 'newpass')).toBe(true);
+            expect(await authService.verifyPassword(user.id, 'oldpass')).toBe(
+                false,
+            );
+            expect(await authService.verifyPassword(user.id, 'newpass')).toBe(
+                true,
+            );
         });
 
         it('should persist credentials to kvStore', async () => {
@@ -166,7 +185,7 @@ describe('CliDefaultAuthService', () => {
 
             const stored = await kvStore.get<any[]>('cli-credentials');
             expect(stored).toBeDefined();
-            expect(stored!.some(c => c.userId === user.id)).toBe(true);
+            expect(stored!.some((c) => c.userId === user.id)).toBe(true);
         });
     });
 
@@ -188,7 +207,9 @@ describe('CliDefaultAuthService', () => {
         it('should set the session on the session service after login', async () => {
             await authService.login('root', 'root');
 
-            const current = await firstValueFrom(sessionService.getUserSession());
+            const current = await firstValueFrom(
+                sessionService.getUserSession(),
+            );
             expect(current).toBeDefined();
             expect(current!.user.name).toBe('root');
         });
@@ -229,7 +250,11 @@ describe('CliDefaultAuthService', () => {
 
         it('should fall back to root session after logout', async () => {
             // Login as a non-root user
-            await usersStore.createUser({ name: 'testlogout', email: 'tl@test.com', groups: [] });
+            await usersStore.createUser({
+                name: 'testlogout',
+                email: 'tl@test.com',
+                groups: [],
+            });
             const user = await firstValueFrom(usersStore.getUser('testlogout'));
             await authService.setPassword(user!.id, 'pass');
             await authService.login('testlogout', 'pass');

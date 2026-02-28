@@ -53,8 +53,12 @@ export class CliHotKeysCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Displays all available keyboard shortcuts and hotkeys');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('hotkeys', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('hotkeys', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
-        writer.writeln('💡 Hotkeys help you navigate and control the terminal faster');
+        writer.writeln(
+            '💡 Hotkeys help you navigate and control the terminal faster',
+        );
     }
 }

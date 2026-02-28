@@ -46,8 +46,14 @@ export class CliScreenCommandProcessor implements ICliCommandProcessor {
         writer.writeln(
             writer.wrapInColor('🪟 Viewport:', CliForegroundColor.Yellow),
         );
-        writeItem('Inner Size:', `${window.innerWidth} x ${window.innerHeight}`);
-        writeItem('Outer Size:', `${window.outerWidth} x ${window.outerHeight}`);
+        writeItem(
+            'Inner Size:',
+            `${window.innerWidth} x ${window.innerHeight}`,
+        );
+        writeItem(
+            'Outer Size:',
+            `${window.outerWidth} x ${window.outerHeight}`,
+        );
         writer.writeln();
 
         writer.writeln(
@@ -66,6 +72,8 @@ export class CliScreenCommandProcessor implements ICliCommandProcessor {
             `  ${writer.wrapInColor('screen', CliForegroundColor.Cyan)}`,
         );
         writer.writeln();
-        writer.writeln('📝 Shows: resolution, color depth, pixel ratio, viewport size, terminal size');
+        writer.writeln(
+            '📝 Shows: resolution, color depth, pixel ratio, viewport size, terminal size',
+        );
     }
 }

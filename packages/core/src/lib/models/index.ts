@@ -283,7 +283,11 @@ export type CliServerConfig = {
  * A single output item in a server response
  */
 export type CliServerOutput =
-    | { type: 'text'; value: string; style?: 'success' | 'error' | 'info' | 'warning' }
+    | {
+          type: 'text';
+          value: string;
+          style?: 'success' | 'error' | 'info' | 'warning';
+      }
     | { type: 'table'; headers: string[]; rows: string[][] }
     | { type: 'list'; items: string[]; ordered?: boolean }
     | { type: 'json'; value: any }

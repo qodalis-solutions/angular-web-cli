@@ -115,7 +115,10 @@ export class ReaderMode implements IInputMode {
         }
     }
 
-    private handlePasswordInput(request: ActiveInputRequest, data: string): void {
+    private handlePasswordInput(
+        request: ActiveInputRequest,
+        data: string,
+    ): void {
         if (data === '\r') {
             this.host.terminal.write('\r\n');
             const value = request.buffer;
@@ -128,7 +131,10 @@ export class ReaderMode implements IInputMode {
                     request.buffer.slice(0, request.cursorPosition - 1) +
                     request.buffer.slice(request.cursorPosition);
                 request.cursorPosition--;
-                this.redrawReaderLine(request, '*'.repeat(request.buffer.length));
+                this.redrawReaderLine(
+                    request,
+                    '*'.repeat(request.buffer.length),
+                );
             }
         } else if (data.startsWith('\u001B')) {
             // Ignore all escape sequences for password
@@ -143,7 +149,10 @@ export class ReaderMode implements IInputMode {
         }
     }
 
-    private handleConfirmInput(request: ActiveInputRequest, data: string): void {
+    private handleConfirmInput(
+        request: ActiveInputRequest,
+        data: string,
+    ): void {
         if (data === '\r') {
             this.host.terminal.write('\r\n');
             this.host.setActiveInputRequest(null);
@@ -198,7 +207,10 @@ export class ReaderMode implements IInputMode {
         }
     }
 
-    private redrawReaderLine(request: ActiveInputRequest, displayText: string): void {
+    private redrawReaderLine(
+        request: ActiveInputRequest,
+        displayText: string,
+    ): void {
         this.host.terminal.write('\x1b[2K\r');
         this.host.terminal.write(request.promptText + displayText);
 
@@ -220,11 +232,16 @@ export class ReaderMode implements IInputMode {
             this.host.terminal.write('\x1b[2K\r');
             const prefix = i === selectedIndex ? '  \x1b[36m> ' : '    ';
             const suffix = i === selectedIndex ? '\x1b[0m' : '';
-            this.host.terminal.write(`${prefix}${options[i].label}${suffix}\r\n`);
+            this.host.terminal.write(
+                `${prefix}${options[i].label}${suffix}\r\n`,
+            );
         }
     }
 
-    private handleSelectInlineInput(request: ActiveInputRequest, data: string): void {
+    private handleSelectInlineInput(
+        request: ActiveInputRequest,
+        data: string,
+    ): void {
         const options = request.options!;
         const selectedIndex = request.selectedIndex!;
 
@@ -267,7 +284,10 @@ export class ReaderMode implements IInputMode {
         this.host.terminal.write(`${request.promptText} ${inlineText}`);
     }
 
-    private handleMultiSelectInput(request: ActiveInputRequest, data: string): void {
+    private handleMultiSelectInput(
+        request: ActiveInputRequest,
+        data: string,
+    ): void {
         const options = request.options!;
         const selectedIndex = request.selectedIndex!;
         const checkedIndices = request.checkedIndices!;
@@ -316,9 +336,14 @@ export class ReaderMode implements IInputMode {
         for (let i = 0; i < options.length; i++) {
             this.host.terminal.write('\x1b[2K\r');
             const checkbox = checkedIndices.has(i) ? '[x]' : '[ ]';
-            const prefix = i === selectedIndex ? `  \x1b[36m> ${checkbox} ` : `    ${checkbox} `;
+            const prefix =
+                i === selectedIndex
+                    ? `  \x1b[36m> ${checkbox} `
+                    : `    ${checkbox} `;
             const suffix = i === selectedIndex ? '\x1b[0m' : '';
-            this.host.terminal.write(`${prefix}${options[i].label}${suffix}\r\n`);
+            this.host.terminal.write(
+                `${prefix}${options[i].label}${suffix}\r\n`,
+            );
         }
     }
 
@@ -335,7 +360,9 @@ export class ReaderMode implements IInputMode {
                 } else {
                     // No input and no default — stay active, show error
                     this.host.terminal.write('\r\n');
-                    this.host.terminal.write('\x1b[31mPlease enter a number.\x1b[0m\r\n');
+                    this.host.terminal.write(
+                        '\x1b[31mPlease enter a number.\x1b[0m\r\n',
+                    );
                     this.host.terminal.write(request.promptText);
                 }
                 return;
@@ -353,7 +380,9 @@ export class ReaderMode implements IInputMode {
 
             if (numOptions?.min !== undefined && value < numOptions.min) {
                 this.host.terminal.write('\r\n');
-                this.host.terminal.write(`\x1b[31mValue must be at least ${numOptions.min}.\x1b[0m\r\n`);
+                this.host.terminal.write(
+                    `\x1b[31mValue must be at least ${numOptions.min}.\x1b[0m\r\n`,
+                );
                 request.buffer = '';
                 request.cursorPosition = 0;
                 this.host.terminal.write(request.promptText);
@@ -362,7 +391,9 @@ export class ReaderMode implements IInputMode {
 
             if (numOptions?.max !== undefined && value > numOptions.max) {
                 this.host.terminal.write('\r\n');
-                this.host.terminal.write(`\x1b[31mValue must be at most ${numOptions.max}.\x1b[0m\r\n`);
+                this.host.terminal.write(
+                    `\x1b[31mValue must be at most ${numOptions.max}.\x1b[0m\r\n`,
+                );
                 request.buffer = '';
                 request.cursorPosition = 0;
                 this.host.terminal.write(request.promptText);

@@ -5,10 +5,7 @@ import {
     ICliCommandChildProcessor,
     ICliExecutionContext,
 } from '@qodalis/cli-core';
-import {
-    CliServerManager,
-    CliServerManager_TOKEN,
-} from './cli-server-manager';
+import { CliServerManager, CliServerManager_TOKEN } from './cli-server-manager';
 
 export class CliServerCommandProcessor implements ICliCommandProcessor {
     command = 'server';
@@ -42,8 +39,9 @@ class ServerListProcessor implements ICliCommandChildProcessor {
         _command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const manager =
-            context.services.get<CliServerManager>(CliServerManager_TOKEN);
+        const manager = context.services.get<CliServerManager>(
+            CliServerManager_TOKEN,
+        );
 
         if (!manager || manager.connections.size === 0) {
             context.writer.writeInfo('No servers configured.');
@@ -58,9 +56,7 @@ class ServerListProcessor implements ICliCommandChildProcessor {
                 name,
                 connection.config.url,
                 connection.connected ? 'Connected' : 'Disconnected',
-                connection.connected
-                    ? String(connection.commands.length)
-                    : '-',
+                connection.connected ? String(connection.commands.length) : '-',
             ]);
         }
 
@@ -85,8 +81,9 @@ class ServerStatusProcessor implements ICliCommandChildProcessor {
             return;
         }
 
-        const manager =
-            context.services.get<CliServerManager>(CliServerManager_TOKEN);
+        const manager = context.services.get<CliServerManager>(
+            CliServerManager_TOKEN,
+        );
         const connection = manager?.getConnection(serverName);
 
         if (!connection) {
@@ -100,9 +97,7 @@ class ServerStatusProcessor implements ICliCommandChildProcessor {
         context.spinner?.hide();
 
         if (reachable) {
-            context.writer.writeSuccess(
-                `Server '${serverName}' is reachable`,
-            );
+            context.writer.writeSuccess(`Server '${serverName}' is reachable`);
             context.writer.writeKeyValue({
                 URL: connection.config.url,
                 Connected: String(connection.connected),
@@ -128,15 +123,14 @@ class ServerReconnectProcessor implements ICliCommandChildProcessor {
     ): Promise<void> {
         const serverName = command.value;
         if (!serverName) {
-            context.writer.writeError(
-                'Usage: server reconnect <server-name>',
-            );
+            context.writer.writeError('Usage: server reconnect <server-name>');
             context.process.exit(1);
             return;
         }
 
-        const manager =
-            context.services.get<CliServerManager>(CliServerManager_TOKEN);
+        const manager = context.services.get<CliServerManager>(
+            CliServerManager_TOKEN,
+        );
 
         if (!manager) {
             context.writer.writeError('Server manager not available.');

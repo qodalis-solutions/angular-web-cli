@@ -50,7 +50,9 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
                     writer.writeln('🐞 Opens a new bug report on GitHub');
                     writer.writeln();
                     writer.writeln('📋 Usage:');
-                    writer.writeln(`  ${writer.wrapInColor('feedback report-bug <title>', CliForegroundColor.Cyan)}`);
+                    writer.writeln(
+                        `  ${writer.wrapInColor('feedback report-bug <title>', CliForegroundColor.Cyan)}`,
+                    );
                 },
             },
             {
@@ -69,7 +71,9 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
                     writer.writeln('✨ Opens a new feature request on GitHub');
                     writer.writeln();
                     writer.writeln('📋 Usage:');
-                    writer.writeln(`  ${writer.wrapInColor('feedback request-feature <title>', CliForegroundColor.Cyan)}`);
+                    writer.writeln(
+                        `  ${writer.wrapInColor('feedback request-feature <title>', CliForegroundColor.Cyan)}`,
+                    );
                 },
             },
             {
@@ -88,7 +92,9 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
                     writer.writeln('🧩 Opens a new command request on GitHub');
                     writer.writeln();
                     writer.writeln('📋 Usage:');
-                    writer.writeln(`  ${writer.wrapInColor('feedback request-command <title>', CliForegroundColor.Cyan)}`);
+                    writer.writeln(
+                        `  ${writer.wrapInColor('feedback request-command <title>', CliForegroundColor.Cyan)}`,
+                    );
                 },
             },
         );
@@ -108,15 +114,27 @@ export class CliFeedbackCommandProcessor implements ICliCommandProcessor {
     }
 
     writeDescription({ writer }: ICliExecutionContext): void {
-        writer.writeln('Allows users to report bugs or request features on GitHub');
+        writer.writeln(
+            'Allows users to report bugs or request features on GitHub',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('feedback report-bug <title>', CliForegroundColor.Cyan)}         🐞 Report a bug`);
-        writer.writeln(`  ${writer.wrapInColor('feedback request-feature <title>', CliForegroundColor.Cyan)}     ✨ Request a feature`);
-        writer.writeln(`  ${writer.wrapInColor('feedback request-command <title>', CliForegroundColor.Cyan)}     🧩 Request a new command`);
+        writer.writeln(
+            `  ${writer.wrapInColor('feedback report-bug <title>', CliForegroundColor.Cyan)}         🐞 Report a bug`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('feedback request-feature <title>', CliForegroundColor.Cyan)}     ✨ Request a feature`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('feedback request-command <title>', CliForegroundColor.Cyan)}     🧩 Request a new command`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  feedback report-bug "Login page crashes"          ${writer.wrapInColor('# Opens GitHub issue', CliForegroundColor.Green)}`);
-        writer.writeln(`  feedback request-feature "Dark mode support"      ${writer.wrapInColor('# Opens feature request', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  feedback report-bug "Login page crashes"          ${writer.wrapInColor('# Opens GitHub issue', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  feedback request-feature "Dark mode support"      ${writer.wrapInColor('# Opens feature request', CliForegroundColor.Green)}`,
+        );
     }
 }

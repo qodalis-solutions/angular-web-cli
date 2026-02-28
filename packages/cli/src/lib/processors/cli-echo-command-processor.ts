@@ -44,10 +44,16 @@ export class CliEchoCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Supports text and JSON object output via piping');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('echo <text>', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('echo <text>', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  echo Hello World                 ${writer.wrapInColor('# Print text', CliForegroundColor.Green)}`);
-        writer.writeln(`  echo "Hello, World!"             ${writer.wrapInColor('# Print quoted text', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  echo Hello World                 ${writer.wrapInColor('# Print text', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  echo "Hello, World!"             ${writer.wrapInColor('# Print quoted text', CliForegroundColor.Green)}`,
+        );
     }
 }

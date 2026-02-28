@@ -1,6 +1,9 @@
 import { CommandParser, CommandPart } from '../lib/parsers/command-parser';
 import { CliArgsParser } from '../lib/parsers/args-parser';
-import { ICliCommandProcessor, ICliCommandParameterDescriptor } from '@qodalis/cli-core';
+import {
+    ICliCommandProcessor,
+    ICliCommandParameterDescriptor,
+} from '@qodalis/cli-core';
 
 // ---------------------------------------------------------------------------
 // CommandParser
@@ -60,14 +63,22 @@ describe('CommandParser', () => {
         const result = parser.parse('build --verbose --output=dist');
         expect(result.commandName).toBe('build');
         expect(result.args.length).toBe(2);
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'verbose', value: true }));
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'output', value: 'dist' }));
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'verbose', value: true }),
+        );
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'output', value: 'dist' }),
+        );
     });
 
     it('should parse flags with hyphens in names', () => {
         const result = parser.parse('run --dry-run --max-retries=3');
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'dry-run', value: true }));
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'max-retries', value: 3 }));
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'dry-run', value: true }),
+        );
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'max-retries', value: 3 }),
+        );
     });
 
     it('should parse flags with underscores in names', () => {
@@ -92,8 +103,12 @@ describe('CommandParser', () => {
         const result = parser.parse('build -v --output=dist');
         expect(result.commandName).toBe('build');
         expect(result.args.length).toBe(2);
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'v', value: true }));
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'output', value: 'dist' }));
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'v', value: true }),
+        );
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'output', value: 'dist' }),
+        );
     });
 
     // -- Quoted values --
@@ -163,13 +178,17 @@ describe('CommandParser', () => {
         const result = parser.parse('git --verbose commit');
         // flags come before command words — command words are "git" and "commit"
         expect(result.commandName).toBe('git commit');
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'verbose', value: true }));
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'verbose', value: true }),
+        );
     });
 
     it('should handle flag at the beginning', () => {
         const result = parser.parse('--help build');
         expect(result.commandName).toBe('build');
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'help', value: true }));
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'help', value: true }),
+        );
     });
 
     // -- Edge cases --
@@ -206,12 +225,23 @@ describe('CommandParser', () => {
     });
 
     it('should parse a realistic complex command', () => {
-        const result = parser.parse('curl https://api.example.com --method=POST --header="Content-Type: application/json" -v');
+        const result = parser.parse(
+            'curl https://api.example.com --method=POST --header="Content-Type: application/json" -v',
+        );
         expect(result.commandName).toBe('curl https://api.example.com');
         expect(result.args.length).toBe(3);
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'method', value: 'POST' }));
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'header', value: 'Content-Type: application/json' }));
-        expect(result.args).toContain(jasmine.objectContaining({ name: 'v', value: true }));
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'method', value: 'POST' }),
+        );
+        expect(result.args).toContain(
+            jasmine.objectContaining({
+                name: 'header',
+                value: 'Content-Type: application/json',
+            }),
+        );
+        expect(result.args).toContain(
+            jasmine.objectContaining({ name: 'v', value: true }),
+        );
     });
 });
 
@@ -219,7 +249,9 @@ describe('CommandParser', () => {
 // CliArgsParser
 // ---------------------------------------------------------------------------
 describe('CliArgsParser', () => {
-    function makeProcessor(parameters: ICliCommandParameterDescriptor[]): ICliCommandProcessor {
+    function makeProcessor(
+        parameters: ICliCommandParameterDescriptor[],
+    ): ICliCommandProcessor {
         return {
             command: 'test',
             parameters,
@@ -231,7 +263,12 @@ describe('CliArgsParser', () => {
 
     it('should convert boolean flag (no value) to true for boolean parameter', () => {
         const processor = makeProcessor([
-            { name: 'verbose', type: 'boolean', required: false, description: '' },
+            {
+                name: 'verbose',
+                type: 'boolean',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [{ name: 'verbose', value: true }],
@@ -244,32 +281,72 @@ describe('CliArgsParser', () => {
         const processor = makeProcessor([
             { name: 'flag', type: 'boolean', required: false, description: '' },
         ]);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 'true' }], processor)['flag']).toBe(true);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 'true' }],
+                processor,
+            )['flag'],
+        ).toBe(true);
     });
 
     it('should convert "yes" and "y" to true for boolean parameter', () => {
         const processor = makeProcessor([
             { name: 'flag', type: 'boolean', required: false, description: '' },
         ]);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 'yes' }], processor)['flag']).toBe(true);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 'y' }], processor)['flag']).toBe(true);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 'yes' }],
+                processor,
+            )['flag'],
+        ).toBe(true);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 'y' }],
+                processor,
+            )['flag'],
+        ).toBe(true);
     });
 
     it('should convert "1" and numeric 1 to true for boolean parameter', () => {
         const processor = makeProcessor([
             { name: 'flag', type: 'boolean', required: false, description: '' },
         ]);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: '1' }], processor)['flag']).toBe(true);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 1 }], processor)['flag']).toBe(true);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: '1' }],
+                processor,
+            )['flag'],
+        ).toBe(true);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 1 }],
+                processor,
+            )['flag'],
+        ).toBe(true);
     });
 
     it('should convert "false" and other strings to false for boolean parameter', () => {
         const processor = makeProcessor([
             { name: 'flag', type: 'boolean', required: false, description: '' },
         ]);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 'false' }], processor)['flag']).toBe(false);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 'no' }], processor)['flag']).toBe(false);
-        expect(CliArgsParser.convertToRecord([{ name: 'flag', value: 'random' }], processor)['flag']).toBe(false);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 'false' }],
+                processor,
+            )['flag'],
+        ).toBe(false);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 'no' }],
+                processor,
+            )['flag'],
+        ).toBe(false);
+        expect(
+            CliArgsParser.convertToRecord(
+                [{ name: 'flag', value: 'random' }],
+                processor,
+            )['flag'],
+        ).toBe(false);
     });
 
     // -- Array type --
@@ -291,7 +368,13 @@ describe('CliArgsParser', () => {
 
     it('should accumulate array values when using aliases', () => {
         const processor = makeProcessor([
-            { name: 'tags', aliases: ['t'], type: 'array', required: false, description: '' },
+            {
+                name: 'tags',
+                aliases: ['t'],
+                type: 'array',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [
@@ -306,7 +389,13 @@ describe('CliArgsParser', () => {
 
     it('should accumulate array values across canonical name and alias', () => {
         const processor = makeProcessor([
-            { name: 'tags', aliases: ['t'], type: 'array', required: false, description: '' },
+            {
+                name: 'tags',
+                aliases: ['t'],
+                type: 'array',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [
@@ -371,7 +460,13 @@ describe('CliArgsParser', () => {
 
     it('should set both canonical name and alias to same value', () => {
         const processor = makeProcessor([
-            { name: 'output', aliases: ['o'], type: 'string', required: false, description: '' },
+            {
+                name: 'output',
+                aliases: ['o'],
+                type: 'string',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [{ name: 'o', value: 'dist' }],
@@ -383,7 +478,13 @@ describe('CliArgsParser', () => {
 
     it('should handle multiple aliases', () => {
         const processor = makeProcessor([
-            { name: 'verbose', aliases: ['v', 'V'], type: 'boolean', required: false, description: '' },
+            {
+                name: 'verbose',
+                aliases: ['v', 'V'],
+                type: 'boolean',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [{ name: 'V', value: true }],
@@ -396,7 +497,13 @@ describe('CliArgsParser', () => {
 
     it('should handle canonical name input with aliases defined', () => {
         const processor = makeProcessor([
-            { name: 'output', aliases: ['o'], type: 'string', required: false, description: '' },
+            {
+                name: 'output',
+                aliases: ['o'],
+                type: 'string',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [{ name: 'output', value: 'build' }],
@@ -444,7 +551,12 @@ describe('CliArgsParser', () => {
 
     it('should return empty record for no args', () => {
         const processor = makeProcessor([
-            { name: 'verbose', type: 'boolean', required: false, description: '' },
+            {
+                name: 'verbose',
+                type: 'boolean',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord([], processor);
         expect(Object.keys(result).length).toBe(0);
@@ -454,7 +566,13 @@ describe('CliArgsParser', () => {
 
     it('should handle mix of known and unknown args', () => {
         const processor = makeProcessor([
-            { name: 'output', aliases: ['o'], type: 'string', required: false, description: '' },
+            {
+                name: 'output',
+                aliases: ['o'],
+                type: 'string',
+                required: false,
+                description: '',
+            },
         ]);
         const result = CliArgsParser.convertToRecord(
             [
@@ -473,11 +591,12 @@ describe('CliArgsParser', () => {
 // CommandParser.splitByOperators
 // ---------------------------------------------------------------------------
 describe('CommandParser.splitByOperators', () => {
-
     // -- && operator --
 
     it('should split two commands by &&', () => {
-        const parts = CommandParser.splitByOperators('echo hello && echo world');
+        const parts = CommandParser.splitByOperators(
+            'echo hello && echo world',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'echo hello' },
             { type: '&&', value: '&&' },
@@ -510,7 +629,9 @@ describe('CommandParser.splitByOperators', () => {
     // -- >> operator --
 
     it('should split command and redirect target by >>', () => {
-        const parts = CommandParser.splitByOperators('echo hello >> output.txt');
+        const parts = CommandParser.splitByOperators(
+            'echo hello >> output.txt',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'echo hello' },
             { type: '>>', value: '>>' },
@@ -532,7 +653,9 @@ describe('CommandParser.splitByOperators', () => {
     });
 
     it('should handle && followed by >>', () => {
-        const parts = CommandParser.splitByOperators('build && echo done >> log.txt');
+        const parts = CommandParser.splitByOperators(
+            'build && echo done >> log.txt',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'build' },
             { type: '&&', value: '&&' },
@@ -546,9 +669,7 @@ describe('CommandParser.splitByOperators', () => {
 
     it('should return single command when no operators', () => {
         const parts = CommandParser.splitByOperators('echo hello');
-        expect(parts).toEqual([
-            { type: 'command', value: 'echo hello' },
-        ]);
+        expect(parts).toEqual([{ type: 'command', value: 'echo hello' }]);
     });
 
     it('should return empty array for empty input', () => {
@@ -599,7 +720,9 @@ describe('CommandParser.splitByOperators', () => {
     });
 
     it('should preserve flags in commands', () => {
-        const parts = CommandParser.splitByOperators('build --verbose && test -v');
+        const parts = CommandParser.splitByOperators(
+            'build --verbose && test -v',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'build --verbose' },
             { type: '&&', value: '&&' },
@@ -609,16 +732,12 @@ describe('CommandParser.splitByOperators', () => {
 
     it('should not split on && inside double-quoted strings', () => {
         const parts = CommandParser.splitByOperators('echo "a && b"');
-        expect(parts).toEqual([
-            { type: 'command', value: 'echo "a && b"' },
-        ]);
+        expect(parts).toEqual([{ type: 'command', value: 'echo "a && b"' }]);
     });
 
     it('should not split on || inside single-quoted strings', () => {
         const parts = CommandParser.splitByOperators("echo 'a || b'");
-        expect(parts).toEqual([
-            { type: 'command', value: "echo 'a || b'" },
-        ]);
+        expect(parts).toEqual([{ type: 'command', value: "echo 'a || b'" }]);
     });
 
     it('should not split on >> inside double-quoted strings', () => {
@@ -638,7 +757,9 @@ describe('CommandParser.splitByOperators', () => {
     });
 
     it('should handle --flag="value with &&" correctly', () => {
-        const parts = CommandParser.splitByOperators('cmd --msg="hello && world" && other');
+        const parts = CommandParser.splitByOperators(
+            'cmd --msg="hello && world" && other',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'cmd --msg="hello && world"' },
             { type: '&&', value: '&&' },
@@ -647,7 +768,9 @@ describe('CommandParser.splitByOperators', () => {
     });
 
     it('should handle mixed quote types with operators', () => {
-        const parts = CommandParser.splitByOperators(`echo "a || b" && echo 'c && d'`);
+        const parts = CommandParser.splitByOperators(
+            `echo "a || b" && echo 'c && d'`,
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'echo "a || b"' },
             { type: '&&', value: '&&' },
@@ -657,13 +780,13 @@ describe('CommandParser.splitByOperators', () => {
 
     it('should not split on | inside quoted strings', () => {
         const parts = CommandParser.splitByOperators('echo "a | b"');
-        expect(parts).toEqual([
-            { type: 'command', value: 'echo "a | b"' },
-        ]);
+        expect(parts).toEqual([{ type: 'command', value: 'echo "a | b"' }]);
     });
 
     it('should handle >> redirect with path containing slashes', () => {
-        const parts = CommandParser.splitByOperators('echo data >> /home/user/log.txt');
+        const parts = CommandParser.splitByOperators(
+            'echo data >> /home/user/log.txt',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'echo data' },
             { type: '>>', value: '>>' },
@@ -674,7 +797,9 @@ describe('CommandParser.splitByOperators', () => {
     // -- Pipe operator --
 
     it('should split two commands by |', () => {
-        const parts = CommandParser.splitByOperators('echo hello | base64 encode');
+        const parts = CommandParser.splitByOperators(
+            'echo hello | base64 encode',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'echo hello' },
             { type: '|', value: '|' },
@@ -714,7 +839,9 @@ describe('CommandParser.splitByOperators', () => {
     });
 
     it('should handle pipe combined with && and >>', () => {
-        const parts = CommandParser.splitByOperators('echo hello | base64 encode && echo done >> log.txt');
+        const parts = CommandParser.splitByOperators(
+            'echo hello | base64 encode && echo done >> log.txt',
+        );
         expect(parts).toEqual([
             { type: 'command', value: 'echo hello' },
             { type: '|', value: '|' },

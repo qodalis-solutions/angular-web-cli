@@ -14,10 +14,20 @@ export class CliWhoCommandProcessor implements ICliCommandProcessor {
     aliases = ['who'];
     description = 'Show who is logged in and session info';
     author = DefaultLibraryAuthor;
-    metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
-    stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };
+    metadata: CliProcessorMetadata = {
+        sealed: true,
+        module: 'users',
+        icon: CliIcon.User,
+    };
+    stateConfiguration: CliStateConfiguration = {
+        initialState: {},
+        storeName: 'users',
+    };
 
-    async processCommand(command: CliProcessCommand, context: ICliExecutionContext): Promise<void> {
+    async processCommand(
+        command: CliProcessCommand,
+        context: ICliExecutionContext,
+    ): Promise<void> {
         const session = context.userSession;
 
         if (!session) {
@@ -29,19 +39,23 @@ export class CliWhoCommandProcessor implements ICliCommandProcessor {
         const lastActivity = new Date(session.lastActivity).toLocaleString();
         const idle = this.formatDuration(Date.now() - session.lastActivity);
 
-        context.writer.writeObjectsAsTable([{
-            USER: session.user.name,
-            TTY: 'web',
-            'LOGIN@': loginTime,
-            IDLE: idle,
-        }]);
+        context.writer.writeObjectsAsTable([
+            {
+                USER: session.user.name,
+                TTY: 'web',
+                'LOGIN@': loginTime,
+                IDLE: idle,
+            },
+        ]);
     }
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
         writer.writeln('Show who is logged in and session info');
         writer.writeln();
-        writer.writeln(`  ${writer.wrapInColor('w', CliForegroundColor.Cyan)}     Show current session`);
+        writer.writeln(
+            `  ${writer.wrapInColor('w', CliForegroundColor.Cyan)}     Show current session`,
+        );
     }
 
     private formatDuration(ms: number): string {

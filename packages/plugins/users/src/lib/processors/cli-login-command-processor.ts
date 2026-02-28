@@ -15,7 +15,10 @@ import {
     CliStateConfiguration,
 } from '@qodalis/cli-core';
 import { firstValueFrom } from 'rxjs';
-import { CliUsersModuleConfig, CliUsersModuleConfig_TOKEN } from '../models/users-module-config';
+import {
+    CliUsersModuleConfig,
+    CliUsersModuleConfig_TOKEN,
+} from '../models/users-module-config';
 
 export class CliLoginCommandProcessor implements ICliCommandProcessor {
     command = 'login';
@@ -23,8 +26,15 @@ export class CliLoginCommandProcessor implements ICliCommandProcessor {
     author = DefaultLibraryAuthor;
     acceptsRawInput = true;
     valueRequired = false;
-    metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
-    stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };
+    metadata: CliProcessorMetadata = {
+        sealed: true,
+        module: 'users',
+        icon: CliIcon.User,
+    };
+    stateConfiguration: CliStateConfiguration = {
+        initialState: {},
+        storeName: 'users',
+    };
 
     private authService!: ICliAuthService;
     private usersStore!: ICliUsersStoreService;
@@ -32,13 +42,25 @@ export class CliLoginCommandProcessor implements ICliCommandProcessor {
     private moduleConfig!: CliUsersModuleConfig;
 
     async initialize(context: ICliExecutionContext): Promise<void> {
-        this.authService = context.services.get<ICliAuthService>(ICliAuthService_TOKEN);
-        this.usersStore = context.services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
-        this.sessionService = context.services.get<ICliUserSessionService>(ICliUserSessionService_TOKEN);
-        this.moduleConfig = context.services.get<CliUsersModuleConfig>(CliUsersModuleConfig_TOKEN) || {};
+        this.authService = context.services.get<ICliAuthService>(
+            ICliAuthService_TOKEN,
+        );
+        this.usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
+        this.sessionService = context.services.get<ICliUserSessionService>(
+            ICliUserSessionService_TOKEN,
+        );
+        this.moduleConfig =
+            context.services.get<CliUsersModuleConfig>(
+                CliUsersModuleConfig_TOKEN,
+            ) || {};
     }
 
-    async processCommand(command: CliProcessCommand, context: ICliExecutionContext): Promise<void> {
+    async processCommand(
+        command: CliProcessCommand,
+        context: ICliExecutionContext,
+    ): Promise<void> {
         let username = command.value as string;
 
         if (!username) {
@@ -57,13 +79,22 @@ export class CliLoginCommandProcessor implements ICliCommandProcessor {
             if (password === null) return;
 
             try {
-                const session = await this.authService.login(username, password);
-                context.writer.writeSuccess(`Logged in as ${session.user.name}`);
+                const session = await this.authService.login(
+                    username,
+                    password,
+                );
+                context.writer.writeSuccess(
+                    `Logged in as ${session.user.name}`,
+                );
             } catch (e: any) {
-                context.writer.writeError(e.message || 'login: Authentication failure');
+                context.writer.writeError(
+                    e.message || 'login: Authentication failure',
+                );
             }
         } else {
-            const user = await firstValueFrom(this.usersStore.getUser(username));
+            const user = await firstValueFrom(
+                this.usersStore.getUser(username),
+            );
             if (!user) {
                 context.writer.writeError(`login: Unknown user: ${username}`);
                 return;
@@ -85,7 +116,11 @@ export class CliLoginCommandProcessor implements ICliCommandProcessor {
         const { writer } = context;
         writer.writeln('Log in with username and password');
         writer.writeln();
-        writer.writeln(`  ${writer.wrapInColor('login', CliForegroundColor.Cyan)}                 Prompts for username and password`);
-        writer.writeln(`  ${writer.wrapInColor('login <username>', CliForegroundColor.Cyan)}       Prompts for password only`);
+        writer.writeln(
+            `  ${writer.wrapInColor('login', CliForegroundColor.Cyan)}                 Prompts for username and password`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('login <username>', CliForegroundColor.Cyan)}       Prompts for password only`,
+        );
     }
 }

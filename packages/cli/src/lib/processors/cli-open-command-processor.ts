@@ -58,7 +58,9 @@ export class CliOpenCommandProcessor implements ICliCommandProcessor {
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
         writer.writeln('Open a URL in a new browser tab');
-        writer.writeln('Automatically adds https:// if no protocol is specified');
+        writer.writeln(
+            'Automatically adds https:// if no protocol is specified',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
         writer.writeln(

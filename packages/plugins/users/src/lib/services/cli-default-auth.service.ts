@@ -25,7 +25,8 @@ export class CliDefaultAuthService implements ICliAuthService {
         this.usersStore = usersStore;
         this.sessionService = sessionService;
 
-        const stored = await kvStore.get<ICliUserCredentials[]>(CREDENTIALS_KEY);
+        const stored =
+            await kvStore.get<ICliUserCredentials[]>(CREDENTIALS_KEY);
         this.credentials = stored || [];
 
         // Seed default root password if no credentials exist
@@ -82,7 +83,7 @@ export class CliDefaultAuthService implements ICliAuthService {
         const salt = this.generateSalt();
         const passwordHash = await this.hashPassword(password, salt);
 
-        const existing = this.credentials.findIndex(c => c.userId === userId);
+        const existing = this.credentials.findIndex((c) => c.userId === userId);
         const cred: ICliUserCredentials = {
             userId,
             passwordHash,
@@ -100,7 +101,7 @@ export class CliDefaultAuthService implements ICliAuthService {
     }
 
     async verifyPassword(userId: string, password: string): Promise<boolean> {
-        const cred = this.credentials.find(c => c.userId === userId);
+        const cred = this.credentials.find((c) => c.userId === userId);
         if (!cred) {
             return false;
         }
@@ -113,7 +114,7 @@ export class CliDefaultAuthService implements ICliAuthService {
         const data = new TextEncoder().encode(salt + password);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         return Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, '0'))
+            .map((b) => b.toString(16).padStart(2, '0'))
             .join('');
     }
 
@@ -121,7 +122,7 @@ export class CliDefaultAuthService implements ICliAuthService {
         const array = new Uint8Array(16);
         crypto.getRandomValues(array);
         return Array.from(array)
-            .map(b => b.toString(16).padStart(2, '0'))
+            .map((b) => b.toString(16).padStart(2, '0'))
             .join('');
     }
 

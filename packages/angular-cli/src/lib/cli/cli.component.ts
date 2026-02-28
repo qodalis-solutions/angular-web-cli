@@ -24,10 +24,11 @@ import {
 
 @Component({
     selector: 'cli',
-    template: `<div #terminal
+    template: `<div
+        #terminal
         [style.height]="height || '100%'"
-        style="width: 100%;">
-    </div>`,
+        style="width: 100%;"
+    ></div>`,
     styles: [],
     encapsulation: ViewEncapsulation.None,
 })
@@ -68,7 +69,10 @@ export class CliComponent implements AfterViewInit, OnDestroy {
 
         // Bridge Angular DI services into the engine's service container
         if (this.pingServerService) {
-            this.engine.registerService('cli-ping-server-service', this.pingServerService);
+            this.engine.registerService(
+                'cli-ping-server-service',
+                this.pingServerService,
+            );
         }
 
         // Register processors provided via Angular DI (from resolveCommandProcessorProvider)

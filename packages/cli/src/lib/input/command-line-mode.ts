@@ -1,10 +1,16 @@
 import { IInputMode } from './input-mode';
 import { CliLineBuffer } from './cli-line-buffer';
-import { CliTerminalLineRenderer, PromptOptions } from './cli-terminal-line-renderer';
+import {
+    CliTerminalLineRenderer,
+    PromptOptions,
+} from './cli-terminal-line-renderer';
 import { CliCompletionEngine } from '../completion/cli-completion-engine';
 import { CliCommandHistory } from '../services/cli-command-history';
 import { Terminal } from '@xterm/xterm';
-import { ICliCommandExecutorService, ICliExecutionContext } from '@qodalis/cli-core';
+import {
+    ICliCommandExecutorService,
+    ICliExecutionContext,
+} from '@qodalis/cli-core';
 
 /**
  * Host interface for CommandLineMode — provides access to
@@ -23,7 +29,11 @@ export interface CommandLineModeHost {
     isProgressRunning(): boolean;
     isRawModeActive(): boolean;
     abort(): void;
-    showPrompt(options?: { reset?: boolean; newLine?: boolean; keepCurrentLine?: boolean }): void;
+    showPrompt(options?: {
+        reset?: boolean;
+        newLine?: boolean;
+        keepCurrentLine?: boolean;
+    }): void;
 }
 
 export class CommandLineMode implements IInputMode {
@@ -175,15 +185,21 @@ export class CommandLineMode implements IInputMode {
         switch (result.action) {
             case 'complete': {
                 const { replacement, tokenStart, token } = result;
-                if (replacement === undefined || tokenStart === undefined || token === undefined) {
+                if (
+                    replacement === undefined ||
+                    tokenStart === undefined ||
+                    token === undefined
+                ) {
                     break;
                 }
 
                 const before = buffer.text.slice(0, tokenStart);
                 const after = buffer.text.slice(tokenStart + token.length);
-                const suffix = after.length === 0 && !replacement.endsWith('/') ? ' ' : '';
+                const suffix =
+                    after.length === 0 && !replacement.endsWith('/') ? ' ' : '';
                 buffer.setText(before + replacement + suffix + after);
-                buffer.cursorPosition = tokenStart + replacement.length + suffix.length;
+                buffer.cursorPosition =
+                    tokenStart + replacement.length + suffix.length;
                 this.refreshLine();
                 break;
             }
@@ -194,7 +210,10 @@ export class CommandLineMode implements IInputMode {
                 this.host.terminal.write('\r\n');
 
                 const maxLen = Math.max(...candidates.map((c) => c.length));
-                const cols = Math.max(1, Math.floor((this.host.terminal.cols || 80) / (maxLen + 2)));
+                const cols = Math.max(
+                    1,
+                    Math.floor((this.host.terminal.cols || 80) / (maxLen + 2)),
+                );
                 let line = '';
                 for (let i = 0; i < candidates.length; i++) {
                     line += candidates[i].padEnd(maxLen + 2);
@@ -211,10 +230,13 @@ export class CommandLineMode implements IInputMode {
                     this.host.getPromptOptions(),
                 );
                 this.host.terminal.write(promptStr);
-                this.host.setPromptLength(this.host.terminal.buffer.active.cursorX);
+                this.host.setPromptLength(
+                    this.host.terminal.buffer.active.cursorX,
+                );
                 this.host.terminal.write(buffer.text);
 
-                const charsAfterCursor = buffer.text.length - buffer.cursorPosition;
+                const charsAfterCursor =
+                    buffer.text.length - buffer.cursorPosition;
                 if (charsAfterCursor > 0) {
                     this.host.terminal.write(`\x1b[${charsAfterCursor}D`);
                 }
@@ -238,7 +260,8 @@ export class CommandLineMode implements IInputMode {
             this.displayCommandFromHistory();
         } else {
             this.historyIndex = this.host.commandHistory.getLastIndex();
-            const previousContentLength = this.host.getPromptLength() + buffer.text.length;
+            const previousContentLength =
+                this.host.getPromptLength() + buffer.text.length;
             buffer.clear();
             this.refreshLine(previousContentLength);
         }
@@ -246,8 +269,10 @@ export class CommandLineMode implements IInputMode {
 
     private displayCommandFromHistory(): void {
         const buffer = this.host.lineBuffer;
-        const previousContentLength = this.host.getPromptLength() + buffer.text.length;
-        const cmd = this.host.commandHistory.getCommand(this.historyIndex) || '';
+        const previousContentLength =
+            this.host.getPromptLength() + buffer.text.length;
+        const cmd =
+            this.host.commandHistory.getCommand(this.historyIndex) || '';
         buffer.setText(cmd);
         this.refreshLine(previousContentLength);
     }
@@ -273,13 +298,26 @@ export class CommandLineMode implements IInputMode {
 
     private updateSelection(): void {
         if (this.selectionStart && this.selectionEnd) {
-            const startRow = Math.min(this.selectionStart.y, this.selectionEnd.y);
+            const startRow = Math.min(
+                this.selectionStart.y,
+                this.selectionEnd.y,
+            );
             const endRow = Math.max(this.selectionStart.y, this.selectionEnd.y);
 
             if (startRow === endRow) {
-                const startCol = Math.min(this.selectionStart.x, this.selectionEnd.x);
-                const endCol = Math.max(this.selectionStart.x, this.selectionEnd.x);
-                this.host.terminal.select(startCol, startRow, Math.abs(endCol - startCol));
+                const startCol = Math.min(
+                    this.selectionStart.x,
+                    this.selectionEnd.x,
+                );
+                const endCol = Math.max(
+                    this.selectionStart.x,
+                    this.selectionEnd.x,
+                );
+                this.host.terminal.select(
+                    startCol,
+                    startRow,
+                    Math.abs(endCol - startCol),
+                );
             } else {
                 this.host.terminal.selectLines(startRow, endRow);
             }

@@ -13,8 +13,23 @@
         "cwd": "packages/plugins/guid",
         "parallel": false
       },
-      "inputs": ["production", "sharedGlobals"],
-      "outputs": ["{workspaceRoot}/dist/guid"]
+      "inputs": [
+        "production",
+        "sharedGlobals"
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/guid"
+      ]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "tsConfig": "packages/plugins/guid/tsconfig.spec.json",
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ]
+      }
     }
   }
 }

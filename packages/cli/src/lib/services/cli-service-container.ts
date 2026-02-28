@@ -67,10 +67,21 @@ export class CliServiceContainer implements ICliServiceProvider {
     getRegisteredTokens(): string[] {
         const tokens: string[] = [];
         for (const key of this.services.keys()) {
-            tokens.push(typeof key === 'string' ? key : (typeof key === 'function' ? key.name : String(key)));
+            tokens.push(
+                typeof key === 'string'
+                    ? key
+                    : typeof key === 'function'
+                      ? key.name
+                      : String(key),
+            );
         }
         for (const key of this.multiServices.keys()) {
-            const name = typeof key === 'string' ? key : (typeof key === 'function' ? key.name : String(key));
+            const name =
+                typeof key === 'string'
+                    ? key
+                    : typeof key === 'function'
+                      ? key.name
+                      : String(key);
             tokens.push(`${name} (multi)`);
         }
         return tokens;
@@ -79,12 +90,21 @@ export class CliServiceContainer implements ICliServiceProvider {
     /**
      * Returns detailed info for each registered service: token name, value type, and multi flag.
      */
-    getRegisteredServiceDetails(): { token: string; type: string; multi: boolean }[] {
+    getRegisteredServiceDetails(): {
+        token: string;
+        type: string;
+        multi: boolean;
+    }[] {
         const details: { token: string; type: string; multi: boolean }[] = [];
 
         for (const [key, value] of this.services.entries()) {
             details.push({
-                token: typeof key === 'string' ? key : (typeof key === 'function' ? key.name : String(key)),
+                token:
+                    typeof key === 'string'
+                        ? key
+                        : typeof key === 'function'
+                          ? key.name
+                          : String(key),
                 type: this.describeValue(value),
                 multi: false,
             });
@@ -92,7 +112,12 @@ export class CliServiceContainer implements ICliServiceProvider {
 
         for (const [key, values] of this.multiServices.entries()) {
             details.push({
-                token: typeof key === 'string' ? key : (typeof key === 'function' ? key.name : String(key)),
+                token:
+                    typeof key === 'string'
+                        ? key
+                        : typeof key === 'function'
+                          ? key.name
+                          : String(key),
                 type: `[${values.map((v: any) => this.describeValue(v)).join(', ')}]`,
                 multi: true,
             });
@@ -107,11 +132,13 @@ export class CliServiceContainer implements ICliServiceProvider {
     private describeValue(value: any): string {
         if (value === null) return 'null';
         if (value === undefined) return 'undefined';
-        if (typeof value === 'string') return `string("${value.length > 30 ? value.slice(0, 30) + '...' : value}")`;
+        if (typeof value === 'string')
+            return `string("${value.length > 30 ? value.slice(0, 30) + '...' : value}")`;
         if (typeof value === 'number') return `number(${value})`;
         if (typeof value === 'boolean') return `boolean(${value})`;
         if (Array.isArray(value)) return `Array(${value.length})`;
-        if (typeof value === 'object' && value.constructor?.name) return value.constructor.name;
+        if (typeof value === 'object' && value.constructor?.name)
+            return value.constructor.name;
         return typeof value;
     }
 

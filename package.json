@@ -15,7 +15,7 @@
     "serve:react-demo": "cd apps/demo-react && npx vite --port 4301",
     "serve:vue-demo": "cd apps/demo-vue && npx vite --port 4302",
     "serve:docs": "nx serve docs",
-    "test": "nx run-many -t test",
+    "test": "nx run-many -t test -- --watch=false",
     "lint": "nx run-many -t lint",
     "format": "prettier --write \"packages/**/*.{ts,html,css,scss}\" \"apps/**/*.{ts,html,css,scss}\"",
     "graph": "nx graph",

@@ -20,19 +20,36 @@ export class CliGroupaddCommandProcessor implements ICliCommandProcessor {
     author = DefaultLibraryAuthor;
     acceptsRawInput = true;
     valueRequired = true;
-    metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
-    stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };
+    metadata: CliProcessorMetadata = {
+        sealed: true,
+        module: 'users',
+        icon: CliIcon.User,
+    };
+    stateConfiguration: CliStateConfiguration = {
+        initialState: {},
+        storeName: 'users',
+    };
     parameters: ICliCommandParameterDescriptor[] = [
-        { name: 'description', description: 'Group description', type: 'string', required: false },
+        {
+            name: 'description',
+            description: 'Group description',
+            type: 'string',
+            required: false,
+        },
     ];
 
     private groupsStore!: ICliGroupsStoreService;
 
     async initialize(context: ICliExecutionContext): Promise<void> {
-        this.groupsStore = context.services.get<ICliGroupsStoreService>(ICliGroupsStoreService_TOKEN);
+        this.groupsStore = context.services.get<ICliGroupsStoreService>(
+            ICliGroupsStoreService_TOKEN,
+        );
     }
 
-    async processCommand(command: CliProcessCommand, context: ICliExecutionContext): Promise<void> {
+    async processCommand(
+        command: CliProcessCommand,
+        context: ICliExecutionContext,
+    ): Promise<void> {
         if (!requireAdmin(context)) return;
 
         const name = command.value as string;
@@ -42,7 +59,9 @@ export class CliGroupaddCommandProcessor implements ICliCommandProcessor {
             await this.groupsStore.createGroup(name, description);
             context.writer.writeSuccess(`groupadd: group '${name}' created`);
         } catch (e: any) {
-            context.writer.writeError(e.message || 'groupadd: failed to create group');
+            context.writer.writeError(
+                e.message || 'groupadd: failed to create group',
+            );
         }
     }
 
@@ -50,7 +69,11 @@ export class CliGroupaddCommandProcessor implements ICliCommandProcessor {
         const { writer } = context;
         writer.writeln('Create a new group');
         writer.writeln();
-        writer.writeln(`  ${writer.wrapInColor('groupadd <name>', CliForegroundColor.Cyan)}`);
-        writer.writeln(`  ${writer.wrapInColor('groupadd <name> --description="Team devs"', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('groupadd <name>', CliForegroundColor.Cyan)}`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('groupadd <name> --description="Team devs"', CliForegroundColor.Cyan)}`,
+        );
     }
 }

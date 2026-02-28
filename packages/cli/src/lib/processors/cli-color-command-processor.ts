@@ -119,17 +119,14 @@ export class CliColorCommandProcessor implements ICliCommandProcessor {
     }
 
     private parseHsl(input: string): [number, number, number] {
-        const match = input.match(
-            /(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?/,
-        );
+        const match = input.match(/(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?/);
         if (!match) throw new Error('Invalid HSL');
         return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])];
     }
 
     private rgbToHex(r: number, g: number, b: number): string {
         return (
-            '#' +
-            [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')
+            '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')
         );
     }
 
@@ -163,11 +160,7 @@ export class CliColorCommandProcessor implements ICliCommandProcessor {
             }
         }
 
-        return [
-            Math.round(h * 360),
-            Math.round(s * 100),
-            Math.round(l * 100),
-        ];
+        return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
     }
 
     private hslToRgb(

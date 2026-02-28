@@ -131,10 +131,7 @@ export class CliServerManager {
 
             const serverName = servers[0];
             const namespacedCommand = `${serverName}:${command}`;
-            const existingProcessor = this.registry.findProcessor(
-                command,
-                [],
-            );
+            const existingProcessor = this.registry.findProcessor(command, []);
 
             // Only register bare alias if no local processor owns this command
             if (existingProcessor && !existingProcessor.metadata?.requireServer)
@@ -149,8 +146,14 @@ export class CliServerManager {
             // Create a proper proxy processor instance (not a spread copy)
             // to preserve prototype methods like processCommand
             const connection = this.connections.get(serverName)!;
-            const descriptor = connection.commands.find(c => c.command === command)!;
-            const alias = new CliServerProxyProcessor(connection, descriptor, serverName);
+            const descriptor = connection.commands.find(
+                (c) => c.command === command,
+            )!;
+            const alias = new CliServerProxyProcessor(
+                connection,
+                descriptor,
+                serverName,
+            );
             alias.command = command;
             alias.aliases = [namespacedCommand];
 

@@ -244,19 +244,33 @@ export class CliCurlCommandProcessor implements ICliCommandProcessor {
         writer.writeln(this.description!);
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('curl <method> <url> [options]', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('curl <method> <url> [options]', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('⚙️  Options:');
-        writer.writeln(`  ${writer.wrapInColor('-H, --header', CliForegroundColor.Yellow)}     Add custom headers`);
-        writer.writeln(`  ${writer.wrapInColor('-d, --data', CliForegroundColor.Yellow)}       Add request body (JSON)`);
-        writer.writeln(`  ${writer.wrapInColor('--verbose', CliForegroundColor.Yellow)}        Print detailed response (status, headers)`);
-        writer.writeln(`  ${writer.wrapInColor('--proxy', CliForegroundColor.Yellow)}          Route request through proxy`);
+        writer.writeln(
+            `  ${writer.wrapInColor('-H, --header', CliForegroundColor.Yellow)}     Add custom headers`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('-d, --data', CliForegroundColor.Yellow)}       Add request body (JSON)`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--verbose', CliForegroundColor.Yellow)}        Print detailed response (status, headers)`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--proxy', CliForegroundColor.Yellow)}          Route request through proxy`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
         writer.writeln(`  curl get https://api.example.com/users`);
-        writer.writeln(`  curl post https://api.example.com/users -d='{"name":"John"}' -H="Content-Type: application/json"`);
+        writer.writeln(
+            `  curl post https://api.example.com/users -d='{"name":"John"}' -H="Content-Type: application/json"`,
+        );
         writer.writeln(`  curl delete https://api.example.com/users/1 --proxy`);
         writer.writeln();
-        writer.writeWarning('⚠️  The server must allow CORS for this tool to work');
+        writer.writeWarning(
+            '⚠️  The server must allow CORS for this tool to work',
+        );
     }
 }

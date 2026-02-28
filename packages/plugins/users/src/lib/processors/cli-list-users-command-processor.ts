@@ -79,7 +79,7 @@ export class CliListUsersCommandProcessor implements ICliCommandProcessor {
             return;
         }
 
-        const displayUsers = users.map(u => ({
+        const displayUsers = users.map((u) => ({
             name: u.name,
             email: u.email,
             groups: u.groups.join(', ') || '(none)',
@@ -94,8 +94,14 @@ export class CliListUsersCommandProcessor implements ICliCommandProcessor {
         writer.writeln('List all users in the system');
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('listusers', CliForegroundColor.Cyan)}                              List all users`);
-        writer.writeln(`  ${writer.wrapInColor('listusers --query=<search>', CliForegroundColor.Cyan)}              Filter users by name/email`);
-        writer.writeln(`  ${writer.wrapInColor('listusers --skip=5 --take=10', CliForegroundColor.Cyan)}            Paginate results`);
+        writer.writeln(
+            `  ${writer.wrapInColor('listusers', CliForegroundColor.Cyan)}                              List all users`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('listusers --query=<search>', CliForegroundColor.Cyan)}              Filter users by name/email`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('listusers --skip=5 --take=10', CliForegroundColor.Cyan)}            Paginate results`,
+        );
     }
 }

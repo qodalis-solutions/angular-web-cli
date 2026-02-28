@@ -17,7 +17,10 @@ import {
 } from '@qodalis/cli-core';
 
 import { firstValueFrom } from 'rxjs';
-import { CliUsersModuleConfig, CliUsersModuleConfig_TOKEN } from '../models/users-module-config';
+import {
+    CliUsersModuleConfig,
+    CliUsersModuleConfig_TOKEN,
+} from '../models/users-module-config';
 
 export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
     command = 'su';
@@ -60,7 +63,10 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
         this.authService = context.services.get<ICliAuthService>(
             ICliAuthService_TOKEN,
         );
-        this.moduleConfig = context.services.get<CliUsersModuleConfig>(CliUsersModuleConfig_TOKEN) || {};
+        this.moduleConfig =
+            context.services.get<CliUsersModuleConfig>(
+                CliUsersModuleConfig_TOKEN,
+            ) || {};
     }
 
     async processCommand(
@@ -106,7 +112,10 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
                 return;
             }
 
-            const valid = await this.authService.verifyPassword(user.id, password);
+            const valid = await this.authService.verifyPassword(
+                user.id,
+                password,
+            );
 
             if (!valid) {
                 context.writer.writeError('su: Authentication failure');
@@ -130,10 +139,16 @@ export class CliSwitchUserCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Switch to a different user session');
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('su <user name or email>', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('su <user name or email>', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('Examples:');
-        writer.writeln(`  su admin@example.com             ${writer.wrapInColor('# Switch to admin', CliForegroundColor.Green)}`);
-        writer.writeln(`  su root                          ${writer.wrapInColor('# Switch to root by name', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  su admin@example.com             ${writer.wrapInColor('# Switch to admin', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  su root                          ${writer.wrapInColor('# Switch to root by name', CliForegroundColor.Green)}`,
+        );
     }
 }

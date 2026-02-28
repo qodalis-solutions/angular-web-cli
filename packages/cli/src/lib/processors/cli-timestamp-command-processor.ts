@@ -85,7 +85,9 @@ export class CliTimestampCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Convert a Unix timestamp to a human-readable date');
+                    writer.writeln(
+                        'Convert a Unix timestamp to a human-readable date',
+                    );
                     writer.writeln('Auto-detects seconds vs milliseconds');
                     writer.writeln();
                     writer.writeln('📋 Usage:');
@@ -154,7 +156,9 @@ export class CliTimestampCommandProcessor implements ICliCommandProcessor {
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Convert between Unix timestamps and human-readable dates');
+        writer.writeln(
+            'Convert between Unix timestamps and human-readable dates',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
         writer.writeln(

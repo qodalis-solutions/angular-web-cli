@@ -1,12 +1,19 @@
 import {
-    ITerminalOptions, ITerminalInitOnlyOptions, Terminal,
+    ITerminalOptions,
+    ITerminalInitOnlyOptions,
+    Terminal,
 } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
 import {
-    CliOptions, CliProvider, ICliCommandProcessor, ICliModule, DefaultThemes,
-    ICliCompletionProvider, ICliCompletionProvider_TOKEN,
+    CliOptions,
+    CliProvider,
+    ICliCommandProcessor,
+    ICliModule,
+    DefaultThemes,
+    ICliCompletionProvider,
+    ICliCompletionProvider_TOKEN,
 } from '@qodalis/cli-core';
 import { CliCommandExecutor } from '../executor/cli-command-executor';
 import { CliCommandProcessorRegistry } from '../registry/cli-command-processor-registry';
@@ -19,11 +26,20 @@ import { CliKeyValueStore } from '../storage/cli-key-value-store';
 import { CliBoot } from '../services/cli-boot';
 import { welcomeModule } from '../services/cli-welcome-message';
 import { OverlayAddon } from '../addons/overlay';
-import { CliCommandHistory_TOKEN, CliModuleRegistry_TOKEN, CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN, ICliPingServerService_TOKEN } from '../tokens';
+import {
+    CliCommandHistory_TOKEN,
+    CliModuleRegistry_TOKEN,
+    CliProcessorsRegistry_TOKEN,
+    CliStateStoreManager_TOKEN,
+    ICliPingServerService_TOKEN,
+} from '../tokens';
 import { CliDefaultPingServerService } from '../services/defaults/cli-default-ping-server.service';
 import { CliCommandCompletionProvider } from '../completion/cli-command-completion-provider';
 import { CliParameterCompletionProvider } from '../completion/cli-parameter-completion-provider';
-import { CliServerManager, CliServerManager_TOKEN } from '../server/cli-server-manager';
+import {
+    CliServerManager,
+    CliServerManager_TOKEN,
+} from '../server/cli-server-manager';
 import { createServerModule } from '../server/cli-server-module';
 
 export interface CliEngineOptions extends CliOptions {
@@ -112,14 +128,18 @@ export class CliEngine {
         const commandHistory = new CliCommandHistory(store);
         await commandHistory.initialize();
 
-        services.set([
-            { provide: 'cli-key-value-store', useValue: store },
-        ]);
+        services.set([{ provide: 'cli-key-value-store', useValue: store }]);
 
-        const stateStoreManager = new CliStateStoreManager(services, this.registry);
+        const stateStoreManager = new CliStateStoreManager(
+            services,
+            this.registry,
+        );
 
         services.set([
-            { provide: CliStateStoreManager_TOKEN, useValue: stateStoreManager },
+            {
+                provide: CliStateStoreManager_TOKEN,
+                useValue: stateStoreManager,
+            },
             { provide: CliProcessorsRegistry_TOKEN, useValue: this.registry },
             { provide: CliCommandHistory_TOKEN, useValue: commandHistory },
         ]);
@@ -130,10 +150,17 @@ export class CliEngine {
         }
 
         // Register default services only if not already provided
-        const pendingTokens = new Set(this.pendingServices.map((s) => s.provide));
+        const pendingTokens = new Set(
+            this.pendingServices.map((s) => s.provide),
+        );
 
         if (!pendingTokens.has(ICliPingServerService_TOKEN)) {
-            services.set([{ provide: ICliPingServerService_TOKEN, useValue: new CliDefaultPingServerService() }]);
+            services.set([
+                {
+                    provide: ICliPingServerService_TOKEN,
+                    useValue: new CliDefaultPingServerService(),
+                },
+            ]);
         }
 
         // 4. Create boot service with registry and services
@@ -141,7 +168,10 @@ export class CliEngine {
 
         // Register the module registry so debug/introspection commands can access it
         services.set([
-            { provide: CliModuleRegistry_TOKEN, useValue: this.bootService.getModuleRegistry() },
+            {
+                provide: CliModuleRegistry_TOKEN,
+                useValue: this.bootService.getModuleRegistry(),
+            },
         ]);
 
         // 5. Create executor and execution context
@@ -186,7 +216,10 @@ export class CliEngine {
         // Collect plugin-registered providers (multi-service)
         let pluginProviders: ICliCompletionProvider[] = [];
         try {
-            pluginProviders = services.get<ICliCompletionProvider[]>(ICliCompletionProvider_TOKEN) ?? [];
+            pluginProviders =
+                services.get<ICliCompletionProvider[]>(
+                    ICliCompletionProvider_TOKEN,
+                ) ?? [];
         } catch {
             // No plugin providers registered — that's fine
         }
@@ -205,7 +238,10 @@ export class CliEngine {
                 try {
                     await module.onAfterBoot(this.executionContext);
                 } catch (e) {
-                    console.error(`Error in onAfterBoot for module "${module.name}":`, e);
+                    console.error(
+                        `Error in onAfterBoot for module "${module.name}":`,
+                        e,
+                    );
                 }
             }
         }
@@ -294,7 +330,9 @@ export class CliEngine {
 
         // Prevent wheel events from scrolling the host page
         this.wheelListener = (e: WheelEvent) => e.preventDefault();
-        this.container.addEventListener('wheel', this.wheelListener, { passive: false });
+        this.container.addEventListener('wheel', this.wheelListener, {
+            passive: false,
+        });
 
         this.terminal.focus();
         this.handleResize();
@@ -315,7 +353,10 @@ export class CliEngine {
     private waitForLayout(): Promise<void> {
         return new Promise<void>((resolve) => {
             const check = () => {
-                if (this.container.offsetWidth > 0 && this.container.offsetHeight > 0) {
+                if (
+                    this.container.offsetWidth > 0 &&
+                    this.container.offsetHeight > 0
+                ) {
                     resolve();
                     return;
                 }

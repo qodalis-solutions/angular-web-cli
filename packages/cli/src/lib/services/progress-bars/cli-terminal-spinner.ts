@@ -13,11 +13,11 @@ export class CliTerminalSpinner implements ICliSpinner {
     private spinnerInterval?: ReturnType<typeof setInterval> | null;
     private spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
     private spinnerColors = [
-        '\x1b[38;5;39m',  // blue
-        '\x1b[38;5;45m',  // cyan
-        '\x1b[38;5;49m',  // teal
-        '\x1b[38;5;48m',  // green-cyan
-        '\x1b[38;5;83m',  // green
+        '\x1b[38;5;39m', // blue
+        '\x1b[38;5;45m', // cyan
+        '\x1b[38;5;49m', // teal
+        '\x1b[38;5;48m', // green-cyan
+        '\x1b[38;5;83m', // green
         '\x1b[38;5;118m', // lime
         '\x1b[38;5;154m', // yellow-green
         '\x1b[38;5;220m', // yellow
@@ -56,7 +56,10 @@ export class CliTerminalSpinner implements ICliSpinner {
 
             const RESET = '\x1b[0m';
             const frame = this.spinnerFrames[this.spinnerIndex];
-            const color = this.spinnerColors[this.spinnerIndex % this.spinnerColors.length];
+            const color =
+                this.spinnerColors[
+                    this.spinnerIndex % this.spinnerColors.length
+                ];
             const textSuffix = this.text.length > 0 ? ` ${this.text}` : '';
 
             const content = `${color}${frame}${RESET}${textSuffix}`;

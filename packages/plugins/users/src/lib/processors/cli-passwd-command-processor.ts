@@ -21,18 +21,32 @@ export class CliPasswdCommandProcessor implements ICliCommandProcessor {
     author = DefaultLibraryAuthor;
     acceptsRawInput = true;
     valueRequired = false;
-    metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
-    stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };
+    metadata: CliProcessorMetadata = {
+        sealed: true,
+        module: 'users',
+        icon: CliIcon.User,
+    };
+    stateConfiguration: CliStateConfiguration = {
+        initialState: {},
+        storeName: 'users',
+    };
 
     private usersStore!: ICliUsersStoreService;
     private authService!: ICliAuthService;
 
     async initialize(context: ICliExecutionContext): Promise<void> {
-        this.usersStore = context.services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
-        this.authService = context.services.get<ICliAuthService>(ICliAuthService_TOKEN);
+        this.usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
+        this.authService = context.services.get<ICliAuthService>(
+            ICliAuthService_TOKEN,
+        );
     }
 
-    async processCommand(command: CliProcessCommand, context: ICliExecutionContext): Promise<void> {
+    async processCommand(
+        command: CliProcessCommand,
+        context: ICliExecutionContext,
+    ): Promise<void> {
         const session = context.userSession;
         if (!session) {
             context.writer.writeError('passwd: no user session');
@@ -49,9 +63,13 @@ export class CliPasswdCommandProcessor implements ICliCommandProcessor {
                 context.writer.writeError('passwd: permission denied');
                 return;
             }
-            const found = await firstValueFrom(this.usersStore.getUser(targetName));
+            const found = await firstValueFrom(
+                this.usersStore.getUser(targetName),
+            );
             if (!found) {
-                context.writer.writeError(`passwd: user '${targetName}' does not exist`);
+                context.writer.writeError(
+                    `passwd: user '${targetName}' does not exist`,
+                );
                 return;
             }
             targetUser = found;
@@ -60,10 +78,14 @@ export class CliPasswdCommandProcessor implements ICliCommandProcessor {
         // If changing own password, verify current password first
         const isOwnPassword = targetUser.id === session.user.id;
         if (isOwnPassword) {
-            const currentPassword = await context.reader.readPassword('Current password: ');
+            const currentPassword =
+                await context.reader.readPassword('Current password: ');
             if (currentPassword === null) return;
 
-            const valid = await this.authService.verifyPassword(targetUser.id, currentPassword);
+            const valid = await this.authService.verifyPassword(
+                targetUser.id,
+                currentPassword,
+            );
             if (!valid) {
                 context.writer.writeError('passwd: Authentication failure');
                 return;
@@ -78,7 +100,9 @@ export class CliPasswdCommandProcessor implements ICliCommandProcessor {
             return;
         }
 
-        const confirmPassword = await context.reader.readPassword('Retype new password: ');
+        const confirmPassword = await context.reader.readPassword(
+            'Retype new password: ',
+        );
         if (confirmPassword === null) return;
 
         if (newPassword !== confirmPassword) {
@@ -94,7 +118,11 @@ export class CliPasswdCommandProcessor implements ICliCommandProcessor {
         const { writer } = context;
         writer.writeln('Change a user password');
         writer.writeln();
-        writer.writeln(`  ${writer.wrapInColor('passwd', CliForegroundColor.Cyan)}                Change own password`);
-        writer.writeln(`  ${writer.wrapInColor('passwd <username>', CliForegroundColor.Cyan)}      Change another user\'s password (admin only)`);
+        writer.writeln(
+            `  ${writer.wrapInColor('passwd', CliForegroundColor.Cyan)}                Change own password`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('passwd <username>', CliForegroundColor.Cyan)}      Change another user\'s password (admin only)`,
+        );
     }
 }

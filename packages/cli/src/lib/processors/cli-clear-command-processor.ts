@@ -33,8 +33,12 @@ export class CliClearCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Clears all content from the terminal screen');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('clear', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('clear', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
-        writer.writeln(`⌨️  Shortcut: ${writer.wrapInColor('Ctrl+L', CliForegroundColor.Yellow)}`);
+        writer.writeln(
+            `⌨️  Shortcut: ${writer.wrapInColor('Ctrl+L', CliForegroundColor.Yellow)}`,
+        );
     }
 }

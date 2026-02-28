@@ -14,7 +14,11 @@ import {
     Package,
 } from '@qodalis/cli-core';
 import { CliProcessorsRegistry_TOKEN } from '../../tokens';
-import { CdnSourceName, ScriptLoaderService, SourceKind } from '../../services/script-loader';
+import {
+    CdnSourceName,
+    ScriptLoaderService,
+    SourceKind,
+} from '../../services/script-loader';
 import { CliPackageManagerService } from '../../services/cli-package-manager';
 
 export class CliPackagesCommandProcessor implements ICliCommandProcessor {
@@ -88,7 +92,10 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     }
 
                     context.writer.writeln(
-                        context.writer.wrapInColor(`📦 Installed packages (${packages.length}):`, CliForegroundColor.Yellow),
+                        context.writer.wrapInColor(
+                            `📦 Installed packages (${packages.length}):`,
+                            CliForegroundColor.Yellow,
+                        ),
                     );
 
                     packages.forEach((pkg) => {
@@ -98,10 +105,14 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     });
                 },
                 writeDescription(context) {
-                    context.writer.writeln('List all installed packages and their versions');
+                    context.writer.writeln(
+                        'List all installed packages and their versions',
+                    );
                     context.writer.writeln();
                     context.writer.writeln('📋 Usage:');
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg ls', CliForegroundColor.Cyan)}`);
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg ls', CliForegroundColor.Cyan)}`,
+                    );
                 },
             },
             {
@@ -145,11 +156,14 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     >();
 
                     // 1. Query registry sources (npm-compatible search API)
-                    const registrySources = scriptsLoader.getSourcesByKind('registry');
+                    const registrySources =
+                        scriptsLoader.getSourcesByKind('registry');
                     for (const regSource of registrySources) {
                         if (signal.aborted) break;
 
-                        progressBar.setText(`Searching ${regSource.name} registry`);
+                        progressBar.setText(
+                            `Searching ${regSource.name} registry`,
+                        );
 
                         try {
                             const searchUrl = `${regSource.url}-/v1/search?text=${encodeURIComponent(prefix)}&size=250`;
@@ -214,11 +228,18 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                                 const existing = packagesMap.get(fullName);
                                 if (existing) {
                                     // Append source name if different version or same
-                                    if (!existing.source.includes(fileSource.name)) {
+                                    if (
+                                        !existing.source.includes(
+                                            fileSource.name,
+                                        )
+                                    ) {
                                         existing.source += `, ${fileSource.name}`;
                                     }
                                     // If file source has a newer version, update
-                                    if (packageInfo.version && packageInfo.version !== existing.version) {
+                                    if (
+                                        packageInfo.version &&
+                                        packageInfo.version !== existing.version
+                                    ) {
                                         existing.version = packageInfo.version;
                                         existing.source = fileSource.name;
                                     }
@@ -226,8 +247,10 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                                     packagesMap.set(fullName, {
                                         name: fullName,
                                         shortName,
-                                        version: packageInfo.version || 'latest',
-                                        description: packageInfo.description || '',
+                                        version:
+                                            packageInfo.version || 'latest',
+                                        description:
+                                            packageInfo.description || '',
                                         source: fileSource.name,
                                     });
                                 }
@@ -254,8 +277,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         return;
                     }
 
-                    const installed =
-                        await packagesManager.getPackages();
+                    const installed = await packagesManager.getPackages();
                     const installedMap = new Map(
                         installed.map((p) => [p.name, p.version]),
                     );
@@ -269,9 +291,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     writer.writeln();
 
                     for (const pkg of allPackages) {
-                        const installedVersion = installedMap.get(
-                            pkg.name,
-                        );
+                        const installedVersion = installedMap.get(pkg.name);
 
                         let status: string;
                         if (installedVersion) {
@@ -303,9 +323,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         );
 
                         if (pkg.description) {
-                            writer.writeln(
-                                `    ${pkg.description}`,
-                            );
+                            writer.writeln(`    ${pkg.description}`);
                         }
                     }
 
@@ -337,9 +355,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         `  ${context.writer.wrapInColor('📥 not installed', CliForegroundColor.Magenta)}  Not yet installed`,
                     );
                     context.writer.writeln();
-                    context.writer.writeln(
-                        '🌐 Sources queried:',
-                    );
+                    context.writer.writeln('🌐 Sources queried:');
                     context.writer.writeln(
                         `  ${context.writer.wrapInColor('registry', CliForegroundColor.Cyan)}  npm-compatible search API (e.g. npmjs.org, Verdaccio)`,
                     );
@@ -350,8 +366,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'add',
-                description:
-                    'Add a package to the cli, e.g. pkg add guid.',
+                description: 'Add a package to the cli, e.g. pkg add guid.',
                 valueRequired: true,
                 async processCommand(command, context) {
                     const { signal, cleanup } =
@@ -366,17 +381,29 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     cleanup();
                 },
                 writeDescription({ writer }) {
-                    writer.writeln('Install one or more packages from the Qodalis registry');
+                    writer.writeln(
+                        'Install one or more packages from the Qodalis registry',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
-                    writer.writeln(`  ${writer.wrapInColor('pkg add <package> [package2...]', CliForegroundColor.Cyan)}`);
+                    writer.writeln(
+                        `  ${writer.wrapInColor('pkg add <package> [package2...]', CliForegroundColor.Cyan)}`,
+                    );
                     writer.writeln();
                     writer.writeln('📝 Examples:');
-                    writer.writeln(`  pkg add guid                        ${writer.wrapInColor('# Short name', CliForegroundColor.Green)}`);
-                    writer.writeln(`  pkg add @qodalis/cli-guid           ${writer.wrapInColor('# Full name', CliForegroundColor.Green)}`);
-                    writer.writeln(`  pkg add guid server-logs            ${writer.wrapInColor('# Multiple packages', CliForegroundColor.Green)}`);
+                    writer.writeln(
+                        `  pkg add guid                        ${writer.wrapInColor('# Short name', CliForegroundColor.Green)}`,
+                    );
+                    writer.writeln(
+                        `  pkg add @qodalis/cli-guid           ${writer.wrapInColor('# Full name', CliForegroundColor.Green)}`,
+                    );
+                    writer.writeln(
+                        `  pkg add guid server-logs            ${writer.wrapInColor('# Multiple packages', CliForegroundColor.Green)}`,
+                    );
                     writer.writeln();
-                    writer.writeInfo('💡 Short names are automatically prefixed with @qodalis/cli-');
+                    writer.writeInfo(
+                        '💡 Short names are automatically prefixed with @qodalis/cli-',
+                    );
                 },
             },
             {
@@ -399,17 +426,22 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     writer.writeln('Remove one or more installed packages');
                     writer.writeln();
                     writer.writeln('📋 Usage:');
-                    writer.writeln(`  ${writer.wrapInColor('pkg remove <package> [package2...]', CliForegroundColor.Cyan)}`);
+                    writer.writeln(
+                        `  ${writer.wrapInColor('pkg remove <package> [package2...]', CliForegroundColor.Cyan)}`,
+                    );
                     writer.writeln();
                     writer.writeln('📝 Examples:');
-                    writer.writeln(`  pkg remove guid                     ${writer.wrapInColor('# Remove one package', CliForegroundColor.Green)}`);
-                    writer.writeln(`  pkg remove guid server-logs         ${writer.wrapInColor('# Remove multiple', CliForegroundColor.Green)}`);
+                    writer.writeln(
+                        `  pkg remove guid                     ${writer.wrapInColor('# Remove one package', CliForegroundColor.Green)}`,
+                    );
+                    writer.writeln(
+                        `  pkg remove guid server-logs         ${writer.wrapInColor('# Remove multiple', CliForegroundColor.Green)}`,
+                    );
                 },
             },
             {
                 command: 'versions',
-                description:
-                    'Show all published versions of a package',
+                description: 'Show all published versions of a package',
                 valueRequired: true,
                 acceptsRawInput: true,
                 async processCommand(command, context) {
@@ -418,49 +450,37 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         scope.createAbortSignal(context);
 
                     const name = command.value!.trim();
-                    const prefix =
-                        packagesManager.QODALIS_COMMAND_PREFIX;
+                    const prefix = packagesManager.QODALIS_COMMAND_PREFIX;
                     const fullName = name.startsWith(prefix)
                         ? name
                         : `${prefix}${name}`;
 
                     progressBar.show();
-                    progressBar.setText(
-                        `Fetching versions for ${name}`,
-                    );
+                    progressBar.setText(`Fetching versions for ${name}`);
 
                     try {
-                        const response =
-                            await scriptsLoader.getScript(
-                                `https://registry.npmjs.org/${encodeURIComponent(fullName)}`,
-                                { signal },
-                            );
+                        const response = await scriptsLoader.getScript(
+                            `https://registry.npmjs.org/${encodeURIComponent(fullName)}`,
+                            { signal },
+                        );
 
                         if (signal.aborted) {
                             cleanup();
                             return;
                         }
 
-                        const data = JSON.parse(
-                            response.content || '{}',
-                        );
+                        const data = JSON.parse(response.content || '{}');
 
                         if (!data.versions) {
                             progressBar.complete();
-                            writer.writeError(
-                                `Package ${name} not found`,
-                            );
+                            writer.writeError(`Package ${name} not found`);
                             cleanup();
                             return;
                         }
 
-                        const versions = Object.keys(
-                            data.versions,
-                        );
-                        const time: Record<string, string> =
-                            data.time || {};
-                        const latest =
-                            data['dist-tags']?.latest || '';
+                        const versions = Object.keys(data.versions);
+                        const time: Record<string, string> = data.time || {};
+                        const latest = data['dist-tags']?.latest || '';
 
                         const installed =
                             await packagesManager.getPackage(name);
@@ -477,9 +497,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                         for (const version of versions) {
                             const publishDate = time[version]
-                                ? new Date(
-                                      time[version],
-                                  ).toLocaleDateString()
+                                ? new Date(time[version]).toLocaleDateString()
                                 : '';
 
                             const tags: string[] = [];
@@ -493,10 +511,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                                 );
                             }
 
-                            if (
-                                installed &&
-                                installed.version === version
-                            ) {
+                            if (installed && installed.version === version) {
                                 tags.push(
                                     writer.wrapInColor(
                                         'installed',
@@ -506,9 +521,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                             }
 
                             const tagStr =
-                                tags.length > 0
-                                    ? `  [${tags.join(', ')}]`
-                                    : '';
+                                tags.length > 0 ? `  [${tags.join(', ')}]` : '';
 
                             writer.writeln(
                                 `  ${writer.wrapInColor(`v${version}`, CliForegroundColor.White)}  ${writer.wrapInColor(publishDate, CliForegroundColor.Yellow)}${tagStr}`,
@@ -523,8 +536,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         }
                         progressBar.complete();
                         writer.writeError(
-                            e?.toString() ||
-                                'Failed to fetch versions',
+                            e?.toString() || 'Failed to fetch versions',
                         );
                     }
 
@@ -551,8 +563,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'check',
-                description:
-                    'Check installed packages for available updates',
+                description: 'Check installed packages for available updates',
                 async processCommand(_, context) {
                     const packages = await packagesManager.getPackages();
 
@@ -582,9 +593,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     for (const pkg of packages) {
                         if (signal.aborted) break;
 
-                        progressBar.setText(
-                            `Checking ${pkg.name}`,
-                        );
+                        progressBar.setText(`Checking ${pkg.name}`);
 
                         try {
                             const packageInfo = await scriptsLoader
@@ -666,17 +675,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     if (errors.length > 0) {
                         writer.writeln();
                         for (const e of errors) {
-                            writer.writeWarning(
-                                `⚠️  ${e.name}: ${e.error}`,
-                            );
+                            writer.writeWarning(`⚠️  ${e.name}: ${e.error}`);
                         }
                     }
 
                     if (updates.length === 0 && errors.length === 0) {
                         writer.writeln();
-                        writer.writeSuccess(
-                            '🎉 All packages are up to date!',
-                        );
+                        writer.writeSuccess('🎉 All packages are up to date!');
                     }
                 },
                 writeDescription(context) {
@@ -712,9 +717,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
 
                         if (
                             atIndex > 0 &&
-                            !raw
-                                .slice(0, atIndex)
-                                .endsWith('/')
+                            !raw.slice(0, atIndex).endsWith('/')
                         ) {
                             name = raw.slice(0, atIndex);
                             version = raw.slice(atIndex + 1);
@@ -729,8 +732,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                             version,
                         );
                     } else {
-                        const packages =
-                            await packagesManager.getPackages();
+                        const packages = await packagesManager.getPackages();
                         for (const pkg of packages) {
                             if (signal.aborted) break;
                             await scope.updatePackage(
@@ -741,31 +743,40 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         }
 
                         if (!signal.aborted) {
-                            context.writer.writeSuccess(
-                                'All packages updated',
-                            );
+                            context.writer.writeSuccess('All packages updated');
                         }
                     }
 
                     cleanup();
                 },
                 writeDescription(context) {
-                    context.writer.writeln('Update packages to their latest versions or to a specific version');
+                    context.writer.writeln(
+                        'Update packages to their latest versions or to a specific version',
+                    );
                     context.writer.writeln();
                     context.writer.writeln('📋 Usage:');
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg update <package>', CliForegroundColor.Cyan)}            Update to latest`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg update <package>@<version>', CliForegroundColor.Cyan)}  Update to specific version`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg update', CliForegroundColor.Cyan)}                      Update all packages`);
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg update <package>', CliForegroundColor.Cyan)}            Update to latest`,
+                    );
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg update <package>@<version>', CliForegroundColor.Cyan)}  Update to specific version`,
+                    );
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg update', CliForegroundColor.Cyan)}                      Update all packages`,
+                    );
                     context.writer.writeln();
                     context.writer.writeln('📝 Examples:');
-                    context.writer.writeln(`  pkg update guid             ${context.writer.wrapInColor('# Update to latest', CliForegroundColor.Green)}`);
-                    context.writer.writeln(`  pkg update guid@1.0.2       ${context.writer.wrapInColor('# Install specific version', CliForegroundColor.Green)}`);
+                    context.writer.writeln(
+                        `  pkg update guid             ${context.writer.wrapInColor('# Update to latest', CliForegroundColor.Green)}`,
+                    );
+                    context.writer.writeln(
+                        `  pkg update guid@1.0.2       ${context.writer.wrapInColor('# Install specific version', CliForegroundColor.Green)}`,
+                    );
                 },
             },
             {
                 command: 'source',
-                description:
-                    'Get or set the package source for downloads',
+                description: 'Get or set the package source for downloads',
                 acceptsRawInput: true,
                 processors: [
                     {
@@ -774,7 +785,9 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         async processCommand(_, context) {
                             const current = scriptsLoader.getCdnSource();
                             const allSources = scriptsLoader.getSources();
-                            const fallbacks = allSources.filter((s) => s !== current);
+                            const fallbacks = allSources.filter(
+                                (s) => s !== current,
+                            );
 
                             context.writer.writeln(
                                 `🌐 Current source: ${context.writer.wrapInColor(current, CliForegroundColor.Cyan)}`,
@@ -789,10 +802,13 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                     },
                     {
                         command: 'set',
-                        description: 'Set the preferred package source (interactive if no name given)',
+                        description:
+                            'Set the preferred package source (interactive if no name given)',
                         acceptsRawInput: true,
                         async processCommand(command, context) {
-                            let value = (command.value || '').trim().toLowerCase();
+                            let value = (command.value || '')
+                                .trim()
+                                .toLowerCase();
                             const allSources = scriptsLoader.getSources();
 
                             if (!value) {
@@ -800,20 +816,24 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                                 const current = scriptsLoader.getCdnSource();
                                 const options = allSources.map((name) => {
                                     const entry = scriptsLoader.getSource(name);
-                                    const active = name === current ? ' (active)' : '';
+                                    const active =
+                                        name === current ? ' (active)' : '';
                                     return {
                                         label: `${name}${active}  ${entry?.url || ''}`,
                                         value: name,
                                     };
                                 });
 
-                                const selected = await context.reader.readSelect(
-                                    'Select package source:',
-                                    options,
-                                );
+                                const selected =
+                                    await context.reader.readSelect(
+                                        'Select package source:',
+                                        options,
+                                    );
 
                                 if (!selected) {
-                                    context.writer.writeInfo('Source selection cancelled');
+                                    context.writer.writeInfo(
+                                        'Source selection cancelled',
+                                    );
                                     return;
                                 }
                                 value = selected;
@@ -834,7 +854,9 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                                 `Package source set to ${context.writer.wrapInColor(value, CliForegroundColor.Cyan)}`,
                             );
 
-                            const fallbacks = allSources.filter((s) => s !== value);
+                            const fallbacks = allSources.filter(
+                                (s) => s !== value,
+                            );
                             if (fallbacks.length > 0) {
                                 context.writer.writeln(
                                     `   Fallbacks: ${fallbacks.map((s) => context.writer.wrapInColor(s, CliForegroundColor.Yellow)).join(', ')}`,
@@ -843,16 +865,22 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                         },
                         writeDescription(context) {
                             const allSources = scriptsLoader.getSources();
-                            context.writer.writeln('Set the preferred source for package downloads');
+                            context.writer.writeln(
+                                'Set the preferred source for package downloads',
+                            );
                             context.writer.writeln();
                             context.writer.writeln('📋 Usage:');
-                            context.writer.writeln(`  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}`);
+                            context.writer.writeln(
+                                `  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}`,
+                            );
                             context.writer.writeln();
                             context.writer.writeln('🌐 Available sources:');
                             for (const name of allSources) {
                                 const entry = scriptsLoader.getSource(name);
                                 const kindTag = entry ? `[${entry.kind}]` : '';
-                                context.writer.writeln(`  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}  ${context.writer.wrapInColor(kindTag, CliForegroundColor.Yellow)}  ${entry?.url || ''}`);
+                                context.writer.writeln(
+                                    `  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}  ${context.writer.wrapInColor(kindTag, CliForegroundColor.Yellow)}  ${entry?.url || ''}`,
+                                );
                             }
                         },
                     },
@@ -880,20 +908,32 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 writeDescription(context) {
                     const allSources = scriptsLoader.getSources();
 
-                    context.writer.writeln('Manage the source used for downloading packages');
+                    context.writer.writeln(
+                        'Manage the source used for downloading packages',
+                    );
                     context.writer.writeln();
                     context.writer.writeln('📋 Commands:');
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source', CliForegroundColor.Cyan)}                  Show current source`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source get', CliForegroundColor.Cyan)}              Show current source`);
-                    context.writer.writeln(`  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}       Set preferred source`);
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg source', CliForegroundColor.Cyan)}                  Show current source`,
+                    );
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg source get', CliForegroundColor.Cyan)}              Show current source`,
+                    );
+                    context.writer.writeln(
+                        `  ${context.writer.wrapInColor('pkg source set <name>', CliForegroundColor.Cyan)}       Set preferred source`,
+                    );
                     context.writer.writeln();
                     context.writer.writeln('🌐 Available sources:');
                     for (const name of allSources) {
                         const url = scriptsLoader.getSourceUrl(name) || '';
-                        context.writer.writeln(`  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}       ${url}`);
+                        context.writer.writeln(
+                            `  ${context.writer.wrapInColor(name, CliForegroundColor.Cyan)}       ${url}`,
+                        );
                     }
                     context.writer.writeln();
-                    context.writer.writeInfo('The non-selected source is used as a fallback.');
+                    context.writer.writeInfo(
+                        'The non-selected source is used as a fallback.',
+                    );
                 },
             },
         ];
@@ -910,21 +950,45 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         writer.writeln(this.description);
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('pkg ls', CliForegroundColor.Cyan)}                        List installed packages`);
-        writer.writeln(`  ${writer.wrapInColor('pkg browse', CliForegroundColor.Cyan)}                      Browse all available packages`);
-        writer.writeln(`  ${writer.wrapInColor('pkg add <package>', CliForegroundColor.Cyan)}                    Install a package`);
-        writer.writeln(`  ${writer.wrapInColor('pkg remove <package>', CliForegroundColor.Cyan)}                 Remove a package`);
-        writer.writeln(`  ${writer.wrapInColor('pkg versions <package>', CliForegroundColor.Cyan)}         Show all published versions`);
-        writer.writeln(`  ${writer.wrapInColor('pkg check', CliForegroundColor.Cyan)}                        Check for available updates`);
-        writer.writeln(`  ${writer.wrapInColor('pkg update [package]', CliForegroundColor.Cyan)}                 Update one or all packages`);
-        writer.writeln(`  ${writer.wrapInColor('pkg source [get|set <name>]', CliForegroundColor.Cyan)}          Get or set package source`);
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg ls', CliForegroundColor.Cyan)}                        List installed packages`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg browse', CliForegroundColor.Cyan)}                      Browse all available packages`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg add <package>', CliForegroundColor.Cyan)}                    Install a package`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg remove <package>', CliForegroundColor.Cyan)}                 Remove a package`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg versions <package>', CliForegroundColor.Cyan)}         Show all published versions`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg check', CliForegroundColor.Cyan)}                        Check for available updates`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg update [package]', CliForegroundColor.Cyan)}                 Update one or all packages`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('pkg source [get|set <name>]', CliForegroundColor.Cyan)}          Get or set package source`,
+        );
         writer.writeln();
-        writer.writeln(`🌐 Browse packages: ${writer.wrapInColor('https://www.npmjs.com/org/qodalis', CliForegroundColor.Blue)}`);
+        writer.writeln(
+            `🌐 Browse packages: ${writer.wrapInColor('https://www.npmjs.com/org/qodalis', CliForegroundColor.Blue)}`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  pkg add guid                ${writer.wrapInColor('# Install @qodalis/cli-guid', CliForegroundColor.Green)}`);
-        writer.writeln(`  pkg add guid server-logs    ${writer.wrapInColor('# Install multiple packages', CliForegroundColor.Green)}`);
-        writer.writeln(`  pkg update                  ${writer.wrapInColor('# Update all packages', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  pkg add guid                ${writer.wrapInColor('# Install @qodalis/cli-guid', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  pkg add guid server-logs    ${writer.wrapInColor('# Install multiple packages', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  pkg update                  ${writer.wrapInColor('# Update all packages', CliForegroundColor.Green)}`,
+        );
     }
 
     async initialize(context: ICliExecutionContext): Promise<void> {
@@ -932,14 +996,20 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
             CliProcessorsRegistry_TOKEN,
         );
 
-        const store = context.services.get<ICliKeyValueStore>('cli-key-value-store');
+        const store = context.services.get<ICliKeyValueStore>(
+            'cli-key-value-store',
+        );
         this.packagesManager.setStore(store);
 
         // Register custom package sources from options
         const packageSources = context.options?.packageSources;
         if (packageSources?.sources) {
             for (const source of packageSources.sources) {
-                this.scriptsLoader.addSource(source.name, source.url, source.kind || 'file');
+                this.scriptsLoader.addSource(
+                    source.name,
+                    source.url,
+                    source.kind || 'file',
+                );
             }
         }
 
@@ -1102,9 +1172,7 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 return;
             }
 
-            const versionSuffix = targetVersion
-                ? `@${targetVersion}`
-                : '';
+            const versionSuffix = targetVersion ? `@${targetVersion}` : '';
             const packagePath = `${currentPackage.name}${versionSuffix}`;
 
             progressBar.setText(
@@ -1114,7 +1182,9 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
             );
 
             const newPackage = await this.scriptsLoader
-                .getScriptWithFallback(packagePath + '/package.json', { signal })
+                .getScriptWithFallback(packagePath + '/package.json', {
+                    signal,
+                })
                 .then((response) => {
                     return JSON.parse(response.content || '{}');
                 });
@@ -1129,9 +1199,14 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
                 return;
             }
 
-            progressBar.setText(`Downloading package ${currentPackage.name}@${newPackage.version}`);
+            progressBar.setText(
+                `Downloading package ${currentPackage.name}@${newPackage.version}`,
+            );
 
-            const cdnPath = this.resolvePackageCdnPath(newPackage, versionSuffix);
+            const cdnPath = this.resolvePackageCdnPath(
+                newPackage,
+                versionSuffix,
+            );
             const response = await this.scriptsLoader.getScriptWithFallback(
                 cdnPath,
                 { signal },
@@ -1230,8 +1305,12 @@ export class CliPackagesCommandProcessor implements ICliCommandProcessor {
         }
     }
 
-    private resolvePackageCdnPath(packageInfo: any, versionSuffix = ''): string {
-        const entryPoint = packageInfo.unpkg || packageInfo.umd || packageInfo.main;
+    private resolvePackageCdnPath(
+        packageInfo: any,
+        versionSuffix = '',
+    ): string {
+        const entryPoint =
+            packageInfo.unpkg || packageInfo.umd || packageInfo.main;
         const basePath = `${packageInfo.name}${versionSuffix}`;
 
         if (entryPoint) {

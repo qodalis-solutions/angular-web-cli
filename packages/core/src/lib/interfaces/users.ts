@@ -1,4 +1,10 @@
-import { ICliUserSession, ICliUser, ICliGroup, CliAddUser, CliUpdateUser } from '../models';
+import {
+    ICliUserSession,
+    ICliUser,
+    ICliGroup,
+    CliAddUser,
+    CliUpdateUser,
+} from '../models';
 import { Observable } from 'rxjs';
 
 /**

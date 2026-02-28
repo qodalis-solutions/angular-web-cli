@@ -72,7 +72,10 @@ export class CliHistoryCommandProcessor implements ICliCommandProcessor {
             return;
         } else {
             writer.writeln(
-                writer.wrapInColor('📜 Command history:', CliForegroundColor.Yellow),
+                writer.wrapInColor(
+                    '📜 Command history:',
+                    CliForegroundColor.Yellow,
+                ),
             );
             history.forEach((command, index) => {
                 writer.writeln(
@@ -86,9 +89,15 @@ export class CliHistoryCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Prints the command history of the current session');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('history', CliForegroundColor.Cyan)}                Show command history`);
-        writer.writeln(`  ${writer.wrapInColor('history clear', CliForegroundColor.Cyan)}          Clear all history`);
+        writer.writeln(
+            `  ${writer.wrapInColor('history', CliForegroundColor.Cyan)}                Show command history`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('history clear', CliForegroundColor.Cyan)}          Clear all history`,
+        );
         writer.writeln();
-        writer.writeln(`💡 Use ${writer.wrapInColor('↑/↓', CliForegroundColor.Yellow)} arrow keys to navigate through history`);
+        writer.writeln(
+            `💡 Use ${writer.wrapInColor('↑/↓', CliForegroundColor.Yellow)} arrow keys to navigate through history`,
+        );
     }
 }

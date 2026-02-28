@@ -51,7 +51,8 @@ export class CliSeqCommandProcessor implements ICliCommandProcessor {
 
         let start: number, end: number;
         const step = parseFloat(command.args['step'] || command.args['s']) || 1;
-        const separator = command.args['separator'] || command.args['sep'] || '\n';
+        const separator =
+            command.args['separator'] || command.args['sep'] || '\n';
 
         if (parts.length === 1) {
             start = 1;
@@ -75,11 +76,19 @@ export class CliSeqCommandProcessor implements ICliCommandProcessor {
         const numbers: number[] = [];
 
         if (step > 0) {
-            for (let i = start; i <= end && numbers.length < maxCount; i += step) {
+            for (
+                let i = start;
+                i <= end && numbers.length < maxCount;
+                i += step
+            ) {
                 numbers.push(i);
             }
         } else if (step < 0) {
-            for (let i = start; i >= end && numbers.length < maxCount; i += step) {
+            for (
+                let i = start;
+                i >= end && numbers.length < maxCount;
+                i += step
+            ) {
                 numbers.push(i);
             }
         } else {

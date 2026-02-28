@@ -1,5 +1,9 @@
 import { CliDefaultGroupsStoreService } from '../lib/services/cli-default-groups-store.service';
-import { ICliKeyValueStore, ICliUsersStoreService, ICliUser } from '@qodalis/cli-core';
+import {
+    ICliKeyValueStore,
+    ICliUsersStoreService,
+    ICliUser,
+} from '@qodalis/cli-core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 
@@ -32,7 +36,7 @@ class MockUsersStore implements ICliUsersStoreService {
 
     getUser(id: string): Observable<ICliUser | undefined> {
         return this.users$.pipe(
-            map(users => users.find(u => u.id === id || u.name === id)),
+            map((users) => users.find((u) => u.id === id || u.name === id)),
         );
     }
 
@@ -73,8 +77,18 @@ describe('CliDefaultGroupsStoreService', () => {
 
         it('should load existing groups from store', async () => {
             const existing = [
-                { id: 'admin', name: 'admin', description: 'Admins', createdAt: 1000 },
-                { id: 'dev', name: 'dev', description: 'Developers', createdAt: 2000 },
+                {
+                    id: 'admin',
+                    name: 'admin',
+                    description: 'Admins',
+                    createdAt: 1000,
+                },
+                {
+                    id: 'dev',
+                    name: 'dev',
+                    description: 'Developers',
+                    createdAt: 2000,
+                },
             ];
             await kvStore.set('cli-groups', existing);
 
@@ -109,9 +123,9 @@ describe('CliDefaultGroupsStoreService', () => {
         it('should reject duplicate name', async () => {
             await service.createGroup('dev');
 
-            await expectAsync(
-                service.createGroup('dev'),
-            ).toBeRejectedWithError(/already exists/);
+            await expectAsync(service.createGroup('dev')).toBeRejectedWithError(
+                /already exists/,
+            );
         });
     });
 
@@ -205,13 +219,23 @@ describe('CliDefaultGroupsStoreService', () => {
                 },
             ]);
 
-            const adminMembers = await firstValueFrom(service.getGroupMembers('admin'));
+            const adminMembers = await firstValueFrom(
+                service.getGroupMembers('admin'),
+            );
             expect(adminMembers.length).toBe(2);
-            expect(adminMembers.map(u => u.name).sort()).toEqual(['alice', 'charlie']);
+            expect(adminMembers.map((u) => u.name).sort()).toEqual([
+                'alice',
+                'charlie',
+            ]);
 
-            const devMembers = await firstValueFrom(service.getGroupMembers('dev'));
+            const devMembers = await firstValueFrom(
+                service.getGroupMembers('dev'),
+            );
             expect(devMembers.length).toBe(2);
-            expect(devMembers.map(u => u.name).sort()).toEqual(['bob', 'charlie']);
+            expect(devMembers.map((u) => u.name).sort()).toEqual([
+                'bob',
+                'charlie',
+            ]);
         });
 
         it('should return empty array for group with no members', async () => {
@@ -226,7 +250,9 @@ describe('CliDefaultGroupsStoreService', () => {
                 },
             ]);
 
-            const members = await firstValueFrom(service.getGroupMembers('admin'));
+            const members = await firstValueFrom(
+                service.getGroupMembers('admin'),
+            );
             expect(members.length).toBe(0);
         });
     });
@@ -244,7 +270,7 @@ describe('CliDefaultGroupsStoreService', () => {
             const stored = await kvStore.get<any[]>('cli-groups');
             expect(stored).toBeDefined();
             expect(stored!.length).toBe(2);
-            expect(stored!.some(g => g.name === 'dev')).toBe(true);
+            expect(stored!.some((g) => g.name === 'dev')).toBe(true);
         });
 
         it('should persist to kvStore after deleteGroup', async () => {
@@ -253,7 +279,7 @@ describe('CliDefaultGroupsStoreService', () => {
 
             const stored = await kvStore.get<any[]>('cli-groups');
             expect(stored!.length).toBe(1);
-            expect(stored!.some(g => g.name === 'dev')).toBe(false);
+            expect(stored!.some((g) => g.name === 'dev')).toBe(false);
         });
     });
 });

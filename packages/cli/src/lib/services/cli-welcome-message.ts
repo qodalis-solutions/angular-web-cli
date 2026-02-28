@@ -1,6 +1,10 @@
 import { LIBRARY_VERSION } from '../version';
 import { getCliNameArt } from '../constants';
-import { CliForegroundColor, ICliModule, CLI_CONFIGURE_STORE_NAME } from '@qodalis/cli-core';
+import {
+    CliForegroundColor,
+    ICliModule,
+    CLI_CONFIGURE_STORE_NAME,
+} from '@qodalis/cli-core';
 import { getGreetingBasedOnTime } from '../utils';
 import { CliStateStoreManager_TOKEN } from '../tokens';
 import { ICliStateStoreManager } from '../state/cli-state-store-manager';
@@ -30,8 +34,12 @@ export const welcomeModule: ICliWelcomeModule = {
         // Check the configure command's persisted state first, then fall back to module config
         let showOption = config.show;
         try {
-            const storeManager = context.services.get<ICliStateStoreManager>(CliStateStoreManager_TOKEN);
-            const configureStore = storeManager.getStateStore(CLI_CONFIGURE_STORE_NAME);
+            const storeManager = context.services.get<ICliStateStoreManager>(
+                CliStateStoreManager_TOKEN,
+            );
+            const configureStore = storeManager.getStateStore(
+                CLI_CONFIGURE_STORE_NAME,
+            );
             await configureStore.initialize();
             const state = configureStore.getState<Record<string, any>>();
             if (state?.['system']?.['welcomeMessage']) {
@@ -58,11 +66,11 @@ export const welcomeModule: ICliWelcomeModule = {
                 '',
                 `📖 ${context.writer.wrapInColor('Documentation:', CliForegroundColor.Green)} https://cli.qodalis.com/docs/`,
                 '',
-                `💡 Type ${context.writer.wrapInColor('\'help\'', CliForegroundColor.Cyan)} to see available commands`,
+                `💡 Type ${context.writer.wrapInColor("'help'", CliForegroundColor.Cyan)} to see available commands`,
                 '',
             ];
 
-            lines.forEach(line => {
+            lines.forEach((line) => {
                 context.terminal.write(line + '\r\n');
             });
         }
@@ -79,7 +87,9 @@ export const welcomeModule: ICliWelcomeModule = {
 function shouldDisplayWelcomeMessage(
     showOption: 'always' | 'once' | 'daily' | 'never',
 ): boolean {
-    const lastDisplayed = localStorage.getItem('cliWelcomeMessageLastDisplayed');
+    const lastDisplayed = localStorage.getItem(
+        'cliWelcomeMessageLastDisplayed',
+    );
 
     switch (showOption) {
         case 'always':

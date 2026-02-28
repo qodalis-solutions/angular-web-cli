@@ -112,14 +112,28 @@ export class CliGuidCommandProcessor implements ICliCommandProcessor {
         writer.writeln(this.description);
         writer.writeln();
         writer.writeln('📋 Commands:');
-        writer.writeln(`  ${writer.wrapInColor('guid new', CliForegroundColor.Cyan)}                        Generate a new GUID`);
-        writer.writeln(`  ${writer.wrapInColor('guid new --copy', CliForegroundColor.Cyan)}                  Generate and copy to clipboard`);
-        writer.writeln(`  ${writer.wrapInColor('guid new --count=5', CliForegroundColor.Cyan)}               Generate multiple GUIDs`);
-        writer.writeln(`  ${writer.wrapInColor('guid validate <guid>', CliForegroundColor.Cyan)}              Validate a GUID`);
+        writer.writeln(
+            `  ${writer.wrapInColor('guid new', CliForegroundColor.Cyan)}                        Generate a new GUID`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('guid new --copy', CliForegroundColor.Cyan)}                  Generate and copy to clipboard`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('guid new --count=5', CliForegroundColor.Cyan)}               Generate multiple GUIDs`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('guid validate <guid>', CliForegroundColor.Cyan)}              Validate a GUID`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  guid new                                                 ${writer.wrapInColor('# Single GUID', CliForegroundColor.Green)}`);
-        writer.writeln(`  guid new --copy --count=3                                ${writer.wrapInColor('# 3 GUIDs, copied', CliForegroundColor.Green)}`);
-        writer.writeln(`  guid validate 123e4567-e89b-12d3-a456-426614174000       ${writer.wrapInColor('# Validate', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  guid new                                                 ${writer.wrapInColor('# Single GUID', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  guid new --copy --count=3                                ${writer.wrapInColor('# 3 GUIDs, copied', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  guid validate 123e4567-e89b-12d3-a456-426614174000       ${writer.wrapInColor('# Validate', CliForegroundColor.Green)}`,
+        );
     }
 }

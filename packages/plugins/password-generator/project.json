@@ -13,8 +13,23 @@
         "cwd": "packages/plugins/password-generator",
         "parallel": false
       },
-      "inputs": ["production", "sharedGlobals"],
-      "outputs": ["{workspaceRoot}/dist/password-generator"]
+      "inputs": [
+        "production",
+        "sharedGlobals"
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/password-generator"
+      ]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "tsConfig": "packages/plugins/password-generator/tsconfig.spec.json",
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ]
+      }
     }
   }
 }

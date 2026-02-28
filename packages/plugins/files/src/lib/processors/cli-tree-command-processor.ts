@@ -5,7 +5,11 @@ import {
     ICliCommandProcessor,
     ICliExecutionContext,
 } from '@qodalis/cli-core';
-import { IFileSystemService, IFileSystemService_TOKEN, IFileNode } from '../interfaces';
+import {
+    IFileSystemService,
+    IFileSystemService_TOKEN,
+    IFileNode,
+} from '../interfaces';
 import { LIBRARY_VERSION } from '../version';
 
 export class CliTreeCommandProcessor implements ICliCommandProcessor {
@@ -30,7 +34,9 @@ export class CliTreeCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
+        const fs = context.services.get<IFileSystemService>(
+            IFileSystemService_TOKEN,
+        );
         const targetPath = command.value || fs.getCurrentDirectory();
         const maxDepth = command.args['depth']
             ? parseInt(command.args['depth'])
@@ -41,24 +47,33 @@ export class CliTreeCommandProcessor implements ICliCommandProcessor {
         try {
             const node = fs.getNode(targetPath);
             if (!node) {
-                context.writer.writeError(`tree: ${targetPath}: No such file or directory`);
+                context.writer.writeError(
+                    `tree: ${targetPath}: No such file or directory`,
+                );
                 return;
             }
             if (node.type !== 'directory') {
-                context.writer.writeError(`tree: ${targetPath}: Not a directory`);
+                context.writer.writeError(
+                    `tree: ${targetPath}: Not a directory`,
+                );
                 return;
             }
 
             const resolvedPath = fs.resolvePath(targetPath);
             context.writer.writeln(
-                context.writer.wrapInColor(resolvedPath, CliForegroundColor.Cyan),
+                context.writer.wrapInColor(
+                    resolvedPath,
+                    CliForegroundColor.Cyan,
+                ),
             );
 
             const counts = { dirs: 0, files: 0 };
             this.printTree(node, '', true, 0, maxDepth, context, counts);
 
             context.writer.writeln();
-            context.writer.writeln(`${counts.dirs} directories, ${counts.files} files`);
+            context.writer.writeln(
+                `${counts.dirs} directories, ${counts.files} files`,
+            );
         } catch (e: any) {
             context.writer.writeError(e.message);
         }
@@ -90,15 +105,27 @@ export class CliTreeCommandProcessor implements ICliCommandProcessor {
             const connector = isLast ? '└── ' : '├── ';
             const childPrefix = isLast ? '    ' : '│   ';
 
-            const displayName = child.type === 'directory'
-                ? context.writer.wrapInColor(child.name, CliForegroundColor.Cyan)
-                : child.name;
+            const displayName =
+                child.type === 'directory'
+                    ? context.writer.wrapInColor(
+                          child.name,
+                          CliForegroundColor.Cyan,
+                      )
+                    : child.name;
 
             context.writer.writeln(`${prefix}${connector}${displayName}`);
 
             if (child.type === 'directory') {
                 counts.dirs++;
-                this.printTree(child, prefix + childPrefix, false, depth + 1, maxDepth, context, counts);
+                this.printTree(
+                    child,
+                    prefix + childPrefix,
+                    false,
+                    depth + 1,
+                    maxDepth,
+                    context,
+                    counts,
+                );
             } else {
                 counts.files++;
             }

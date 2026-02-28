@@ -37,35 +37,43 @@ describe('CliPasswordGeneratorCommandProcessor', () => {
         });
 
         it('should have "length" parameter with type "number" and defaultValue 16', () => {
-            const param = processor.parameters!.find(p => p.name === 'length');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'length',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('number');
             expect(param!.defaultValue).toBe(16);
         });
 
         it('should have "symbols" parameter with type "boolean" and defaultValue false', () => {
-            const param = processor.parameters!.find(p => p.name === 'symbols');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'symbols',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('boolean');
             expect(param!.defaultValue).toBe(false);
         });
 
         it('should have "uppercase" parameter with type "boolean" and defaultValue true', () => {
-            const param = processor.parameters!.find(p => p.name === 'uppercase');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'uppercase',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('boolean');
             expect(param!.defaultValue).toBe(true);
         });
 
         it('should have "numbers" parameter with type "boolean" and defaultValue true', () => {
-            const param = processor.parameters!.find(p => p.name === 'numbers');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'numbers',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('boolean');
             expect(param!.defaultValue).toBe(true);
         });
 
         it('should contain all expected parameter names', () => {
-            const names = processor.parameters!.map(p => p.name);
+            const names = processor.parameters!.map((p) => p.name);
             expect(names).toContain('length');
             expect(names).toContain('symbols');
             expect(names).toContain('uppercase');

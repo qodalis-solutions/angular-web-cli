@@ -22,7 +22,11 @@ export class CliHashCommandProcessor implements ICliCommandProcessor {
     };
 
     constructor() {
-        const algorithms: { command: string; algo: string; aliases?: string[] }[] = [
+        const algorithms: {
+            command: string;
+            algo: string;
+            aliases?: string[];
+        }[] = [
             { command: 'sha256', algo: 'SHA-256', aliases: ['sha-256'] },
             { command: 'sha1', algo: 'SHA-1', aliases: ['sha-1'] },
             { command: 'sha384', algo: 'SHA-384', aliases: ['sha-384'] },
@@ -42,7 +46,10 @@ export class CliHashCommandProcessor implements ICliCommandProcessor {
                 const text = (cmd.value || cmd.data || '') as string;
                 try {
                     const encoded = new TextEncoder().encode(text);
-                    const hashBuffer = await crypto.subtle.digest(algo, encoded);
+                    const hashBuffer = await crypto.subtle.digest(
+                        algo,
+                        encoded,
+                    );
                     const hashArray = Array.from(new Uint8Array(hashBuffer));
                     const hex = hashArray
                         .map((b) => b.toString(16).padStart(2, '0'))
@@ -56,7 +63,9 @@ export class CliHashCommandProcessor implements ICliCommandProcessor {
             },
             writeDescription: (context: ICliExecutionContext) => {
                 const { writer } = context;
-                writer.writeln(`Generate a ${algo} hash digest of the input text`);
+                writer.writeln(
+                    `Generate a ${algo} hash digest of the input text`,
+                );
                 writer.writeln();
                 writer.writeln('📋 Usage:');
                 writer.writeln(
@@ -75,7 +84,9 @@ export class CliHashCommandProcessor implements ICliCommandProcessor {
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Generate cryptographic hash digests using the Web Crypto API');
+        writer.writeln(
+            'Generate cryptographic hash digests using the Web Crypto API',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
         writer.writeln(

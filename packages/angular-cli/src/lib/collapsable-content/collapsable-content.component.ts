@@ -85,8 +85,6 @@ export class CollapsableContentComponent {
     }
 
     private updateTerminalSize() {
-        this.onContentSizeChange.emit(
-            this.panelHeight - HEADER_HEIGHT,
-        );
+        this.onContentSizeChange.emit(this.panelHeight - HEADER_HEIGHT);
     }
 }

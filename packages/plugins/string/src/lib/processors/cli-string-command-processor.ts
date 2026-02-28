@@ -81,72 +81,144 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
     constructor() {
         this.processors = [
             // -- Case conversions --
-            stringTransform('upper', 'Convert to UPPERCASE', (t) => t.toUpperCase(), {
-                aliases: ['uppercase', 'toUpper'],
-                example: { input: 'hello world', output: 'HELLO WORLD' },
-            }),
-            stringTransform('lower', 'Convert to lowercase', (t) => t.toLowerCase(), {
-                aliases: ['lowercase', 'toLower'],
-                example: { input: 'HELLO WORLD', output: 'hello world' },
-            }),
-            stringTransform('capitalize', 'Capitalize the first letter', (t) => lodash.capitalize(t), {
-                aliases: ['cap'],
-                example: { input: 'hello world', output: 'Hello world' },
-            }),
-            stringTransform('camelCase', 'Convert to camelCase', (t) => lodash.camelCase(t), {
-                aliases: ['camel'],
-                example: { input: 'hello world', output: 'helloWorld' },
-            }),
-            stringTransform('kebabCase', 'Convert to kebab-case', (t) => lodash.kebabCase(t), {
-                aliases: ['kebab'],
-                example: { input: 'Hello World', output: 'hello-world' },
-            }),
-            stringTransform('snakeCase', 'Convert to snake_case', (t) => lodash.snakeCase(t), {
-                aliases: ['snake'],
-                example: { input: 'Hello World', output: 'hello_world' },
-            }),
-            stringTransform('startCase', 'Convert to Start Case', (t) => lodash.startCase(t), {
-                aliases: ['title', 'titleCase'],
-                example: { input: 'hello-world', output: 'Hello World' },
-            }),
+            stringTransform(
+                'upper',
+                'Convert to UPPERCASE',
+                (t) => t.toUpperCase(),
+                {
+                    aliases: ['uppercase', 'toUpper'],
+                    example: { input: 'hello world', output: 'HELLO WORLD' },
+                },
+            ),
+            stringTransform(
+                'lower',
+                'Convert to lowercase',
+                (t) => t.toLowerCase(),
+                {
+                    aliases: ['lowercase', 'toLower'],
+                    example: { input: 'HELLO WORLD', output: 'hello world' },
+                },
+            ),
+            stringTransform(
+                'capitalize',
+                'Capitalize the first letter',
+                (t) => lodash.capitalize(t),
+                {
+                    aliases: ['cap'],
+                    example: { input: 'hello world', output: 'Hello world' },
+                },
+            ),
+            stringTransform(
+                'camelCase',
+                'Convert to camelCase',
+                (t) => lodash.camelCase(t),
+                {
+                    aliases: ['camel'],
+                    example: { input: 'hello world', output: 'helloWorld' },
+                },
+            ),
+            stringTransform(
+                'kebabCase',
+                'Convert to kebab-case',
+                (t) => lodash.kebabCase(t),
+                {
+                    aliases: ['kebab'],
+                    example: { input: 'Hello World', output: 'hello-world' },
+                },
+            ),
+            stringTransform(
+                'snakeCase',
+                'Convert to snake_case',
+                (t) => lodash.snakeCase(t),
+                {
+                    aliases: ['snake'],
+                    example: { input: 'Hello World', output: 'hello_world' },
+                },
+            ),
+            stringTransform(
+                'startCase',
+                'Convert to Start Case',
+                (t) => lodash.startCase(t),
+                {
+                    aliases: ['title', 'titleCase'],
+                    example: { input: 'hello-world', output: 'Hello World' },
+                },
+            ),
 
             // -- Trimming --
-            stringTransform('trim', 'Remove whitespace from both ends', (t) => t.trim(), {
-                example: { input: '"  hello  "', output: 'hello' },
-            }),
-            stringTransform('trimStart', 'Remove whitespace from the start', (t) => t.trimStart(), {
-                aliases: ['ltrim'],
-                example: { input: '"  hello"', output: 'hello' },
-            }),
-            stringTransform('trimEnd', 'Remove whitespace from the end', (t) => t.trimEnd(), {
-                aliases: ['rtrim'],
-                example: { input: '"hello  "', output: 'hello' },
-            }),
+            stringTransform(
+                'trim',
+                'Remove whitespace from both ends',
+                (t) => t.trim(),
+                {
+                    example: { input: '"  hello  "', output: 'hello' },
+                },
+            ),
+            stringTransform(
+                'trimStart',
+                'Remove whitespace from the start',
+                (t) => t.trimStart(),
+                {
+                    aliases: ['ltrim'],
+                    example: { input: '"  hello"', output: 'hello' },
+                },
+            ),
+            stringTransform(
+                'trimEnd',
+                'Remove whitespace from the end',
+                (t) => t.trimEnd(),
+                {
+                    aliases: ['rtrim'],
+                    example: { input: '"hello  "', output: 'hello' },
+                },
+            ),
 
             // -- Transform --
-            stringTransform('reverse', 'Reverse a string', (t) => [...t].reverse().join(''), {
-                aliases: ['rev'],
-                example: { input: 'Hello', output: 'olleH' },
-            }),
-            stringTransform('slug', 'Convert to URL-friendly slug', (t) =>
-                t.toLowerCase()
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/^-|-$/g, ''),
+            stringTransform(
+                'reverse',
+                'Reverse a string',
+                (t) => [...t].reverse().join(''),
+                {
+                    aliases: ['rev'],
+                    example: { input: 'Hello', output: 'olleH' },
+                },
+            ),
+            stringTransform(
+                'slug',
+                'Convert to URL-friendly slug',
+                (t) =>
+                    t
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-|-$/g, ''),
                 {
                     aliases: ['slugify'],
                     example: { input: '"Hello World!"', output: 'hello-world' },
                 },
             ),
-            stringTransform('escape', 'Escape HTML entities', (t) => lodash.escape(t), {
-                aliases: ['escapeHtml'],
-                example: { input: '"<b>hi</b>"', output: '&lt;b&gt;hi&lt;/b&gt;' },
-            }),
-            stringTransform('unescape', 'Unescape HTML entities', (t) => lodash.unescape(t), {
-                aliases: ['unescapeHtml'],
-                example: { input: '"&lt;b&gt;"', output: '<b>' },
-            }),
+            stringTransform(
+                'escape',
+                'Escape HTML entities',
+                (t) => lodash.escape(t),
+                {
+                    aliases: ['escapeHtml'],
+                    example: {
+                        input: '"<b>hi</b>"',
+                        output: '&lt;b&gt;hi&lt;/b&gt;',
+                    },
+                },
+            ),
+            stringTransform(
+                'unescape',
+                'Unescape HTML entities',
+                (t) => lodash.unescape(t),
+                {
+                    aliases: ['unescapeHtml'],
+                    example: { input: '"&lt;b&gt;"', output: '<b>' },
+                },
+            ),
 
             // -- Repeat --
             {
@@ -165,7 +237,8 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     {
                         name: 'separator',
                         aliases: ['sep'],
-                        description: 'Separator between repetitions (default: none)',
+                        description:
+                            'Separator between repetitions (default: none)',
                         type: 'string',
                         required: false,
                     },
@@ -174,9 +247,16 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const count = Math.min(parseInt(command.args['count'] || command.args['n']) || 2, 1000);
-                    const sep = command.args['separator'] || command.args['sep'] || '';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const count = Math.min(
+                        parseInt(command.args['count'] || command.args['n']) ||
+                            2,
+                        1000,
+                    );
+                    const sep =
+                        command.args['separator'] || command.args['sep'] || '';
                     const result = Array(count).fill(text).join(sep);
                     context.writer.writeln(
                         `${context.writer.wrapInColor('Result: ', CliForegroundColor.Yellow)}${result}`,
@@ -228,9 +308,13 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const find = command.args['find'] || command.args['f'] || '';
-                    const replacement = command.args['with'] || command.args['w'] || '';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const find =
+                        command.args['find'] || command.args['f'] || '';
+                    const replacement =
+                        command.args['with'] || command.args['w'] || '';
 
                     if (!find) {
                         context.writer.writeError('--find is required');
@@ -289,12 +373,17 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const length = parseInt(command.args['length'] || command.args['l']) || 30;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const length =
+                        parseInt(command.args['length'] || command.args['l']) ||
+                        30;
                     const suffix = command.args['suffix'] ?? '...';
-                    const result = text.length > length
-                        ? text.substring(0, length - suffix.length) + suffix
-                        : text;
+                    const result =
+                        text.length > length
+                            ? text.substring(0, length - suffix.length) + suffix
+                            : text;
                     context.writer.writeln(
                         `${context.writer.wrapInColor('Result: ', CliForegroundColor.Yellow)}${result}`,
                     );
@@ -302,7 +391,9 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Truncate a string to a maximum length with an ellipsis');
+                    writer.writeln(
+                        'Truncate a string to a maximum length with an ellipsis',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -334,7 +425,8 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     },
                     {
                         name: 'side',
-                        description: 'Pad side: left, right, both (default: both)',
+                        description:
+                            'Pad side: left, right, both (default: both)',
                         type: 'string',
                         required: false,
                     },
@@ -343,9 +435,14 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const length = parseInt(command.args['length'] || command.args['l']);
-                    const char = command.args['char'] || command.args['c'] || ' ';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const length = parseInt(
+                        command.args['length'] || command.args['l'],
+                    );
+                    const char =
+                        command.args['char'] || command.args['c'] || ' ';
                     const side = command.args['side'] || 'both';
 
                     if (isNaN(length)) {
@@ -412,8 +509,14 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const delimiter = command.args['by'] || command.args['d'] || command.args['delimiter'] || ' ';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const delimiter =
+                        command.args['by'] ||
+                        command.args['d'] ||
+                        command.args['delimiter'] ||
+                        ' ';
                     const parts = text.split(delimiter);
                     const { writer } = context;
 
@@ -450,7 +553,9 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     const words: string[] = lodash.words(text);
                     const { writer } = context;
 
@@ -489,7 +594,9 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     context.writer.writeln(
                         `${context.writer.wrapInColor('Result: ', CliForegroundColor.Yellow)}${text.length}`,
                     );
@@ -515,11 +622,15 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     const { writer } = context;
 
                     const lines = text.split(/\r?\n/).length;
-                    const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+                    const wordCount = text.trim()
+                        ? text.trim().split(/\s+/).length
+                        : 0;
                     const chars = text.length;
                     const bytes = new TextEncoder().encode(text).length;
 
@@ -536,11 +647,18 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                         `  ${writer.wrapInColor('Bytes:', CliForegroundColor.Cyan)}       ${bytes}`,
                     );
 
-                    context.process.output({ lines, words: wordCount, chars, bytes });
+                    context.process.output({
+                        lines,
+                        words: wordCount,
+                        chars,
+                        bytes,
+                    });
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Count lines, words, characters, and bytes in text');
+                    writer.writeln(
+                        'Count lines, words, characters, and bytes in text',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -567,8 +685,11 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const find = command.args['find'] || command.args['f'] || '';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const find =
+                        command.args['find'] || command.args['f'] || '';
                     const result = text.includes(find);
                     const { writer } = context;
 
@@ -581,7 +702,9 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Check if a string contains a given substring');
+                    writer.writeln(
+                        'Check if a string contains a given substring',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -607,8 +730,11 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const find = command.args['find'] || command.args['f'] || '';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const find =
+                        command.args['find'] || command.args['f'] || '';
                     const result = text.startsWith(find);
                     const { writer } = context;
 
@@ -619,7 +745,9 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Check if a string starts with a given prefix');
+                    writer.writeln(
+                        'Check if a string starts with a given prefix',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -645,8 +773,11 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
-                    const find = command.args['find'] || command.args['f'] || '';
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
+                    const find =
+                        command.args['find'] || command.args['f'] || '';
                     const result = text.endsWith(find);
                     const { writer } = context;
 
@@ -657,7 +788,9 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Check if a string ends with a given suffix');
+                    writer.writeln(
+                        'Check if a string ends with a given suffix',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -680,27 +813,50 @@ export class CliStringCommandProcessor implements ICliCommandProcessor {
         writer.writeln('String manipulation and analysis commands');
         writer.writeln();
         writer.writeln(
-            writer.wrapInColor('🔠 Case Conversions:', CliForegroundColor.Yellow),
+            writer.wrapInColor(
+                '🔠 Case Conversions:',
+                CliForegroundColor.Yellow,
+            ),
         );
-        writer.writeln(`  ${writer.wrapInColor('string upper', CliForegroundColor.Cyan)} / ${writer.wrapInColor('lower', CliForegroundColor.Cyan)} / ${writer.wrapInColor('capitalize', CliForegroundColor.Cyan)}`);
-        writer.writeln(`  ${writer.wrapInColor('string camelCase', CliForegroundColor.Cyan)} / ${writer.wrapInColor('kebabCase', CliForegroundColor.Cyan)} / ${writer.wrapInColor('snakeCase', CliForegroundColor.Cyan)} / ${writer.wrapInColor('startCase', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('string upper', CliForegroundColor.Cyan)} / ${writer.wrapInColor('lower', CliForegroundColor.Cyan)} / ${writer.wrapInColor('capitalize', CliForegroundColor.Cyan)}`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('string camelCase', CliForegroundColor.Cyan)} / ${writer.wrapInColor('kebabCase', CliForegroundColor.Cyan)} / ${writer.wrapInColor('snakeCase', CliForegroundColor.Cyan)} / ${writer.wrapInColor('startCase', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln(
             writer.wrapInColor('🔧 Transform:', CliForegroundColor.Yellow),
         );
-        writer.writeln(`  ${writer.wrapInColor('string reverse', CliForegroundColor.Cyan)} / ${writer.wrapInColor('trim', CliForegroundColor.Cyan)} / ${writer.wrapInColor('slug', CliForegroundColor.Cyan)} / ${writer.wrapInColor('repeat', CliForegroundColor.Cyan)} / ${writer.wrapInColor('replace', CliForegroundColor.Cyan)} / ${writer.wrapInColor('truncate', CliForegroundColor.Cyan)}`);
-        writer.writeln(`  ${writer.wrapInColor('string pad', CliForegroundColor.Cyan)} / ${writer.wrapInColor('escape', CliForegroundColor.Cyan)} / ${writer.wrapInColor('unescape', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('string reverse', CliForegroundColor.Cyan)} / ${writer.wrapInColor('trim', CliForegroundColor.Cyan)} / ${writer.wrapInColor('slug', CliForegroundColor.Cyan)} / ${writer.wrapInColor('repeat', CliForegroundColor.Cyan)} / ${writer.wrapInColor('replace', CliForegroundColor.Cyan)} / ${writer.wrapInColor('truncate', CliForegroundColor.Cyan)}`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('string pad', CliForegroundColor.Cyan)} / ${writer.wrapInColor('escape', CliForegroundColor.Cyan)} / ${writer.wrapInColor('unescape', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln(
             writer.wrapInColor('🔍 Analysis:', CliForegroundColor.Yellow),
         );
-        writer.writeln(`  ${writer.wrapInColor('string length', CliForegroundColor.Cyan)} / ${writer.wrapInColor('wc', CliForegroundColor.Cyan)} / ${writer.wrapInColor('includes', CliForegroundColor.Cyan)} / ${writer.wrapInColor('startsWith', CliForegroundColor.Cyan)} / ${writer.wrapInColor('endsWith', CliForegroundColor.Cyan)}`);
-        writer.writeln(`  ${writer.wrapInColor('string split', CliForegroundColor.Cyan)} / ${writer.wrapInColor('words', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('string length', CliForegroundColor.Cyan)} / ${writer.wrapInColor('wc', CliForegroundColor.Cyan)} / ${writer.wrapInColor('includes', CliForegroundColor.Cyan)} / ${writer.wrapInColor('startsWith', CliForegroundColor.Cyan)} / ${writer.wrapInColor('endsWith', CliForegroundColor.Cyan)}`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('string split', CliForegroundColor.Cyan)} / ${writer.wrapInColor('words', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  string camelCase "hello world"       ${writer.wrapInColor('# → helloWorld', CliForegroundColor.Green)}`);
-        writer.writeln(`  string reverse Hello                 ${writer.wrapInColor('# → olleH', CliForegroundColor.Green)}`);
-        writer.writeln(`  string slug "Hello World!"           ${writer.wrapInColor('# → hello-world', CliForegroundColor.Green)}`);
-        writer.writeln(`  string wc "some text here"           ${writer.wrapInColor('# word/char counts', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  string camelCase "hello world"       ${writer.wrapInColor('# → helloWorld', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  string reverse Hello                 ${writer.wrapInColor('# → olleH', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  string slug "Hello World!"           ${writer.wrapInColor('# → hello-world', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  string wc "some text here"           ${writer.wrapInColor('# word/char counts', CliForegroundColor.Green)}`,
+        );
     }
 }

@@ -8,15 +8,68 @@ import {
 } from '@qodalis/cli-core';
 
 const LOREM_WORDS = [
-    'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing',
-    'elit', 'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore',
-    'et', 'dolore', 'magna', 'aliqua', 'enim', 'ad', 'minim', 'veniam',
-    'quis', 'nostrud', 'exercitation', 'ullamco', 'laboris', 'nisi',
-    'aliquip', 'ex', 'ea', 'commodo', 'consequat', 'duis', 'aute', 'irure',
-    'in', 'reprehenderit', 'voluptate', 'velit', 'esse', 'cillum',
-    'fugiat', 'nulla', 'pariatur', 'excepteur', 'sint', 'occaecat',
-    'cupidatat', 'non', 'proident', 'sunt', 'culpa', 'qui', 'officia',
-    'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum',
+    'lorem',
+    'ipsum',
+    'dolor',
+    'sit',
+    'amet',
+    'consectetur',
+    'adipiscing',
+    'elit',
+    'sed',
+    'do',
+    'eiusmod',
+    'tempor',
+    'incididunt',
+    'ut',
+    'labore',
+    'et',
+    'dolore',
+    'magna',
+    'aliqua',
+    'enim',
+    'ad',
+    'minim',
+    'veniam',
+    'quis',
+    'nostrud',
+    'exercitation',
+    'ullamco',
+    'laboris',
+    'nisi',
+    'aliquip',
+    'ex',
+    'ea',
+    'commodo',
+    'consequat',
+    'duis',
+    'aute',
+    'irure',
+    'in',
+    'reprehenderit',
+    'voluptate',
+    'velit',
+    'esse',
+    'cillum',
+    'fugiat',
+    'nulla',
+    'pariatur',
+    'excepteur',
+    'sint',
+    'occaecat',
+    'cupidatat',
+    'non',
+    'proident',
+    'sunt',
+    'culpa',
+    'qui',
+    'officia',
+    'deserunt',
+    'mollit',
+    'anim',
+    'id',
+    'est',
+    'laborum',
 ];
 
 export class CliLoremCommandProcessor implements ICliCommandProcessor {
@@ -55,7 +108,8 @@ export class CliLoremCommandProcessor implements ICliCommandProcessor {
                     context: ICliExecutionContext,
                 ) => {
                     const count = Math.min(
-                        parseInt(command.args['count'] || command.args['n']) || 10,
+                        parseInt(command.args['count'] || command.args['n']) ||
+                            10,
                         1000,
                     );
                     const text = this.generateWords(count);
@@ -64,7 +118,9 @@ export class CliLoremCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Generate a specific number of lorem ipsum words');
+                    writer.writeln(
+                        'Generate a specific number of lorem ipsum words',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -90,13 +146,13 @@ export class CliLoremCommandProcessor implements ICliCommandProcessor {
                     context: ICliExecutionContext,
                 ) => {
                     const count = Math.min(
-                        parseInt(command.args['count'] || command.args['n']) || 3,
+                        parseInt(command.args['count'] || command.args['n']) ||
+                            3,
                         50,
                     );
                     const sentences: string[] = [];
                     for (let i = 0; i < count; i++) {
-                        const wordCount =
-                            Math.floor(Math.random() * 10) + 5;
+                        const wordCount = Math.floor(Math.random() * 10) + 5;
                         const words = this.generateWords(wordCount);
                         sentences.push(
                             words.charAt(0).toUpperCase() +
@@ -136,13 +192,13 @@ export class CliLoremCommandProcessor implements ICliCommandProcessor {
                     context: ICliExecutionContext,
                 ) => {
                     const count = Math.min(
-                        parseInt(command.args['count'] || command.args['n']) || 1,
+                        parseInt(command.args['count'] || command.args['n']) ||
+                            1,
                         20,
                     );
                     const paragraphs: string[] = [];
                     for (let i = 0; i < count; i++) {
-                        const sentenceCount =
-                            Math.floor(Math.random() * 4) + 3;
+                        const sentenceCount = Math.floor(Math.random() * 4) + 3;
                         const sentences: string[] = [];
                         for (let j = 0; j < sentenceCount; j++) {
                             const wordCount =

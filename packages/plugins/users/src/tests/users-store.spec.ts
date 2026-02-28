@@ -170,7 +170,9 @@ describe('CliDefaultUsersStoreService', () => {
                 groups: [],
             });
 
-            const found = await firstValueFrom(service.getUser('alice@test.com'));
+            const found = await firstValueFrom(
+                service.getUser('alice@test.com'),
+            );
             expect(found).toBeDefined();
             expect(found!.name).toBe('alice');
         });
@@ -187,9 +189,21 @@ describe('CliDefaultUsersStoreService', () => {
         beforeEach(async () => {
             await service.initialize(kvStore);
             // root already exists; add more users
-            await service.createUser({ name: 'alice', email: 'alice@test.com', groups: ['dev'] });
-            await service.createUser({ name: 'bob', email: 'bob@test.com', groups: ['admin'] });
-            await service.createUser({ name: 'charlie', email: 'charlie@test.com', groups: [] });
+            await service.createUser({
+                name: 'alice',
+                email: 'alice@test.com',
+                groups: ['dev'],
+            });
+            await service.createUser({
+                name: 'bob',
+                email: 'bob@test.com',
+                groups: ['admin'],
+            });
+            await service.createUser({
+                name: 'charlie',
+                email: 'charlie@test.com',
+                groups: [],
+            });
         });
 
         it('should return all users', async () => {
@@ -198,13 +212,17 @@ describe('CliDefaultUsersStoreService', () => {
         });
 
         it('should filter by query matching name', async () => {
-            const users = await firstValueFrom(service.getUsers({ query: 'ali' }));
+            const users = await firstValueFrom(
+                service.getUsers({ query: 'ali' }),
+            );
             expect(users.length).toBe(1);
             expect(users[0].name).toBe('alice');
         });
 
         it('should filter by query matching email', async () => {
-            const users = await firstValueFrom(service.getUsers({ query: 'bob@test' }));
+            const users = await firstValueFrom(
+                service.getUsers({ query: 'bob@test' }),
+            );
             expect(users.length).toBe(1);
             expect(users[0].name).toBe('bob');
         });
@@ -220,7 +238,9 @@ describe('CliDefaultUsersStoreService', () => {
         });
 
         it('should support skip and take together', async () => {
-            const users = await firstValueFrom(service.getUsers({ skip: 1, take: 2 }));
+            const users = await firstValueFrom(
+                service.getUsers({ skip: 1, take: 2 }),
+            );
             expect(users.length).toBe(2);
             expect(users[0].name).toBe('alice');
             expect(users[1].name).toBe('bob');
@@ -348,7 +368,7 @@ describe('CliDefaultUsersStoreService', () => {
             const stored = await kvStore.get<any[]>('cli-users');
             expect(stored).toBeDefined();
             expect(stored!.length).toBe(2); // root + alice
-            expect(stored!.some(u => u.name === 'alice')).toBe(true);
+            expect(stored!.some((u) => u.name === 'alice')).toBe(true);
         });
 
         it('should persist to kvStore after updateUser', async () => {
@@ -361,7 +381,9 @@ describe('CliDefaultUsersStoreService', () => {
             await service.updateUser(created.id, { email: 'updated@test.com' });
 
             const stored = await kvStore.get<any[]>('cli-users');
-            expect(stored!.some(u => u.email === 'updated@test.com')).toBe(true);
+            expect(stored!.some((u) => u.email === 'updated@test.com')).toBe(
+                true,
+            );
         });
 
         it('should persist to kvStore after deleteUser', async () => {
@@ -375,7 +397,7 @@ describe('CliDefaultUsersStoreService', () => {
 
             const stored = await kvStore.get<any[]>('cli-users');
             expect(stored!.length).toBe(1); // only root remains
-            expect(stored!.some(u => u.name === 'alice')).toBe(false);
+            expect(stored!.some((u) => u.name === 'alice')).toBe(false);
         });
     });
 });

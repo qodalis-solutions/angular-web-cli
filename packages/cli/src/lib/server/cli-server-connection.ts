@@ -176,8 +176,6 @@ export class CliServerConnection {
                 typeof location !== 'undefined' ? location.host : 'localhost';
             return `${protocol}//${host}`;
         }
-        return httpUrl
-            .replace(/^https:/, 'wss:')
-            .replace(/^http:/, 'ws:');
+        return httpUrl.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
     }
 }

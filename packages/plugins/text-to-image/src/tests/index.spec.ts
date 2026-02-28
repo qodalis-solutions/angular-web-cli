@@ -50,43 +50,51 @@ describe('CliTextToImageCommandProcessor', () => {
         });
 
         it('should have parameter named "fileName"', () => {
-            const param = processor.parameters!.find(p => p.name === 'fileName');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'fileName',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should have parameter named "width"', () => {
-            const param = processor.parameters!.find(p => p.name === 'width');
+            const param = processor.parameters!.find((p) => p.name === 'width');
             expect(param).toBeDefined();
             expect(param!.type).toBe('integer');
         });
 
         it('should have parameter named "height"', () => {
-            const param = processor.parameters!.find(p => p.name === 'height');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'height',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('integer');
         });
 
         it('should have parameter named "bgColor"', () => {
-            const param = processor.parameters!.find(p => p.name === 'bgColor');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'bgColor',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should have parameter named "textColor"', () => {
-            const param = processor.parameters!.find(p => p.name === 'textColor');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'textColor',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should have parameter named "font"', () => {
-            const param = processor.parameters!.find(p => p.name === 'font');
+            const param = processor.parameters!.find((p) => p.name === 'font');
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should contain all expected parameter names', () => {
-            const names = processor.parameters!.map(p => p.name);
+            const names = processor.parameters!.map((p) => p.name);
             expect(names).toContain('fileName');
             expect(names).toContain('width');
             expect(names).toContain('height');
@@ -99,7 +107,8 @@ describe('CliTextToImageCommandProcessor', () => {
     describe('sub-processors', () => {
         it('should not have sub-processors', () => {
             expect(
-                !(processor as any).processors || (processor as any).processors.length === 0,
+                !(processor as any).processors ||
+                    (processor as any).processors.length === 0,
             ).toBe(true);
         });
     });

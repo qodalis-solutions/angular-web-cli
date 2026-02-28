@@ -37,9 +37,12 @@ export class CliRmCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
+        const fs = context.services.get<IFileSystemService>(
+            IFileSystemService_TOKEN,
+        );
         const path = command.value;
-        const recursive = command.args['recursive'] || command.args['r'] || command.args['R'];
+        const recursive =
+            command.args['recursive'] || command.args['r'] || command.args['R'];
         const force = command.args['force'] || command.args['f'];
 
         if (!path) {
@@ -50,7 +53,9 @@ export class CliRmCommandProcessor implements ICliCommandProcessor {
         try {
             if (!fs.exists(path)) {
                 if (!force) {
-                    context.writer.writeError(`rm: ${path}: No such file or directory`);
+                    context.writer.writeError(
+                        `rm: ${path}: No such file or directory`,
+                    );
                 }
                 return;
             }

@@ -28,13 +28,19 @@ export class CliUnameCommandProcessor implements ICliCommandProcessor {
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Prints detailed system and browser information including:');
+        writer.writeln(
+            'Prints detailed system and browser information including:',
+        );
         writer.writeln('  💾 CLI core and library versions');
-        writer.writeln('  🌐 Browser name, version, user agent, language, and platform');
+        writer.writeln(
+            '  🌐 Browser name, version, user agent, language, and platform',
+        );
         writer.writeln('  🖥  Operating system');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('uname', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('uname', CliForegroundColor.Cyan)}`,
+        );
     }
 
     async processCommand(

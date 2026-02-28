@@ -20,7 +20,9 @@ export class CliRmdirCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
+        const fs = context.services.get<IFileSystemService>(
+            IFileSystemService_TOKEN,
+        );
         const path = command.value;
 
         if (!path) {
@@ -31,7 +33,9 @@ export class CliRmdirCommandProcessor implements ICliCommandProcessor {
         try {
             const node = fs.getNode(path);
             if (!node) {
-                context.writer.writeError(`rmdir: ${path}: No such file or directory`);
+                context.writer.writeError(
+                    `rmdir: ${path}: No such file or directory`,
+                );
                 return;
             }
             if (node.type !== 'directory') {
@@ -39,7 +43,9 @@ export class CliRmdirCommandProcessor implements ICliCommandProcessor {
                 return;
             }
             if (node.children && node.children.length > 0) {
-                context.writer.writeError(`rmdir: ${path}: Directory not empty`);
+                context.writer.writeError(
+                    `rmdir: ${path}: Directory not empty`,
+                );
                 return;
             }
             fs.remove(path);

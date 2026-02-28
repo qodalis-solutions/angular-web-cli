@@ -13,8 +13,23 @@
         "cwd": "packages/plugins/regex",
         "parallel": false
       },
-      "inputs": ["production", "sharedGlobals"],
-      "outputs": ["{workspaceRoot}/dist/regex"]
+      "inputs": [
+        "production",
+        "sharedGlobals"
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/regex"
+      ]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "tsConfig": "packages/plugins/regex/tsconfig.spec.json",
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ]
+      }
     }
   }
 }

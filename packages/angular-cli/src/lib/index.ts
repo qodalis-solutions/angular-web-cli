@@ -1,7 +1,5 @@
 import { Provider } from '@angular/core';
-import {
-    ICliPingServerService_TOKEN as CLI_PING_TOKEN,
-} from './cli/tokens';
+import { ICliPingServerService_TOKEN as CLI_PING_TOKEN } from './cli/tokens';
 import { CliDefaultPingServerService } from './cli/services';
 
 /**

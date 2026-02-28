@@ -137,7 +137,8 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
 
         try {
             const resolved = fs.resolvePath(filePath.trim());
-            const content = typeof output === 'string' ? output : JSON.stringify(output);
+            const content =
+                typeof output === 'string' ? output : JSON.stringify(output);
             if (fs.exists(resolved)) {
                 fs.writeFile(resolved, content, true); // append
             } else {
@@ -176,14 +177,17 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
         );
 
         if (!processor) {
-            const aliasProcessor = this.registry.findProcessor(
-                'alias',
-                [],
-            ) as CliAliasCommandProcessor | undefined;
+            const aliasProcessor = this.registry.findProcessor('alias', []) as
+                | CliAliasCommandProcessor
+                | undefined;
             const aliases = aliasProcessor?.userAliases ?? {};
 
             if (aliases[mainCommand]) {
-                return await this.executeSingleCommand(aliases[mainCommand], data, context);
+                return await this.executeSingleCommand(
+                    aliases[mainCommand],
+                    data,
+                    context,
+                );
             }
 
             context.writer.writeError(
@@ -425,7 +429,12 @@ export class CliCommandExecutor implements ICliCommandExecutorService {
             if (missingParams?.length) {
                 context.writer.writeError(
                     `Missing required parameters: ${missingParams
-                        .map((p) => context.writer.wrapInColor(`--${p.name}`, CliForegroundColor.Cyan))
+                        .map((p) =>
+                            context.writer.wrapInColor(
+                                `--${p.name}`,
+                                CliForegroundColor.Cyan,
+                            ),
+                        )
                         .join(', ')}`,
                 );
 

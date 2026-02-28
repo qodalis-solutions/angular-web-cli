@@ -44,7 +44,7 @@ describe('CliCookiesCommandProcessor', () => {
         });
 
         it('should contain all expected sub-processor names', () => {
-            const names = processor.processors!.map(p => p.command);
+            const names = processor.processors!.map((p) => p.command);
             expect(names).toContain('list');
             expect(names).toContain('get');
             expect(names).toContain('set');
@@ -52,25 +52,27 @@ describe('CliCookiesCommandProcessor', () => {
         });
 
         it('"list" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'list');
+            const sub = processor.processors!.find((p) => p.command === 'list');
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"get" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'get');
+            const sub = processor.processors!.find((p) => p.command === 'get');
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"set" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'set');
+            const sub = processor.processors!.find((p) => p.command === 'set');
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"remove" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'remove');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'remove',
+            );
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });
@@ -131,26 +133,28 @@ describe('CliLocalStorageCommandProcessor', () => {
         });
 
         it('should contain all expected sub-processor names', () => {
-            const names = processor.processors!.map(p => p.command);
+            const names = processor.processors!.map((p) => p.command);
             expect(names).toContain('get');
             expect(names).toContain('set');
             expect(names).toContain('remove');
         });
 
         it('"get" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'get');
+            const sub = processor.processors!.find((p) => p.command === 'get');
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"set" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'set');
+            const sub = processor.processors!.find((p) => p.command === 'set');
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"remove" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'remove');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'remove',
+            );
             expect(sub).toBeDefined();
             expect(typeof sub!.processCommand).toBe('function');
         });

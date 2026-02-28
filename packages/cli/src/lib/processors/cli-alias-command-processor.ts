@@ -46,9 +46,11 @@ export class CliAliasCommandProcessor implements ICliCommandProcessor {
                     const { writer } = context;
 
                     writer.writeln('Aliases:');
-                    Object.entries(this.userAliases).forEach(([alias, command]) => {
-                        writer.writeInfo(`  ${alias} -> ${command}`);
-                    });
+                    Object.entries(this.userAliases).forEach(
+                        ([alias, command]) => {
+                            writer.writeInfo(`  ${alias} -> ${command}`);
+                        },
+                    );
 
                     if (Object.keys(this.userAliases).length === 0) {
                         writer.writeInfo('  No aliases defined');
@@ -63,14 +65,24 @@ export class CliAliasCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Create shortcut aliases for frequently used commands');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('alias --<name>=<command>', CliForegroundColor.Cyan)}    Create a new alias`);
-        writer.writeln(`  ${writer.wrapInColor('alias ls', CliForegroundColor.Cyan)}                    List all aliases`);
+        writer.writeln(
+            `  ${writer.wrapInColor('alias --<name>=<command>', CliForegroundColor.Cyan)}    Create a new alias`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('alias ls', CliForegroundColor.Cyan)}                    List all aliases`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  alias --h=help               ${writer.wrapInColor('# "h" → runs "help"', CliForegroundColor.Green)}`);
-        writer.writeln(`  alias --cls=clear             ${writer.wrapInColor('# "cls" → runs "clear"', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  alias --h=help               ${writer.wrapInColor('# "h" → runs "help"', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  alias --cls=clear             ${writer.wrapInColor('# "cls" → runs "clear"', CliForegroundColor.Green)}`,
+        );
         writer.writeln();
-        writer.writeln(`💡 Use ${writer.wrapInColor('unalias <name>', CliForegroundColor.Yellow)} to remove an alias`);
+        writer.writeln(
+            `💡 Use ${writer.wrapInColor('unalias <name>', CliForegroundColor.Yellow)} to remove an alias`,
+        );
     }
 
     public async processCommand(

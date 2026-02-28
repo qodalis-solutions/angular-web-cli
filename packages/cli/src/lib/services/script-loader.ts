@@ -14,7 +14,9 @@ const BUILTIN_SOURCES: Record<string, SourceEntry> = {
 };
 
 export class ScriptLoaderService {
-    private sources: Map<string, SourceEntry> = new Map(Object.entries(BUILTIN_SOURCES));
+    private sources: Map<string, SourceEntry> = new Map(
+        Object.entries(BUILTIN_SOURCES),
+    );
     private primary: string = 'unpkg';
 
     constructor() {}

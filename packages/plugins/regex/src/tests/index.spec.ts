@@ -46,28 +46,38 @@ describe('CliRegexCommandProcessor', () => {
         });
 
         it('should include "match" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'match');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'match',
+            );
             expect(sub).toBeDefined();
         });
 
         it('"match" sub-processor should have a description', () => {
-            const sub = processor.processors!.find(p => p.command === 'match');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'match',
+            );
             expect(sub!.description).toBeDefined();
             expect(sub!.description!.length).toBeGreaterThan(0);
         });
 
         it('"match" sub-processor should have acceptsRawInput = true', () => {
-            const sub = processor.processors!.find(p => p.command === 'match');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'match',
+            );
             expect(sub!.acceptsRawInput).toBe(true);
         });
 
         it('"match" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'match');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'match',
+            );
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"match" sub-processor should have writeDescription as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'match');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'match',
+            );
             expect(typeof sub!.writeDescription).toBe('function');
         });
     });

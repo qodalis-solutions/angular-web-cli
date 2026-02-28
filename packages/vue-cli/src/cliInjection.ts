@@ -5,4 +5,5 @@ export interface CliContextValue {
     engine: Ref<CliEngine | null>;
 }
 
-export const CliInjectionKey: InjectionKey<CliContextValue> = Symbol('qodalis-cli');
+export const CliInjectionKey: InjectionKey<CliContextValue> =
+    Symbol('qodalis-cli');

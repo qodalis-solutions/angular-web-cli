@@ -29,4 +29,7 @@ export const ICliPingServerService_TOKEN = 'cli-ping-server-service';
 export const CliModuleRegistry_TOKEN = 'cli-module-registry';
 
 // Re-exported from @qodalis/cli-core for backward compatibility
-export { ICliUserSessionService_TOKEN, ICliUsersStoreService_TOKEN } from '@qodalis/cli-core';
+export {
+    ICliUserSessionService_TOKEN,
+    ICliUsersStoreService_TOKEN,
+} from '@qodalis/cli-core';

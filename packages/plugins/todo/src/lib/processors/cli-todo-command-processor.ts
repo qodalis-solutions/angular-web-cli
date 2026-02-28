@@ -56,17 +56,35 @@ export class CliTodoCommandProcessor implements ICliCommandProcessor {
         writer.writeln(this.description!);
         writer.writeln();
         writer.writeln('📋 Commands:');
-        writer.writeln(`  ${writer.wrapInColor('todo ls', CliForegroundColor.Cyan)}               📃 List all TODO items`);
-        writer.writeln(`  ${writer.wrapInColor('todo add <text>', CliForegroundColor.Cyan)}        ➕ Add a new TODO item`);
-        writer.writeln(`  ${writer.wrapInColor('todo rm <id>', CliForegroundColor.Cyan)}           🗑  Remove a TODO item by ID`);
-        writer.writeln(`  ${writer.wrapInColor('todo rm --all', CliForegroundColor.Cyan)}          🗑  Remove all TODO items`);
-        writer.writeln(`  ${writer.wrapInColor('todo complete <id>', CliForegroundColor.Cyan)}     ✔  Mark a TODO as completed`);
+        writer.writeln(
+            `  ${writer.wrapInColor('todo ls', CliForegroundColor.Cyan)}               📃 List all TODO items`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('todo add <text>', CliForegroundColor.Cyan)}        ➕ Add a new TODO item`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('todo rm <id>', CliForegroundColor.Cyan)}           🗑  Remove a TODO item by ID`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('todo rm --all', CliForegroundColor.Cyan)}          🗑  Remove all TODO items`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('todo complete <id>', CliForegroundColor.Cyan)}     ✔  Mark a TODO as completed`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  todo add Buy milk                ${writer.wrapInColor('# Add a new task', CliForegroundColor.Green)}`);
-        writer.writeln(`  todo ls                          ${writer.wrapInColor('# View all tasks', CliForegroundColor.Green)}`);
-        writer.writeln(`  todo complete 1                  ${writer.wrapInColor('# Mark task #1 done', CliForegroundColor.Green)}`);
-        writer.writeln(`  todo rm 2                        ${writer.wrapInColor('# Delete task #2', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  todo add Buy milk                ${writer.wrapInColor('# Add a new task', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  todo ls                          ${writer.wrapInColor('# View all tasks', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  todo complete 1                  ${writer.wrapInColor('# Mark task #1 done', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  todo rm 2                        ${writer.wrapInColor('# Delete task #2', CliForegroundColor.Green)}`,
+        );
     }
 
     async initialize(context: ICliExecutionContext): Promise<void> {

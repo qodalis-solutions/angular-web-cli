@@ -1,4 +1,8 @@
-import { ICliTerminalWriter, CliForegroundColor, CliBackgroundColor } from '@qodalis/cli-core';
+import {
+    ICliTerminalWriter,
+    CliForegroundColor,
+    CliBackgroundColor,
+} from '@qodalis/cli-core';
 import { CapturingTerminalWriter } from '../lib/services/capturing-terminal-writer';
 
 /**
@@ -8,17 +12,37 @@ function createStubWriter(): ICliTerminalWriter & { written: string[] } {
     const written: string[] = [];
     return {
         written,
-        write(text: string) { written.push(text); },
-        writeln(text?: string) { written.push(text ?? ''); },
-        writeSuccess(msg: string) { written.push(`[success] ${msg}`); },
-        writeInfo(msg: string) { written.push(`[info] ${msg}`); },
-        writeWarning(msg: string) { written.push(`[warn] ${msg}`); },
-        writeError(msg: string) { written.push(`[error] ${msg}`); },
-        wrapInColor(text: string, _color: CliForegroundColor) { return text; },
-        wrapInBackgroundColor(text: string, _color: CliBackgroundColor) { return text; },
-        writeJson(json: any) { written.push(JSON.stringify(json)); },
+        write(text: string) {
+            written.push(text);
+        },
+        writeln(text?: string) {
+            written.push(text ?? '');
+        },
+        writeSuccess(msg: string) {
+            written.push(`[success] ${msg}`);
+        },
+        writeInfo(msg: string) {
+            written.push(`[info] ${msg}`);
+        },
+        writeWarning(msg: string) {
+            written.push(`[warn] ${msg}`);
+        },
+        writeError(msg: string) {
+            written.push(`[error] ${msg}`);
+        },
+        wrapInColor(text: string, _color: CliForegroundColor) {
+            return text;
+        },
+        wrapInBackgroundColor(text: string, _color: CliBackgroundColor) {
+            return text;
+        },
+        writeJson(json: any) {
+            written.push(JSON.stringify(json));
+        },
         writeToFile(_fn: string, _content: string) {},
-        writeObjectsAsTable(objects: any[]) { written.push(JSON.stringify(objects)); },
+        writeObjectsAsTable(objects: any[]) {
+            written.push(JSON.stringify(objects));
+        },
         writeTable(_h: string[], _r: string[][]) {},
         writeDivider() {},
         writeList(_items: string[], _options?: any) {},
@@ -31,7 +55,6 @@ function createStubWriter(): ICliTerminalWriter & { written: string[] } {
 // CapturingTerminalWriter
 // ---------------------------------------------------------------------------
 describe('CapturingTerminalWriter', () => {
-
     it('should delegate write() to inner writer', () => {
         const inner = createStubWriter();
         const cw = new CapturingTerminalWriter(inner);

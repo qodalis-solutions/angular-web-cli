@@ -1,4 +1,12 @@
-import { defineComponent, ref, onMounted, onBeforeUnmount, PropType, h, inject } from 'vue';
+import {
+    defineComponent,
+    ref,
+    onMounted,
+    onBeforeUnmount,
+    PropType,
+    h,
+    inject,
+} from 'vue';
 import { ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
 import { CliEngine, CliEngineOptions } from '@qodalis/cli';
 import { CliInjectionKey } from './cliInjection';

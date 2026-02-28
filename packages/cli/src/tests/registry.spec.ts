@@ -1,7 +1,10 @@
 import { CliCommandProcessorRegistry } from '../lib/registry';
 import { ICliCommandProcessor } from '@qodalis/cli-core';
 
-const createProcessor = (command: string, aliases?: string[]): ICliCommandProcessor => ({
+const createProcessor = (
+    command: string,
+    aliases?: string[],
+): ICliCommandProcessor => ({
     command,
     aliases,
     description: `Test ${command}`,
@@ -52,7 +55,9 @@ describe('CliCommandProcessorRegistry', () => {
         proc2.description = 'Replaced';
         registry.registerProcessor(proc1);
         registry.registerProcessor(proc2);
-        expect(registry.findProcessor('test', [])?.description).toBe('Replaced');
+        expect(registry.findProcessor('test', [])?.description).toBe(
+            'Replaced',
+        );
     });
 
     it('should accept initial processors', () => {
@@ -70,7 +75,13 @@ describe('CliCommandProcessorRegistry', () => {
         const parent = createProcessor('parent');
         parent.processors = [child];
         registry.registerProcessor(parent);
-        expect(registry.findProcessorInCollection('parent', ['sub'], registry.processors)).toBe(child);
+        expect(
+            registry.findProcessorInCollection(
+                'parent',
+                ['sub'],
+                registry.processors,
+            ),
+        ).toBe(child);
     });
 
     describe('Extension / Delegation', () => {
@@ -148,11 +159,17 @@ describe('CliCommandProcessorRegistry', () => {
         it('should allow extending processor to delegate to original', async () => {
             const calls: string[] = [];
             const original = createProcessor('echo');
-            original.processCommand = async () => { calls.push('original'); };
+            original.processCommand = async () => {
+                calls.push('original');
+            };
 
             const extension = createProcessor('echo');
             extension.extendsProcessor = true;
-            extension.processCommand = async function (this: ICliCommandProcessor, cmd: any, ctx: any) {
+            extension.processCommand = async function (
+                this: ICliCommandProcessor,
+                cmd: any,
+                ctx: any,
+            ) {
                 calls.push('extension');
                 await this.originalProcessor!.processCommand(cmd, ctx);
             }.bind(extension);
@@ -161,7 +178,15 @@ describe('CliCommandProcessorRegistry', () => {
             registry.registerProcessor(extension);
 
             const found = registry.findProcessor('echo', [])!;
-            await found.processCommand({ command: 'echo', rawCommand: 'echo hi', chainCommands: [], args: {} }, {} as any);
+            await found.processCommand(
+                {
+                    command: 'echo',
+                    rawCommand: 'echo hi',
+                    chainCommands: [],
+                    args: {},
+                },
+                {} as any,
+            );
 
             expect(calls).toEqual(['extension', 'original']);
         });
@@ -169,17 +194,29 @@ describe('CliCommandProcessorRegistry', () => {
         it('should allow extending processor to NOT delegate', async () => {
             const calls: string[] = [];
             const original = createProcessor('echo');
-            original.processCommand = async () => { calls.push('original'); };
+            original.processCommand = async () => {
+                calls.push('original');
+            };
 
             const extension = createProcessor('echo');
             extension.extendsProcessor = true;
-            extension.processCommand = async () => { calls.push('extension-only'); };
+            extension.processCommand = async () => {
+                calls.push('extension-only');
+            };
 
             registry.registerProcessor(original);
             registry.registerProcessor(extension);
 
             const found = registry.findProcessor('echo', [])!;
-            await found.processCommand({ command: 'echo', rawCommand: 'echo hi', chainCommands: [], args: {} }, {} as any);
+            await found.processCommand(
+                {
+                    command: 'echo',
+                    rawCommand: 'echo hi',
+                    chainCommands: [],
+                    args: {},
+                },
+                {} as any,
+            );
 
             expect(calls).toEqual(['extension-only']);
         });

@@ -113,11 +113,19 @@ export class CliSpeedTestCommandProcessor implements ICliCommandProcessor {
         writer.writeln(this.description);
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('speed-test run', CliForegroundColor.Cyan)}                          Run download & upload test`);
-        writer.writeln(`  ${writer.wrapInColor('speed-test run --download-url=<url>', CliForegroundColor.Cyan)}     Custom download URL`);
-        writer.writeln(`  ${writer.wrapInColor('speed-test run --upload-url=<url>', CliForegroundColor.Cyan)}       Custom upload URL`);
+        writer.writeln(
+            `  ${writer.wrapInColor('speed-test run', CliForegroundColor.Cyan)}                          Run download & upload test`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('speed-test run --download-url=<url>', CliForegroundColor.Cyan)}     Custom download URL`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('speed-test run --upload-url=<url>', CliForegroundColor.Cyan)}       Custom upload URL`,
+        );
         writer.writeln();
-        writer.writeln(`💡 Press ${writer.wrapInColor('Ctrl+C', CliForegroundColor.Yellow)} to abort the test`);
+        writer.writeln(
+            `💡 Press ${writer.wrapInColor('Ctrl+C', CliForegroundColor.Yellow)} to abort the test`,
+        );
     }
 
     /**

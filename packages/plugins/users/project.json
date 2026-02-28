@@ -13,8 +13,23 @@
         "cwd": "packages/plugins/users",
         "parallel": false
       },
-      "inputs": ["production", "sharedGlobals"],
-      "outputs": ["{workspaceRoot}/dist/users"]
+      "inputs": [
+        "production",
+        "sharedGlobals"
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/users"
+      ]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "tsConfig": "packages/plugins/users/tsconfig.spec.json",
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ]
+      }
     }
   }
 }

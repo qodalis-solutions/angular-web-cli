@@ -38,7 +38,7 @@ export class CliDefaultUsersStoreService implements ICliUsersStoreService {
     async createUser(user: CliAddUser): Promise<ICliUser> {
         const users = this.usersSubject.getValue();
 
-        if (users.some(u => u.email === user.email || u.name === user.name)) {
+        if (users.some((u) => u.email === user.email || u.name === user.name)) {
             throw new Error(`adduser: user '${user.name}' already exists`);
         }
 
@@ -59,20 +59,26 @@ export class CliDefaultUsersStoreService implements ICliUsersStoreService {
 
     async updateUser(id: string, updates: CliUpdateUser): Promise<ICliUser> {
         const users = this.usersSubject.getValue();
-        const index = users.findIndex(u => u.id === id || u.name === id || u.email === id);
+        const index = users.findIndex(
+            (u) => u.id === id || u.name === id || u.email === id,
+        );
 
         if (index === -1) {
             throw new Error(`usermod: user '${id}' does not exist`);
         }
 
         if (updates.name && updates.name !== users[index].name) {
-            if (users.some(u => u.name === updates.name)) {
-                throw new Error(`usermod: name '${updates.name}' is already taken`);
+            if (users.some((u) => u.name === updates.name)) {
+                throw new Error(
+                    `usermod: name '${updates.name}' is already taken`,
+                );
             }
         }
         if (updates.email && updates.email !== users[index].email) {
-            if (users.some(u => u.email === updates.email)) {
-                throw new Error(`usermod: email '${updates.email}' is already taken`);
+            if (users.some((u) => u.email === updates.email)) {
+                throw new Error(
+                    `usermod: email '${updates.email}' is already taken`,
+                );
             }
         }
 
@@ -91,13 +97,15 @@ export class CliDefaultUsersStoreService implements ICliUsersStoreService {
 
     async deleteUser(id: string): Promise<void> {
         const users = this.usersSubject.getValue();
-        const user = users.find(u => u.id === id || u.name === id || u.email === id);
+        const user = users.find(
+            (u) => u.id === id || u.name === id || u.email === id,
+        );
 
         if (!user) {
             throw new Error(`userdel: user '${id}' does not exist`);
         }
 
-        const updated = users.filter(u => u.id !== user.id);
+        const updated = users.filter((u) => u.id !== user.id);
         this.usersSubject.next(updated);
         await this.persist();
     }
@@ -110,11 +118,13 @@ export class CliDefaultUsersStoreService implements ICliUsersStoreService {
         const { query, skip, take } = options || {};
 
         return this.usersSubject.asObservable().pipe(
-            map(users => {
+            map((users) => {
                 if (query) {
                     const q = query.toLowerCase();
                     users = users.filter(
-                        u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
+                        (u) =>
+                            u.name.toLowerCase().includes(q) ||
+                            u.email.toLowerCase().includes(q),
                     );
                 }
                 if (skip) {
@@ -129,9 +139,15 @@ export class CliDefaultUsersStoreService implements ICliUsersStoreService {
     }
 
     getUser(id: string): Observable<ICliUser | undefined> {
-        return this.usersSubject.asObservable().pipe(
-            map(users => users.find(u => u.id === id || u.name === id || u.email === id)),
-        );
+        return this.usersSubject
+            .asObservable()
+            .pipe(
+                map((users) =>
+                    users.find(
+                        (u) => u.id === id || u.name === id || u.email === id,
+                    ),
+                ),
+            );
     }
 
     private async persist(): Promise<void> {

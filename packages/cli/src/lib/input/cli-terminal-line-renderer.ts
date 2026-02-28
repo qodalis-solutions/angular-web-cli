@@ -36,9 +36,8 @@ export class CliTerminalLineRenderer {
         }
 
         const path = options.pathProvider?.() ?? null;
-        const pathSegment = path !== null
-            ? `\x1b[34m${path}\x1b[0m`
-            : '\x1b[34m~\x1b[0m';
+        const pathSegment =
+            path !== null ? `\x1b[34m${path}\x1b[0m` : '\x1b[34m~\x1b[0m';
         return `${promptStart}${pathSegment}$ `;
     }
 
@@ -63,9 +62,10 @@ export class CliTerminalLineRenderer {
     ): void {
         const contentLength = promptLength + currentLine.length;
         const cols = this.terminal.cols;
-        const clearLength = previousContentLength !== undefined
-            ? Math.max(contentLength, previousContentLength)
-            : contentLength;
+        const clearLength =
+            previousContentLength !== undefined
+                ? Math.max(contentLength, previousContentLength)
+                : contentLength;
         const lines = Math.max(1, Math.ceil(clearLength / cols));
 
         let output = '';

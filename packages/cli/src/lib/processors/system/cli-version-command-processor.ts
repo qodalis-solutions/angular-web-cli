@@ -65,11 +65,17 @@ export class CliVersionCommandProcessor implements ICliCommandProcessor {
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Prints the current version of the CLI and documentation link');
+        writer.writeln(
+            'Prints the current version of the CLI and documentation link',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('version', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('version', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
-        writer.writeln(`📖 Documentation: ${writer.wrapInColor('https://cli.qodalis.com/docs/', CliForegroundColor.Blue)}`);
+        writer.writeln(
+            `📖 Documentation: ${writer.wrapInColor('https://cli.qodalis.com/docs/', CliForegroundColor.Blue)}`,
+        );
     }
 }

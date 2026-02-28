@@ -64,6 +64,8 @@ export class CliTimeCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Display the current local and UTC time');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('time now', CliForegroundColor.Cyan)}              🕒 Show current local and UTC time`);
+        writer.writeln(
+            `  ${writer.wrapInColor('time now', CliForegroundColor.Cyan)}              🕒 Show current local and UTC time`,
+        );
     }
 }

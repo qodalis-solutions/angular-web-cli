@@ -1,4 +1,8 @@
-import { ICliCommandProcessor, ICliCommandProcessorRegistry, ICliCommandChildProcessor } from '@qodalis/cli-core';
+import {
+    ICliCommandProcessor,
+    ICliCommandProcessorRegistry,
+    ICliCommandChildProcessor,
+} from '@qodalis/cli-core';
 import { CliCommandCompletionProvider } from '../lib/completion/cli-command-completion-provider';
 import { CliParameterCompletionProvider } from '../lib/completion/cli-parameter-completion-provider';
 import { CliCompletionEngine } from '../lib/completion/cli-completion-engine';
@@ -31,35 +35,57 @@ describe('CliCommandCompletionProvider', () => {
         registry = new CliCommandProcessorRegistry();
         registry.registerProcessor(createProcessor('echo'));
         registry.registerProcessor(createProcessor('eval'));
-        registry.registerProcessor(createProcessor('help', { aliases: ['man'] }));
+        registry.registerProcessor(
+            createProcessor('help', { aliases: ['man'] }),
+        );
         registry.registerProcessor(createProcessor('hash'));
         provider = new CliCommandCompletionProvider(registry);
     });
 
     it('should complete top-level commands by prefix', () => {
         const result = provider.getCompletions({
-            input: 'e', cursor: 1, token: 'e', tokenStart: 0, tokenIndex: 0, tokens: ['e'],
+            input: 'e',
+            cursor: 1,
+            token: 'e',
+            tokenStart: 0,
+            tokenIndex: 0,
+            tokens: ['e'],
         });
         expect(result).toEqual(['echo', 'eval']);
     });
 
     it('should complete top-level commands with empty prefix', () => {
         const result = provider.getCompletions({
-            input: '', cursor: 0, token: '', tokenStart: 0, tokenIndex: 0, tokens: [],
+            input: '',
+            cursor: 0,
+            token: '',
+            tokenStart: 0,
+            tokenIndex: 0,
+            tokens: [],
         });
         expect(result.length).toBe(5); // echo, eval, help, man, hash
     });
 
     it('should include aliases in completions', () => {
         const result = provider.getCompletions({
-            input: 'm', cursor: 1, token: 'm', tokenStart: 0, tokenIndex: 0, tokens: ['m'],
+            input: 'm',
+            cursor: 1,
+            token: 'm',
+            tokenStart: 0,
+            tokenIndex: 0,
+            tokens: ['m'],
         });
         expect(result).toContain('man');
     });
 
     it('should be case-insensitive', () => {
         const result = provider.getCompletions({
-            input: 'H', cursor: 1, token: 'H', tokenStart: 0, tokenIndex: 0, tokens: ['H'],
+            input: 'H',
+            cursor: 1,
+            token: 'H',
+            tokenStart: 0,
+            tokenIndex: 0,
+            tokens: ['H'],
         });
         expect(result).toContain('help');
         expect(result).toContain('hash');
@@ -72,7 +98,11 @@ describe('CliCommandCompletionProvider', () => {
         registry.registerProcessor(parent);
 
         const result = provider.getCompletions({
-            input: 'theme a', cursor: 7, token: 'a', tokenStart: 6, tokenIndex: 1,
+            input: 'theme a',
+            cursor: 7,
+            token: 'a',
+            tokenStart: 6,
+            tokenIndex: 1,
             tokens: ['theme', 'a'],
         });
         expect(result).toEqual(['apply']);
@@ -80,7 +110,11 @@ describe('CliCommandCompletionProvider', () => {
 
     it('should return empty for non-existing sub-commands', () => {
         const result = provider.getCompletions({
-            input: 'echo sub', cursor: 8, token: 'sub', tokenStart: 5, tokenIndex: 1,
+            input: 'echo sub',
+            cursor: 8,
+            token: 'sub',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['echo', 'sub'],
         });
         expect(result).toEqual([]);
@@ -88,7 +122,12 @@ describe('CliCommandCompletionProvider', () => {
 
     it('should return sorted results', () => {
         const result = provider.getCompletions({
-            input: '', cursor: 0, token: '', tokenStart: 0, tokenIndex: 0, tokens: [],
+            input: '',
+            cursor: 0,
+            token: '',
+            tokenStart: 0,
+            tokenIndex: 0,
+            tokens: [],
         });
         const sorted = [...result].sort();
         expect(result).toEqual(sorted);
@@ -104,19 +143,42 @@ describe('CliParameterCompletionProvider', () => {
 
     beforeEach(() => {
         registry = new CliCommandProcessorRegistry();
-        registry.registerProcessor(createProcessor('curl', {
-            parameters: [
-                { name: 'method', aliases: ['X'], description: 'HTTP method', type: 'string', required: false },
-                { name: 'header', aliases: ['H'], description: 'HTTP header', type: 'string', required: false },
-                { name: 'output', description: 'Output file', type: 'string', required: false },
-            ],
-        }));
+        registry.registerProcessor(
+            createProcessor('curl', {
+                parameters: [
+                    {
+                        name: 'method',
+                        aliases: ['X'],
+                        description: 'HTTP method',
+                        type: 'string',
+                        required: false,
+                    },
+                    {
+                        name: 'header',
+                        aliases: ['H'],
+                        description: 'HTTP header',
+                        type: 'string',
+                        required: false,
+                    },
+                    {
+                        name: 'output',
+                        description: 'Output file',
+                        type: 'string',
+                        required: false,
+                    },
+                ],
+            }),
+        );
         provider = new CliParameterCompletionProvider(registry);
     });
 
     it('should complete long parameter names with --', () => {
         const result = provider.getCompletions({
-            input: 'curl --m', cursor: 8, token: '--m', tokenStart: 5, tokenIndex: 1,
+            input: 'curl --m',
+            cursor: 8,
+            token: '--m',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['curl', '--m'],
         });
         expect(result).toContain('--method');
@@ -124,7 +186,11 @@ describe('CliParameterCompletionProvider', () => {
 
     it('should complete short aliases with -', () => {
         const result = provider.getCompletions({
-            input: 'curl -X', cursor: 7, token: '-X', tokenStart: 5, tokenIndex: 1,
+            input: 'curl -X',
+            cursor: 7,
+            token: '-X',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['curl', '-X'],
         });
         expect(result).toContain('-X');
@@ -132,7 +198,11 @@ describe('CliParameterCompletionProvider', () => {
 
     it('should return all matching parameters for empty prefix', () => {
         const result = provider.getCompletions({
-            input: 'curl --', cursor: 7, token: '--', tokenStart: 5, tokenIndex: 1,
+            input: 'curl --',
+            cursor: 7,
+            token: '--',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['curl', '--'],
         });
         expect(result).toContain('--method');
@@ -142,7 +212,11 @@ describe('CliParameterCompletionProvider', () => {
 
     it('should not complete tokens that do not start with -', () => {
         const result = provider.getCompletions({
-            input: 'curl hello', cursor: 10, token: 'hello', tokenStart: 5, tokenIndex: 1,
+            input: 'curl hello',
+            cursor: 10,
+            token: 'hello',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['curl', 'hello'],
         });
         expect(result).toEqual([]);
@@ -150,7 +224,11 @@ describe('CliParameterCompletionProvider', () => {
 
     it('should return empty for unknown command', () => {
         const result = provider.getCompletions({
-            input: 'unknown --f', cursor: 11, token: '--f', tokenStart: 8, tokenIndex: 1,
+            input: 'unknown --f',
+            cursor: 11,
+            token: '--f',
+            tokenStart: 8,
+            tokenIndex: 1,
             tokens: ['unknown', '--f'],
         });
         expect(result).toEqual([]);
@@ -158,14 +236,23 @@ describe('CliParameterCompletionProvider', () => {
 
     it('should return empty when no tokens', () => {
         const result = provider.getCompletions({
-            input: '', cursor: 0, token: '-', tokenStart: 0, tokenIndex: 0, tokens: [],
+            input: '',
+            cursor: 0,
+            token: '-',
+            tokenStart: 0,
+            tokenIndex: 0,
+            tokens: [],
         });
         expect(result).toEqual([]);
     });
 
     it('should be case-insensitive', () => {
         const result = provider.getCompletions({
-            input: 'curl --M', cursor: 8, token: '--M', tokenStart: 5, tokenIndex: 1,
+            input: 'curl --M',
+            cursor: 8,
+            token: '--M',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['curl', '--M'],
         });
         expect(result).toContain('--method');
@@ -173,7 +260,11 @@ describe('CliParameterCompletionProvider', () => {
 
     it('should return sorted results', () => {
         const result = provider.getCompletions({
-            input: 'curl --', cursor: 7, token: '--', tokenStart: 5, tokenIndex: 1,
+            input: 'curl --',
+            cursor: 7,
+            token: '--',
+            tokenStart: 5,
+            tokenIndex: 1,
             tokens: ['curl', '--'],
         });
         const sorted = [...result].sort();
@@ -193,7 +284,9 @@ describe('CliCompletionEngine', () => {
         registry = new CliCommandProcessorRegistry();
         registry.registerProcessor(createProcessor('echo'));
         registry.registerProcessor(createProcessor('eval'));
-        registry.registerProcessor(createProcessor('help', { aliases: ['man'] }));
+        registry.registerProcessor(
+            createProcessor('help', { aliases: ['man'] }),
+        );
 
         const cmdProvider = new CliCommandCompletionProvider(registry);
         const paramProvider = new CliParameterCompletionProvider(registry);

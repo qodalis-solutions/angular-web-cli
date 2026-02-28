@@ -63,7 +63,10 @@ export class CommandParser {
                     result.push({ type: 'command', value: trimmed });
                 }
                 current = '';
-                result.push({ type: twoChar as CommandPart['type'], value: twoChar });
+                result.push({
+                    type: twoChar as CommandPart['type'],
+                    value: twoChar,
+                });
                 i++; // skip the second character of the operator
                 continue;
             }

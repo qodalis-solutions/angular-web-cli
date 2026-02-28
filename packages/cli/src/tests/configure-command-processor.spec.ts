@@ -14,7 +14,10 @@ import {
 } from '@qodalis/cli-core';
 import { CliCommandProcessorRegistry } from '../lib/registry';
 import { CliExecutionProcess } from '../lib/context/cli-execution-process';
-import { CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN } from '../lib/tokens';
+import {
+    CliProcessorsRegistry_TOKEN,
+    CliStateStoreManager_TOKEN,
+} from '../lib/tokens';
 import { CliConfigureCommandProcessor } from '../lib/processors/configure/cli-configure-command-processor';
 
 // ---------------------------------------------------------------------------
@@ -25,17 +28,37 @@ function createStubWriter(): ICliTerminalWriter & { written: string[] } {
     const written: string[] = [];
     return {
         written,
-        write(text: string) { written.push(text); },
-        writeln(text?: string) { written.push(text ?? ''); },
-        writeSuccess(msg: string) { written.push(`[success] ${msg}`); },
-        writeInfo(msg: string) { written.push(`[info] ${msg}`); },
-        writeWarning(msg: string) { written.push(`[warn] ${msg}`); },
-        writeError(msg: string) { written.push(`[error] ${msg}`); },
-        wrapInColor(text: string, _color: CliForegroundColor) { return text; },
-        wrapInBackgroundColor(text: string, _color: CliBackgroundColor) { return text; },
-        writeJson(json: any) { written.push(JSON.stringify(json)); },
+        write(text: string) {
+            written.push(text);
+        },
+        writeln(text?: string) {
+            written.push(text ?? '');
+        },
+        writeSuccess(msg: string) {
+            written.push(`[success] ${msg}`);
+        },
+        writeInfo(msg: string) {
+            written.push(`[info] ${msg}`);
+        },
+        writeWarning(msg: string) {
+            written.push(`[warn] ${msg}`);
+        },
+        writeError(msg: string) {
+            written.push(`[error] ${msg}`);
+        },
+        wrapInColor(text: string, _color: CliForegroundColor) {
+            return text;
+        },
+        wrapInBackgroundColor(text: string, _color: CliBackgroundColor) {
+            return text;
+        },
+        writeJson(json: any) {
+            written.push(JSON.stringify(json));
+        },
         writeToFile(_fn: string, _content: string) {},
-        writeObjectsAsTable(objects: any[]) { written.push(JSON.stringify(objects)); },
+        writeObjectsAsTable(objects: any[]) {
+            written.push(JSON.stringify(objects));
+        },
         writeTable(_h: string[], _r: string[][]) {},
         writeDivider() {},
         writeList(_items: string[], _options?: any) {},
@@ -44,7 +67,9 @@ function createStubWriter(): ICliTerminalWriter & { written: string[] } {
     };
 }
 
-function createStubStateStore(initialState?: Record<string, any>): ICliStateStore {
+function createStubStateStore(
+    initialState?: Record<string, any>,
+): ICliStateStore {
     const state: Record<string, any> = initialState ?? {
         system: { logLevel: 'ERROR', welcomeMessage: 'always' },
         plugins: {},
@@ -53,10 +78,10 @@ function createStubStateStore(initialState?: Record<string, any>): ICliStateStor
         getState: () => state as any,
         updateState: (partial: any) => Object.assign(state, partial),
         select: () => new Subject<any>().asObservable(),
-        subscribe: () => ({ unsubscribe() {} } as any),
+        subscribe: () => ({ unsubscribe() {} }) as any,
         reset: () => {
             // Reset to initial defaults
-            Object.keys(state).forEach(k => delete state[k]);
+            Object.keys(state).forEach((k) => delete state[k]);
             Object.assign(state, {
                 system: { logLevel: 'ERROR', welcomeMessage: 'always' },
                 plugins: {},
@@ -101,10 +126,18 @@ function createMockContext(
         onAbort: new Subject<void>(),
         terminal: {} as any,
         reader: {
-            readLine: jasmine.createSpy('readLine').and.returnValue(Promise.resolve(null)),
-            readConfirm: jasmine.createSpy('readConfirm').and.returnValue(Promise.resolve(null)),
-            readSelect: jasmine.createSpy('readSelect').and.returnValue(Promise.resolve(null)),
-            readNumber: jasmine.createSpy('readNumber').and.returnValue(Promise.resolve(null)),
+            readLine: jasmine
+                .createSpy('readLine')
+                .and.returnValue(Promise.resolve(null)),
+            readConfirm: jasmine
+                .createSpy('readConfirm')
+                .and.returnValue(Promise.resolve(null)),
+            readSelect: jasmine
+                .createSpy('readSelect')
+                .and.returnValue(Promise.resolve(null)),
+            readNumber: jasmine
+                .createSpy('readNumber')
+                .and.returnValue(Promise.resolve(null)),
         },
         executor: {
             showHelp: jasmine.createSpy('showHelp'),
@@ -158,7 +191,9 @@ describe('CliConfigureCommandProcessor', () => {
         let listProcessor: ICliCommandProcessor;
 
         beforeEach(() => {
-            listProcessor = processor.processors!.find(p => p.command === 'list')!;
+            listProcessor = processor.processors!.find(
+                (p) => p.command === 'list',
+            )!;
         });
 
         it('should list system configuration options', async () => {
@@ -215,7 +250,9 @@ describe('CliConfigureCommandProcessor', () => {
         let getProcessor: ICliCommandProcessor;
 
         beforeEach(() => {
-            getProcessor = processor.processors!.find(p => p.command === 'get')!;
+            getProcessor = processor.processors!.find(
+                (p) => p.command === 'get',
+            )!;
         });
 
         it('should return a system config value', async () => {
@@ -271,7 +308,9 @@ describe('CliConfigureCommandProcessor', () => {
         let setProcessor: ICliCommandProcessor;
 
         beforeEach(() => {
-            setProcessor = processor.processors!.find(p => p.command === 'set')!;
+            setProcessor = processor.processors!.find(
+                (p) => p.command === 'set',
+            )!;
         });
 
         it('should set a system config value', async () => {
@@ -363,7 +402,9 @@ describe('CliConfigureCommandProcessor', () => {
         let resetProcessor: ICliCommandProcessor;
 
         beforeEach(() => {
-            resetProcessor = processor.processors!.find(p => p.command === 'reset')!;
+            resetProcessor = processor.processors!.find(
+                (p) => p.command === 'reset',
+            )!;
         });
 
         it('should reset a specific category', async () => {
@@ -403,7 +444,9 @@ describe('CliConfigureCommandProcessor', () => {
         });
 
         it('should prompt for confirmation when resetting all', async () => {
-            (context.reader.readConfirm as jasmine.Spy).and.returnValue(Promise.resolve(false));
+            (context.reader.readConfirm as jasmine.Spy).and.returnValue(
+                Promise.resolve(false),
+            );
 
             const cmd: CliProcessCommand = {
                 command: 'reset',
@@ -426,7 +469,9 @@ describe('CliConfigureCommandProcessor', () => {
             context.state.updateState({ system: state.system });
 
             // Mock readConfirm to return true
-            (context.reader.readConfirm as jasmine.Spy).and.returnValue(Promise.resolve(true));
+            (context.reader.readConfirm as jasmine.Spy).and.returnValue(
+                Promise.resolve(true),
+            );
 
             const cmd: CliProcessCommand = {
                 command: 'reset',

@@ -36,9 +36,7 @@ export class CliInputDemoCommandProcessor implements ICliCommandProcessor {
             writer.writeWarning('Input cancelled.');
             return;
         }
-        writer.writeSuccess(
-            `Secret received (${password.length} characters)`,
-        );
+        writer.writeSuccess(`Secret received (${password.length} characters)`);
         writer.writeln();
 
         // 3. readConfirm demo
@@ -54,15 +52,12 @@ export class CliInputDemoCommandProcessor implements ICliCommandProcessor {
         writer.writeln();
 
         // 4. readSelect demo
-        const choice = await reader.readSelect(
-            'Pick your favorite color:',
-            [
-                { label: 'Red', value: 'red' },
-                { label: 'Green', value: 'green' },
-                { label: 'Blue', value: 'blue' },
-                { label: 'Yellow', value: 'yellow' },
-            ],
-        );
+        const choice = await reader.readSelect('Pick your favorite color:', [
+            { label: 'Red', value: 'red' },
+            { label: 'Green', value: 'green' },
+            { label: 'Blue', value: 'blue' },
+            { label: 'Yellow', value: 'yellow' },
+        ]);
         if (choice === null) {
             writer.writeWarning('Input cancelled.');
             return;

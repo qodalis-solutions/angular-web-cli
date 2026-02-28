@@ -10,29 +10,121 @@ import {
 type ConversionMap = Record<string, Record<string, number>>;
 
 const lengthUnits: ConversionMap = {
-    m: { m: 1, km: 0.001, cm: 100, mm: 1000, mi: 0.000621371, ft: 3.28084, in: 39.3701, yd: 1.09361 },
-    km: { m: 1000, km: 1, cm: 100000, mm: 1000000, mi: 0.621371, ft: 3280.84, in: 39370.1, yd: 1093.61 },
-    cm: { m: 0.01, km: 0.00001, cm: 1, mm: 10, mi: 0.00000621371, ft: 0.0328084, in: 0.393701, yd: 0.0109361 },
-    mm: { m: 0.001, km: 0.000001, cm: 0.1, mm: 1, mi: 6.2137e-7, ft: 0.00328084, in: 0.0393701, yd: 0.00109361 },
-    mi: { m: 1609.34, km: 1.60934, cm: 160934, mm: 1609340, mi: 1, ft: 5280, in: 63360, yd: 1760 },
-    ft: { m: 0.3048, km: 0.0003048, cm: 30.48, mm: 304.8, mi: 0.000189394, ft: 1, in: 12, yd: 0.333333 },
-    in: { m: 0.0254, km: 0.0000254, cm: 2.54, mm: 25.4, mi: 0.0000157828, ft: 0.0833333, in: 1, yd: 0.0277778 },
-    yd: { m: 0.9144, km: 0.0009144, cm: 91.44, mm: 914.4, mi: 0.000568182, ft: 3, in: 36, yd: 1 },
+    m: {
+        m: 1,
+        km: 0.001,
+        cm: 100,
+        mm: 1000,
+        mi: 0.000621371,
+        ft: 3.28084,
+        in: 39.3701,
+        yd: 1.09361,
+    },
+    km: {
+        m: 1000,
+        km: 1,
+        cm: 100000,
+        mm: 1000000,
+        mi: 0.621371,
+        ft: 3280.84,
+        in: 39370.1,
+        yd: 1093.61,
+    },
+    cm: {
+        m: 0.01,
+        km: 0.00001,
+        cm: 1,
+        mm: 10,
+        mi: 0.00000621371,
+        ft: 0.0328084,
+        in: 0.393701,
+        yd: 0.0109361,
+    },
+    mm: {
+        m: 0.001,
+        km: 0.000001,
+        cm: 0.1,
+        mm: 1,
+        mi: 6.2137e-7,
+        ft: 0.00328084,
+        in: 0.0393701,
+        yd: 0.00109361,
+    },
+    mi: {
+        m: 1609.34,
+        km: 1.60934,
+        cm: 160934,
+        mm: 1609340,
+        mi: 1,
+        ft: 5280,
+        in: 63360,
+        yd: 1760,
+    },
+    ft: {
+        m: 0.3048,
+        km: 0.0003048,
+        cm: 30.48,
+        mm: 304.8,
+        mi: 0.000189394,
+        ft: 1,
+        in: 12,
+        yd: 0.333333,
+    },
+    in: {
+        m: 0.0254,
+        km: 0.0000254,
+        cm: 2.54,
+        mm: 25.4,
+        mi: 0.0000157828,
+        ft: 0.0833333,
+        in: 1,
+        yd: 0.0277778,
+    },
+    yd: {
+        m: 0.9144,
+        km: 0.0009144,
+        cm: 91.44,
+        mm: 914.4,
+        mi: 0.000568182,
+        ft: 3,
+        in: 36,
+        yd: 1,
+    },
 };
 
 const weightUnits: ConversionMap = {
     kg: { kg: 1, g: 1000, mg: 1000000, lb: 2.20462, oz: 35.274, t: 0.001 },
     g: { kg: 0.001, g: 1, mg: 1000, lb: 0.00220462, oz: 0.035274, t: 0.000001 },
-    mg: { kg: 0.000001, g: 0.001, mg: 1, lb: 0.00000220462, oz: 0.000035274, t: 1e-9 },
+    mg: {
+        kg: 0.000001,
+        g: 0.001,
+        mg: 1,
+        lb: 0.00000220462,
+        oz: 0.000035274,
+        t: 1e-9,
+    },
     lb: { kg: 0.453592, g: 453.592, mg: 453592, lb: 1, oz: 16, t: 0.000453592 },
-    oz: { kg: 0.0283495, g: 28.3495, mg: 28349.5, lb: 0.0625, oz: 1, t: 0.0000283495 },
+    oz: {
+        kg: 0.0283495,
+        g: 28.3495,
+        mg: 28349.5,
+        lb: 0.0625,
+        oz: 1,
+        t: 0.0000283495,
+    },
     t: { kg: 1000, g: 1000000, mg: 1000000000, lb: 2204.62, oz: 35274, t: 1 },
 };
 
 const dataUnits: ConversionMap = {
-    b: { b: 1, kb: 1 / 1024, mb: 1 / (1024 ** 2), gb: 1 / (1024 ** 3), tb: 1 / (1024 ** 4) },
-    kb: { b: 1024, kb: 1, mb: 1 / 1024, gb: 1 / (1024 ** 2), tb: 1 / (1024 ** 3) },
-    mb: { b: 1024 ** 2, kb: 1024, mb: 1, gb: 1 / 1024, tb: 1 / (1024 ** 2) },
+    b: {
+        b: 1,
+        kb: 1 / 1024,
+        mb: 1 / 1024 ** 2,
+        gb: 1 / 1024 ** 3,
+        tb: 1 / 1024 ** 4,
+    },
+    kb: { b: 1024, kb: 1, mb: 1 / 1024, gb: 1 / 1024 ** 2, tb: 1 / 1024 ** 3 },
+    mb: { b: 1024 ** 2, kb: 1024, mb: 1, gb: 1 / 1024, tb: 1 / 1024 ** 2 },
     gb: { b: 1024 ** 3, kb: 1024 ** 2, mb: 1024, gb: 1, tb: 1 / 1024 },
     tb: { b: 1024 ** 4, kb: 1024 ** 3, mb: 1024 ** 2, gb: 1024, tb: 1 },
 };
@@ -47,17 +139,39 @@ const categories: ConversionCategory[] = [
     {
         name: 'length',
         units: lengthUnits,
-        unitNames: { m: 'meters', km: 'kilometers', cm: 'centimeters', mm: 'millimeters', mi: 'miles', ft: 'feet', in: 'inches', yd: 'yards' },
+        unitNames: {
+            m: 'meters',
+            km: 'kilometers',
+            cm: 'centimeters',
+            mm: 'millimeters',
+            mi: 'miles',
+            ft: 'feet',
+            in: 'inches',
+            yd: 'yards',
+        },
     },
     {
         name: 'weight',
         units: weightUnits,
-        unitNames: { kg: 'kilograms', g: 'grams', mg: 'milligrams', lb: 'pounds', oz: 'ounces', t: 'tonnes' },
+        unitNames: {
+            kg: 'kilograms',
+            g: 'grams',
+            mg: 'milligrams',
+            lb: 'pounds',
+            oz: 'ounces',
+            t: 'tonnes',
+        },
     },
     {
         name: 'data',
         units: dataUnits,
-        unitNames: { b: 'bytes', kb: 'kilobytes', mb: 'megabytes', gb: 'gigabytes', tb: 'terabytes' },
+        unitNames: {
+            b: 'bytes',
+            kb: 'kilobytes',
+            mb: 'megabytes',
+            gb: 'gigabytes',
+            tb: 'terabytes',
+        },
     },
 ];
 
@@ -92,9 +206,7 @@ export class CliConvertCommandProcessor implements ICliCommandProcessor {
         );
 
         if (!match) {
-            writer.writeError(
-                'Usage: convert <value> <from> to <to>',
-            );
+            writer.writeError('Usage: convert <value> <from> to <to>');
             writer.writeInfo('Example: convert 100 km to mi');
             context.process.exit(-1);
             return;
@@ -111,7 +223,10 @@ export class CliConvertCommandProcessor implements ICliCommandProcessor {
         }
 
         // Temperature special case
-        if (this.isTemperatureUnit(fromUnit) && this.isTemperatureUnit(toUnit)) {
+        if (
+            this.isTemperatureUnit(fromUnit) &&
+            this.isTemperatureUnit(toUnit)
+        ) {
             const result = this.convertTemperature(value, fromUnit, toUnit);
             if (result !== null) {
                 const rounded = Math.round(result * 1000) / 1000;
@@ -125,7 +240,10 @@ export class CliConvertCommandProcessor implements ICliCommandProcessor {
 
         // Standard unit conversion
         for (const category of categories) {
-            if (category.units[fromUnit] && category.units[fromUnit][toUnit] !== undefined) {
+            if (
+                category.units[fromUnit] &&
+                category.units[fromUnit][toUnit] !== undefined
+            ) {
                 const result = value * category.units[fromUnit][toUnit];
                 const rounded = Math.round(result * 1000000) / 1000000;
                 const fromName = category.unitNames[fromUnit] || fromUnit;
@@ -198,18 +316,29 @@ export class CliConvertCommandProcessor implements ICliCommandProcessor {
         // Convert to Celsius first
         let celsius: number;
         switch (f) {
-            case 'c': celsius = value; break;
-            case 'f': celsius = (value - 32) * 5 / 9; break;
-            case 'k': celsius = value - 273.15; break;
-            default: return null;
+            case 'c':
+                celsius = value;
+                break;
+            case 'f':
+                celsius = ((value - 32) * 5) / 9;
+                break;
+            case 'k':
+                celsius = value - 273.15;
+                break;
+            default:
+                return null;
         }
 
         // Convert from Celsius to target
         switch (t) {
-            case 'c': return celsius;
-            case 'f': return celsius * 9 / 5 + 32;
-            case 'k': return celsius + 273.15;
-            default: return null;
+            case 'c':
+                return celsius;
+            case 'f':
+                return (celsius * 9) / 5 + 32;
+            case 'k':
+                return celsius + 273.15;
+            default:
+                return null;
         }
     }
 }

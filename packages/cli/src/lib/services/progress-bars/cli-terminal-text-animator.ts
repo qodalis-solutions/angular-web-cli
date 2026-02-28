@@ -14,10 +14,10 @@ export class CliTerminalTextAnimator implements ICliTextAnimator {
     private animationInterval?: ReturnType<typeof setInterval> | null;
     private text: string = '';
     private waveColors = [
-        '\x1b[38;5;39m',  // blue
-        '\x1b[38;5;45m',  // cyan
-        '\x1b[38;5;49m',  // teal
-        '\x1b[38;5;83m',  // green
+        '\x1b[38;5;39m', // blue
+        '\x1b[38;5;45m', // cyan
+        '\x1b[38;5;49m', // teal
+        '\x1b[38;5;83m', // green
         '\x1b[38;5;118m', // lime
         '\x1b[38;5;220m', // yellow
         '\x1b[38;5;214m', // orange
@@ -52,7 +52,8 @@ export class CliTerminalTextAnimator implements ICliTextAnimator {
             this.animationInterval = setInterval(() => {
                 if (isTyping) {
                     // Write text character by character with wave color
-                    const color = this.waveColors[index % this.waveColors.length];
+                    const color =
+                        this.waveColors[index % this.waveColors.length];
                     const ch = this.text[index];
                     this.terminal.write(`${color}${ch}${RESET}`);
                     index++;

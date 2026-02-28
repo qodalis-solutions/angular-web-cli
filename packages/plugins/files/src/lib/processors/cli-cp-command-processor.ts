@@ -29,14 +29,19 @@ export class CliCpCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
-        const recursive = command.args['recursive'] || command.args['r'] || command.args['R'];
+        const fs = context.services.get<IFileSystemService>(
+            IFileSystemService_TOKEN,
+        );
+        const recursive =
+            command.args['recursive'] || command.args['r'] || command.args['R'];
 
         const parts = this.parseArgs(command);
 
         if (parts.length < 2) {
             context.writer.writeError('cp: missing destination file operand');
-            context.writer.writeln('Usage: cp [--recursive] <source> <destination>');
+            context.writer.writeln(
+                'Usage: cp [--recursive] <source> <destination>',
+            );
             return;
         }
 
@@ -54,9 +59,9 @@ export class CliCpCommandProcessor implements ICliCommandProcessor {
     private parseArgs(command: CliProcessCommand): string[] {
         const raw = command.rawCommand;
         const afterCmd = raw.substring(raw.indexOf('cp') + 2).trim();
-        const tokens = afterCmd.split(/\s+/).filter(
-            (t) => t && !t.startsWith('--') && !t.startsWith('-'),
-        );
+        const tokens = afterCmd
+            .split(/\s+/)
+            .filter((t) => t && !t.startsWith('--') && !t.startsWith('-'));
         return tokens;
     }
 }

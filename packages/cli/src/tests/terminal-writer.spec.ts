@@ -75,7 +75,10 @@ describe('CliTerminalWriter', () => {
         });
 
         it('should accept array-of-tuples input', () => {
-            writer.writeKeyValue([['Key1', 'Value1'], ['LongerKey', 'Value2']]);
+            writer.writeKeyValue([
+                ['Key1', 'Value1'],
+                ['LongerKey', 'Value2'],
+            ]);
 
             const allText = terminal.written.join('');
             expect(allText).toContain('Key1');

@@ -77,7 +77,9 @@ describe('CliServiceContainer', () => {
                 value = 'constructed';
             }
             container.set({ provide: 'myService', useClass: MyService });
-            expect(container.get<MyService>('myService').value).toBe('constructed');
+            expect(container.get<MyService>('myService').value).toBe(
+                'constructed',
+            );
         });
 
         it('should return the same instance on subsequent gets', () => {
@@ -97,8 +99,16 @@ describe('CliServiceContainer', () => {
     // -----------------------------------------------------------------------
     describe('multi providers', () => {
         it('should accumulate values when multi is true', () => {
-            container.set({ provide: 'plugins', useValue: 'pluginA', multi: true });
-            container.set({ provide: 'plugins', useValue: 'pluginB', multi: true });
+            container.set({
+                provide: 'plugins',
+                useValue: 'pluginA',
+                multi: true,
+            });
+            container.set({
+                provide: 'plugins',
+                useValue: 'pluginB',
+                multi: true,
+            });
             const result = container.get<string[]>('plugins');
             expect(result).toEqual(['pluginA', 'pluginB']);
         });
@@ -167,27 +177,27 @@ describe('CliServiceContainer', () => {
             const details = container.getRegisteredServiceDetails();
             expect(details.length).toBe(5);
 
-            const strDetail = details.find(d => d.token === 'str')!;
+            const strDetail = details.find((d) => d.token === 'str')!;
             expect(strDetail.type).toContain('string');
             expect(strDetail.multi).toBeFalse();
 
-            const numDetail = details.find(d => d.token === 'num')!;
+            const numDetail = details.find((d) => d.token === 'num')!;
             expect(numDetail.type).toContain('number');
 
-            const boolDetail = details.find(d => d.token === 'bool')!;
+            const boolDetail = details.find((d) => d.token === 'bool')!;
             expect(boolDetail.type).toContain('boolean');
 
-            const arrDetail = details.find(d => d.token === 'arr')!;
+            const arrDetail = details.find((d) => d.token === 'arr')!;
             expect(arrDetail.type).toContain('Array');
 
-            const nilDetail = details.find(d => d.token === 'nil')!;
+            const nilDetail = details.find((d) => d.token === 'nil')!;
             expect(nilDetail.type).toBe('null');
         });
 
         it('should flag multi providers', () => {
             container.set({ provide: 'multi', useValue: 'a', multi: true });
             const details = container.getRegisteredServiceDetails();
-            const multiDetail = details.find(d => d.token === 'multi')!;
+            const multiDetail = details.find((d) => d.token === 'multi')!;
             expect(multiDetail.multi).toBeTrue();
         });
     });

@@ -41,7 +41,10 @@ export interface ICliInputReader {
      * @param defaultValue The default value when Enter is pressed without input (defaults to false)
      * @returns true for yes, false for no, defaultValue on empty Enter, or null if aborted
      */
-    readConfirm(prompt: string, defaultValue?: boolean): Promise<boolean | null>;
+    readConfirm(
+        prompt: string,
+        defaultValue?: boolean,
+    ): Promise<boolean | null>;
 
     /**
      * Prompt the user to select from a list of options using arrow keys.

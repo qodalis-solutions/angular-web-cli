@@ -145,7 +145,8 @@ export class CliTerminalProgressBar implements ICliPercentageProgressBar {
         this.clearCurrentLine();
         this.progressText = `${progressBar} ${percentage} ${text}`;
         // Plain-text length for line-wrap calculation (no ANSI codes)
-        this.progressTextPlainLength = 1 + totalBars + 1 + 1 + 4 + 1 + text.length;
+        this.progressTextPlainLength =
+            1 + totalBars + 1 + 1 + 4 + 1 + text.length;
 
         this.terminal.write(this.progressText);
         this.lastLineCount = this.calcLineCount(this.progressTextPlainLength);

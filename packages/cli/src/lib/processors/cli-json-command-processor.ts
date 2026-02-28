@@ -33,9 +33,14 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const input = (command.value || command.data || '') as string;
+                    const input = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
-                        const parsed = typeof input === 'object' ? input : JSON.parse(input);
+                        const parsed =
+                            typeof input === 'object'
+                                ? input
+                                : JSON.parse(input);
                         const formatted = JSON.stringify(parsed, null, 2);
                         context.writer.writeln(formatted);
                         context.process.output(formatted);
@@ -46,7 +51,9 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Pretty-print JSON with 2-space indentation');
+                    writer.writeln(
+                        'Pretty-print JSON with 2-space indentation',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -64,9 +71,14 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const input = (command.value || command.data || '') as string;
+                    const input = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
-                        const parsed = typeof input === 'object' ? input : JSON.parse(input);
+                        const parsed =
+                            typeof input === 'object'
+                                ? input
+                                : JSON.parse(input);
                         const minified = JSON.stringify(parsed);
                         context.writer.writeln(minified);
                         context.process.output(minified);
@@ -77,7 +89,9 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Minify JSON by removing all unnecessary whitespace');
+                    writer.writeln(
+                        'Minify JSON by removing all unnecessary whitespace',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -95,7 +109,9 @@ export class CliJsonCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const input = (command.value || command.data || '') as string;
+                    const input = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
                         JSON.parse(input);
                         context.writer.writeSuccess('Valid JSON');

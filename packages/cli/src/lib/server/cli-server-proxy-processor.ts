@@ -40,8 +40,7 @@ export class CliServerProxyProcessor implements ICliCommandProcessor {
             defaultValue: p.defaultValue,
         }));
         this.processors = descriptor.processors?.map(
-            (sub) =>
-                new CliServerProxyProcessor(connection, sub, serverName),
+            (sub) => new CliServerProxyProcessor(connection, sub, serverName),
         );
     }
 

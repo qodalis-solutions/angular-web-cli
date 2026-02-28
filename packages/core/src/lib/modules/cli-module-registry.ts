@@ -6,7 +6,8 @@ import { ICliModule } from '../interfaces';
  */
 export class CliModuleRegistry {
     private readonly modules = new Map<string, ICliModule>();
-    private readonly bootHandlers: ((module: ICliModule) => Promise<void>)[] = [];
+    private readonly bootHandlers: ((module: ICliModule) => Promise<void>)[] =
+        [];
 
     /**
      * Register a handler that is called whenever a new module is registered.

@@ -21,32 +21,81 @@ export class CliUsermodCommandProcessor implements ICliCommandProcessor {
     author = DefaultLibraryAuthor;
     acceptsRawInput = true;
     valueRequired = true;
-    metadata: CliProcessorMetadata = { sealed: true, module: 'users', icon: CliIcon.User };
-    stateConfiguration: CliStateConfiguration = { initialState: {}, storeName: 'users' };
+    metadata: CliProcessorMetadata = {
+        sealed: true,
+        module: 'users',
+        icon: CliIcon.User,
+    };
+    stateConfiguration: CliStateConfiguration = {
+        initialState: {},
+        storeName: 'users',
+    };
     parameters: ICliCommandParameterDescriptor[] = [
-        { name: 'email', description: 'New email address', type: 'string', required: false },
-        { name: 'groups', description: 'Replace groups (comma-separated)', type: 'string', required: false },
-        { name: 'add-groups', description: 'Add to groups (comma-separated)', type: 'string', required: false },
-        { name: 'remove-groups', description: 'Remove from groups (comma-separated)', type: 'string', required: false },
-        { name: 'home', description: 'Set home directory', type: 'string', required: false },
-        { name: 'disable', description: 'Disable the account', type: 'boolean', required: false },
-        { name: 'enable', description: 'Enable the account', type: 'boolean', required: false },
+        {
+            name: 'email',
+            description: 'New email address',
+            type: 'string',
+            required: false,
+        },
+        {
+            name: 'groups',
+            description: 'Replace groups (comma-separated)',
+            type: 'string',
+            required: false,
+        },
+        {
+            name: 'add-groups',
+            description: 'Add to groups (comma-separated)',
+            type: 'string',
+            required: false,
+        },
+        {
+            name: 'remove-groups',
+            description: 'Remove from groups (comma-separated)',
+            type: 'string',
+            required: false,
+        },
+        {
+            name: 'home',
+            description: 'Set home directory',
+            type: 'string',
+            required: false,
+        },
+        {
+            name: 'disable',
+            description: 'Disable the account',
+            type: 'boolean',
+            required: false,
+        },
+        {
+            name: 'enable',
+            description: 'Enable the account',
+            type: 'boolean',
+            required: false,
+        },
     ];
 
     private usersStore!: ICliUsersStoreService;
 
     async initialize(context: ICliExecutionContext): Promise<void> {
-        this.usersStore = context.services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
+        this.usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
     }
 
-    async processCommand(command: CliProcessCommand, context: ICliExecutionContext): Promise<void> {
+    async processCommand(
+        command: CliProcessCommand,
+        context: ICliExecutionContext,
+    ): Promise<void> {
         if (!requireAdmin(context)) return;
 
         const target = command.value as string;
         const user = await firstValueFrom(this.usersStore.getUser(target));
 
         if (!user) {
-            context.writer.writeError(`usermod: user '${target}' does not exist`);
+            context.writer.writeError(
+                `usermod: user '${target}' does not exist`,
+            );
             return;
         }
 
@@ -70,16 +119,22 @@ export class CliUsermodCommandProcessor implements ICliCommandProcessor {
 
         // Handle groups
         if (command.args['groups']) {
-            updates.groups = command.args['groups'].split(',').map((g: string) => g.trim());
+            updates.groups = command.args['groups']
+                .split(',')
+                .map((g: string) => g.trim());
         } else {
             let groups = [...user.groups];
             if (command.args['add-groups']) {
-                const toAdd = command.args['add-groups'].split(',').map((g: string) => g.trim());
+                const toAdd = command.args['add-groups']
+                    .split(',')
+                    .map((g: string) => g.trim());
                 groups = [...new Set([...groups, ...toAdd])];
             }
             if (command.args['remove-groups']) {
-                const toRemove = command.args['remove-groups'].split(',').map((g: string) => g.trim());
-                groups = groups.filter(g => !toRemove.includes(g));
+                const toRemove = command.args['remove-groups']
+                    .split(',')
+                    .map((g: string) => g.trim());
+                groups = groups.filter((g) => !toRemove.includes(g));
             }
             if (command.args['add-groups'] || command.args['remove-groups']) {
                 updates.groups = groups;
@@ -95,7 +150,9 @@ export class CliUsermodCommandProcessor implements ICliCommandProcessor {
             await this.usersStore.updateUser(user.id, updates);
             context.writer.writeSuccess(`usermod: user '${user.name}' updated`);
         } catch (e: any) {
-            context.writer.writeError(e.message || 'usermod: failed to update user');
+            context.writer.writeError(
+                e.message || 'usermod: failed to update user',
+            );
         }
     }
 
@@ -103,15 +160,31 @@ export class CliUsermodCommandProcessor implements ICliCommandProcessor {
         const { writer } = context;
         writer.writeln('Modify a user account');
         writer.writeln();
-        writer.writeln(`  ${writer.wrapInColor('usermod <username> [options]', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('usermod <username> [options]', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('Options:');
-        writer.writeln(`  ${writer.wrapInColor('--email=<email>', CliForegroundColor.Cyan)}              Change email`);
-        writer.writeln(`  ${writer.wrapInColor('--groups=<g1,g2>', CliForegroundColor.Cyan)}             Replace groups`);
-        writer.writeln(`  ${writer.wrapInColor('--add-groups=<g1,g2>', CliForegroundColor.Cyan)}         Add to groups`);
-        writer.writeln(`  ${writer.wrapInColor('--remove-groups=<g1,g2>', CliForegroundColor.Cyan)}      Remove from groups`);
-        writer.writeln(`  ${writer.wrapInColor('--home=<path>', CliForegroundColor.Cyan)}                Set home directory`);
-        writer.writeln(`  ${writer.wrapInColor('--disable', CliForegroundColor.Cyan)}                    Disable account`);
-        writer.writeln(`  ${writer.wrapInColor('--enable', CliForegroundColor.Cyan)}                     Enable account`);
+        writer.writeln(
+            `  ${writer.wrapInColor('--email=<email>', CliForegroundColor.Cyan)}              Change email`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--groups=<g1,g2>', CliForegroundColor.Cyan)}             Replace groups`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--add-groups=<g1,g2>', CliForegroundColor.Cyan)}         Add to groups`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--remove-groups=<g1,g2>', CliForegroundColor.Cyan)}      Remove from groups`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--home=<path>', CliForegroundColor.Cyan)}                Set home directory`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--disable', CliForegroundColor.Cyan)}                    Disable account`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('--enable', CliForegroundColor.Cyan)}                     Enable account`,
+        );
     }
 }

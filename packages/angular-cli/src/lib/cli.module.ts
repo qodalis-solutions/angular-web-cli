@@ -12,9 +12,7 @@ import { resolveCliProviders } from '.';
         CliPanelComponent,
     ],
     imports: [CommonModule],
-    providers: [
-        resolveCliProviders(),
-    ],
+    providers: [resolveCliProviders()],
     exports: [CliPanelComponent, CliComponent],
 })
 export class CliModule {}

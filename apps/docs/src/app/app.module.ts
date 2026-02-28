@@ -6,11 +6,7 @@ import { CliModule } from '@qodalis/angular-cli';
 
 @NgModule({
     declarations: [AppComponent],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        CliModule,
-    ],
+    imports: [BrowserModule, BrowserAnimationsModule, CliModule],
     providers: [],
     bootstrap: [AppComponent],
 })

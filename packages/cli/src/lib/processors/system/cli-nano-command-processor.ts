@@ -90,21 +90,31 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
             if (this.fs) {
                 try {
                     const resolved = this.fs.resolvePath(this.filePath);
-                    if (this.fs.exists(resolved) && !this.fs.isDirectory(resolved)) {
+                    if (
+                        this.fs.exists(resolved) &&
+                        !this.fs.isDirectory(resolved)
+                    ) {
                         const content = this.fs.readFile(resolved);
                         if (content !== null) {
                             this.buffer.load(content);
                         }
                         this.filePath = resolved;
-                    } else if (this.fs.exists(resolved) && this.fs.isDirectory(resolved)) {
-                        context.writer.writeError(`${this.filePath} is a directory`);
+                    } else if (
+                        this.fs.exists(resolved) &&
+                        this.fs.isDirectory(resolved)
+                    ) {
+                        context.writer.writeError(
+                            `${this.filePath} is a directory`,
+                        );
                         return;
                     } else {
                         this.filePath = resolved;
                         // New file — empty buffer is fine
                     }
                 } catch (e: any) {
-                    context.writer.writeError(e.message || 'Error opening file');
+                    context.writer.writeError(
+                        e.message || 'Error opening file',
+                    );
                     return;
                 }
             }
@@ -387,10 +397,26 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
         }
 
         // Arrow keys
-        if (data === '\x1b[A') { this.buffer.moveUp(); this.render(); return; }
-        if (data === '\x1b[B') { this.buffer.moveDown(); this.render(); return; }
-        if (data === '\x1b[C') { this.buffer.moveRight(); this.render(); return; }
-        if (data === '\x1b[D') { this.buffer.moveLeft(); this.render(); return; }
+        if (data === '\x1b[A') {
+            this.buffer.moveUp();
+            this.render();
+            return;
+        }
+        if (data === '\x1b[B') {
+            this.buffer.moveDown();
+            this.render();
+            return;
+        }
+        if (data === '\x1b[C') {
+            this.buffer.moveRight();
+            this.render();
+            return;
+        }
+        if (data === '\x1b[D') {
+            this.buffer.moveLeft();
+            this.render();
+            return;
+        }
 
         // Home / End
         if (data === '\x1b[H' || data === '\x1b[1~') {
@@ -435,17 +461,35 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Open the built-in nano-style text editor');
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('nano', CliForegroundColor.Cyan)}                    Open empty scratch buffer`);
-        writer.writeln(`  ${writer.wrapInColor('nano <file>', CliForegroundColor.Cyan)}              Open or create a file`);
+        writer.writeln(
+            `  ${writer.wrapInColor('nano', CliForegroundColor.Cyan)}                    Open empty scratch buffer`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('nano <file>', CliForegroundColor.Cyan)}              Open or create a file`,
+        );
         writer.writeln();
         writer.writeln('Keyboard shortcuts:');
-        writer.writeln(`  ${writer.wrapInColor('^X', CliForegroundColor.Yellow)}  Exit              ${writer.wrapInColor('^O', CliForegroundColor.Yellow)}  Write Out (save)`);
-        writer.writeln(`  ${writer.wrapInColor('^G', CliForegroundColor.Yellow)}  Help              ${writer.wrapInColor('^W', CliForegroundColor.Yellow)}  Search`);
-        writer.writeln(`  ${writer.wrapInColor('^K', CliForegroundColor.Yellow)}  Cut line          ${writer.wrapInColor('^U', CliForegroundColor.Yellow)}  Paste line`);
-        writer.writeln(`  ${writer.wrapInColor('^\\', CliForegroundColor.Yellow)}  Replace           ${writer.wrapInColor('^R', CliForegroundColor.Yellow)}  Read File`);
-        writer.writeln(`  ${writer.wrapInColor('^C', CliForegroundColor.Yellow)}  Cursor position   ${writer.wrapInColor('^S', CliForegroundColor.Yellow)}  Save (quick)`);
-        writer.writeln(`  ${writer.wrapInColor('^A', CliForegroundColor.Yellow)}  Home              ${writer.wrapInColor('^E', CliForegroundColor.Yellow)}  End`);
-        writer.writeln(`  ${writer.wrapInColor('^Y', CliForegroundColor.Yellow)}  Page Up           ${writer.wrapInColor('^V', CliForegroundColor.Yellow)}  Page Down`);
+        writer.writeln(
+            `  ${writer.wrapInColor('^X', CliForegroundColor.Yellow)}  Exit              ${writer.wrapInColor('^O', CliForegroundColor.Yellow)}  Write Out (save)`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('^G', CliForegroundColor.Yellow)}  Help              ${writer.wrapInColor('^W', CliForegroundColor.Yellow)}  Search`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('^K', CliForegroundColor.Yellow)}  Cut line          ${writer.wrapInColor('^U', CliForegroundColor.Yellow)}  Paste line`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('^\\', CliForegroundColor.Yellow)}  Replace           ${writer.wrapInColor('^R', CliForegroundColor.Yellow)}  Read File`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('^C', CliForegroundColor.Yellow)}  Cursor position   ${writer.wrapInColor('^S', CliForegroundColor.Yellow)}  Save (quick)`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('^A', CliForegroundColor.Yellow)}  Home              ${writer.wrapInColor('^E', CliForegroundColor.Yellow)}  End`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('^Y', CliForegroundColor.Yellow)}  Page Up           ${writer.wrapInColor('^V', CliForegroundColor.Yellow)}  Page Down`,
+        );
     }
 
     // ── Rendering helpers ──
@@ -584,9 +628,7 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
 
         // Prompt: "Save modified buffer?"
         this.inputMode = 'exit-save-prompt';
-        this.renderPrompt(
-            'Save modified buffer? [Y]es/[N]o/[C]ancel',
-        );
+        this.renderPrompt('Save modified buffer? [Y]es/[N]o/[C]ancel');
     }
 
     private handleExitSavePrompt(data: string): void {
@@ -613,7 +655,9 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
 
     private async writeOut(): Promise<void> {
         if (!this.fs) {
-            this.showStatus('No filesystem available — install @qodalis/cli-files');
+            this.showStatus(
+                'No filesystem available — install @qodalis/cli-files',
+            );
             return;
         }
 
@@ -634,7 +678,9 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
 
     private async save(): Promise<void> {
         if (!this.fs) {
-            this.showStatus('No filesystem available — install @qodalis/cli-files');
+            this.showStatus(
+                'No filesystem available — install @qodalis/cli-files',
+            );
             return;
         }
 
@@ -654,7 +700,9 @@ export class CliNanoCommandProcessor implements ICliCommandProcessor {
             }
             await this.fs.persist();
             this.buffer.dirty = false;
-            this.showStatus(`Wrote ${this.buffer.lines.length} lines to ${this.filePath}`);
+            this.showStatus(
+                `Wrote ${this.buffer.lines.length} lines to ${this.filePath}`,
+            );
         } catch (e: any) {
             this.showStatus(`Error: ${e.message}`);
         }

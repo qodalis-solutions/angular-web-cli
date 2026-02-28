@@ -97,7 +97,9 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
             } else {
                 writer.writeError(`Unknown command: ${commandsToHelp[0]}`);
                 writer.writeln();
-                writer.writeln(`💡 Type ${writer.wrapInColor('help', CliForegroundColor.Cyan)} to see all available commands`);
+                writer.writeln(
+                    `💡 Type ${writer.wrapInColor('help', CliForegroundColor.Cyan)} to see all available commands`,
+                );
             }
         }
     }
@@ -106,13 +108,23 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Displays help information for commands');
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('help', CliForegroundColor.Cyan)}                    Show all available commands`);
-        writer.writeln(`  ${writer.wrapInColor('help <command>', CliForegroundColor.Cyan)}            Show details for a command`);
-        writer.writeln(`  ${writer.wrapInColor('help <command> <sub>', CliForegroundColor.Cyan)}      Show details for a subcommand`);
+        writer.writeln(
+            `  ${writer.wrapInColor('help', CliForegroundColor.Cyan)}                    Show all available commands`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('help <command>', CliForegroundColor.Cyan)}            Show details for a command`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('help <command> <sub>', CliForegroundColor.Cyan)}      Show details for a subcommand`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  help pkg                         ${writer.wrapInColor('# Package manager help', CliForegroundColor.Green)}`);
-        writer.writeln(`  help theme apply                 ${writer.wrapInColor('# Theme apply subcommand help', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  help pkg                         ${writer.wrapInColor('# Package manager help', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  help theme apply                 ${writer.wrapInColor('# Theme apply subcommand help', CliForegroundColor.Green)}`,
+        );
     }
 
     private writeProcessorDescription(
@@ -159,7 +171,10 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
         // Extension chain
         if (processor.originalProcessor) {
             writer.writeln(
-                writer.wrapInColor('🔗 Extension chain:', CliForegroundColor.Yellow),
+                writer.wrapInColor(
+                    '🔗 Extension chain:',
+                    CliForegroundColor.Yellow,
+                ),
             );
             let current = processor.originalProcessor;
             let depth = 1;
@@ -179,7 +194,10 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
         // Description
         if (processor.writeDescription) {
             writer.writeln(
-                writer.wrapInColor('📖 Description:', CliForegroundColor.Yellow),
+                writer.wrapInColor(
+                    '📖 Description:',
+                    CliForegroundColor.Yellow,
+                ),
             );
             processor.writeDescription(context);
         } else if (processor.description) {
@@ -193,7 +211,10 @@ export class CliHelpCommandProcessor implements ICliCommandProcessor {
         // Subcommands
         if (processor.processors?.length) {
             writer.writeln(
-                writer.wrapInColor('🔧 Subcommands:', CliForegroundColor.Yellow),
+                writer.wrapInColor(
+                    '🔧 Subcommands:',
+                    CliForegroundColor.Yellow,
+                ),
             );
 
             processor.processors.forEach((subprocessor) => {

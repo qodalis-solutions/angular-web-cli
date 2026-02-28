@@ -95,9 +95,7 @@ export class CliYesnoCommandProcessor implements ICliCommandProcessor {
                 aborted = true;
                 subscription.unsubscribe();
                 this.clearBox(context);
-                context.writer.writeln(
-                    `${DIM}(cancelled)${RESET}`,
-                );
+                context.writer.writeln(`${DIM}(cancelled)${RESET}`);
                 resolve();
             });
 
@@ -109,9 +107,7 @@ export class CliYesnoCommandProcessor implements ICliCommandProcessor {
                 this.clearBox(context);
 
                 const isLast = step === totalSteps;
-                const currentValue = isLast
-                    ? result
-                    : step % 2 === 0;
+                const currentValue = isLast ? result : step % 2 === 0;
 
                 this.drawBox(context, currentValue, isLast);
 
@@ -144,16 +140,8 @@ export class CliYesnoCommandProcessor implements ICliCommandProcessor {
         isFinal: boolean,
     ): void {
         const label = value ? ' YES ' : '  NO ';
-        const color = isFinal
-            ? value
-                ? GREEN
-                : RED
-            : CYAN;
-        const bgColor = isFinal
-            ? value
-                ? GREEN_BG
-                : RED_BG
-            : '';
+        const color = isFinal ? (value ? GREEN : RED) : CYAN;
+        const bgColor = isFinal ? (value ? GREEN_BG : RED_BG) : '';
         const border = isFinal ? color : DIM;
 
         const top = `  ${border}+-----------+${RESET}`;

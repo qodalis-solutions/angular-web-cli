@@ -59,8 +59,18 @@ export class CliCalCommandProcessor implements ICliCommandProcessor {
         }
 
         const monthNames = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December',
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
         ];
 
         const title = `${monthNames[month - 1]} ${year}`;

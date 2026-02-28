@@ -1,4 +1,8 @@
-import { ICliKeyValueStore, ICliServiceProvider, CliProvider } from '@qodalis/cli-core';
+import {
+    ICliKeyValueStore,
+    ICliServiceProvider,
+    CliProvider,
+} from '@qodalis/cli-core';
 import { CliStateStore } from '../lib/state/cli-state-store';
 import { CliStateStoreManager } from '../lib/state/cli-state-store-manager';
 import { CliCommandProcessorRegistry } from '../lib/registry';
@@ -59,7 +63,10 @@ describe('CliStateStore', () => {
         kvStore = new MockKeyValueStore();
         services = new MockServiceProvider();
         services.set({ provide: 'cli-key-value-store', useValue: kvStore });
-        store = new CliStateStore(services, 'test-store', { count: 0, label: 'init' });
+        store = new CliStateStore(services, 'test-store', {
+            count: 0,
+            label: 'init',
+        });
     });
 
     it('should return initial state', () => {
@@ -99,14 +106,16 @@ describe('CliStateStore', () => {
 
     it('should select a slice of state', (done) => {
         const values: number[] = [];
-        store.select((s) => s['count']).subscribe((count) => {
-            values.push(count);
-            if (values.length === 3) {
-                // 0 (initial), 1, 5  — deduplication via distinctUntilChanged
-                expect(values).toEqual([0, 1, 5]);
-                done();
-            }
-        });
+        store
+            .select((s) => s['count'])
+            .subscribe((count) => {
+                values.push(count);
+                if (values.length === 3) {
+                    // 0 (initial), 1, 5  — deduplication via distinctUntilChanged
+                    expect(values).toEqual([0, 1, 5]);
+                    done();
+                }
+            });
         store.updateState({ count: 1 });
         store.updateState({ count: 1 }); // Same value, should not emit
         store.updateState({ count: 5 });
@@ -120,7 +129,10 @@ describe('CliStateStore', () => {
     });
 
     it('should initialize from persisted state', async () => {
-        await kvStore.set('store-state-test-store', { count: 99, label: 'persisted' });
+        await kvStore.set('store-state-test-store', {
+            count: 99,
+            label: 'persisted',
+        });
         await store.initialize();
         expect(store.getState()).toEqual({ count: 99, label: 'persisted' });
     });
@@ -143,7 +155,10 @@ describe('CliStateStoreManager', () => {
     let services: MockServiceProvider;
     let registry: CliCommandProcessorRegistry;
 
-    const createProcessor = (command: string, stateConfig?: any): ICliCommandProcessor => ({
+    const createProcessor = (
+        command: string,
+        stateConfig?: any,
+    ): ICliCommandProcessor => ({
         command,
         description: `Test ${command}`,
         stateConfiguration: stateConfig,
@@ -205,8 +220,10 @@ describe('CliStateStoreManager', () => {
 
         const entries = manager.getStoreEntries();
         expect(entries.length).toBe(2);
-        expect(entries.find(e => e.name === 'alpha')?.state).toEqual({ a: 10 });
-        expect(entries.find(e => e.name === 'beta')?.state).toEqual({ b: 2 });
+        expect(entries.find((e) => e.name === 'alpha')?.state).toEqual({
+            a: 10,
+        });
+        expect(entries.find((e) => e.name === 'beta')?.state).toEqual({ b: 2 });
     });
 
     it('should return empty entries when no stores exist', () => {

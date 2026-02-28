@@ -33,7 +33,9 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     const hex = Array.from(new TextEncoder().encode(text))
                         .map((b) => b.toString(16).padStart(2, '0'))
                         .join('');
@@ -60,7 +62,9 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const hexStr = (command.value || command.data || '') as string;
+                    const hexStr = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
                         const bytes = new Uint8Array(
                             (hexStr.match(/.{1,2}/g) || []).map((byte) =>
@@ -114,7 +118,12 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                     const fromBase = parseInt(command.args['from']) || 10;
                     const toBase = parseInt(command.args['to']) || 16;
 
-                    if (fromBase < 2 || fromBase > 36 || toBase < 2 || toBase > 36) {
+                    if (
+                        fromBase < 2 ||
+                        fromBase > 36 ||
+                        toBase < 2 ||
+                        toBase > 36
+                    ) {
                         writer.writeError('Base must be between 2 and 36');
                         context.process.exit(-1);
                         return;
@@ -123,7 +132,9 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                     try {
                         const num = parseInt(input, fromBase);
                         if (isNaN(num)) {
-                            writer.writeError(`Invalid number for base ${fromBase}`);
+                            writer.writeError(
+                                `Invalid number for base ${fromBase}`,
+                            );
                             context.process.exit(-1);
                             return;
                         }
@@ -150,7 +161,9 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Convert a number between different bases (2-36)');
+                    writer.writeln(
+                        'Convert a number between different bases (2-36)',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -181,7 +194,9 @@ export class CliHexCommandProcessor implements ICliCommandProcessor {
 
     writeDescription(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Hex encode/decode text and convert numbers between bases');
+        writer.writeln(
+            'Hex encode/decode text and convert numbers between bases',
+        );
         writer.writeln();
         writer.writeln('📋 Usage:');
         writer.writeln(

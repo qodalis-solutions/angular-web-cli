@@ -21,7 +21,9 @@ import { ICliModule } from '../lib/interfaces';
 // ---------------------------------------------------------------------------
 describe('getRightOfWord', () => {
     it('should return text to the right of the word', () => {
-        expect(getRightOfWord('regex validate invalid', 'validate')).toBe('invalid');
+        expect(getRightOfWord('regex validate invalid', 'validate')).toBe(
+            'invalid',
+        );
     });
 
     it('should return empty string when word is at the end', () => {
@@ -46,27 +48,58 @@ describe('getRightOfWord', () => {
 // ---------------------------------------------------------------------------
 describe('getParameterValue', () => {
     it('should return value by parameter name', () => {
-        const param = { name: 'output', type: 'string' as const, description: '', required: false };
-        expect(getParameterValue(param, { output: 'file.txt' })).toBe('file.txt');
+        const param = {
+            name: 'output',
+            type: 'string' as const,
+            description: '',
+            required: false,
+        };
+        expect(getParameterValue(param, { output: 'file.txt' })).toBe(
+            'file.txt',
+        );
     });
 
     it('should return value by alias', () => {
-        const param = { name: 'output', aliases: ['o'], type: 'string' as const, description: '', required: false };
+        const param = {
+            name: 'output',
+            aliases: ['o'],
+            type: 'string' as const,
+            description: '',
+            required: false,
+        };
         expect(getParameterValue(param, { o: 'file.txt' })).toBe('file.txt');
     });
 
     it('should prefer name over alias', () => {
-        const param = { name: 'output', aliases: ['o'], type: 'string' as const, description: '', required: false };
-        expect(getParameterValue(param, { output: 'byName', o: 'byAlias' })).toBe('byName');
+        const param = {
+            name: 'output',
+            aliases: ['o'],
+            type: 'string' as const,
+            description: '',
+            required: false,
+        };
+        expect(
+            getParameterValue(param, { output: 'byName', o: 'byAlias' }),
+        ).toBe('byName');
     });
 
     it('should return undefined when not found', () => {
-        const param = { name: 'output', type: 'string' as const, description: '', required: false };
+        const param = {
+            name: 'output',
+            type: 'string' as const,
+            description: '',
+            required: false,
+        };
         expect(getParameterValue(param, { other: 'val' })).toBeUndefined();
     });
 
     it('should handle falsy values correctly', () => {
-        const param = { name: 'flag', type: 'boolean' as const, description: '', required: false };
+        const param = {
+            name: 'flag',
+            type: 'boolean' as const,
+            description: '',
+            required: false,
+        };
         expect(getParameterValue(param, { flag: false })).toBe(false);
         expect(getParameterValue(param, { flag: 0 })).toBe(0);
         expect(getParameterValue(param, { flag: '' })).toBe('');
@@ -111,7 +144,11 @@ describe('highlightTextWithBg', () => {
     });
 
     it('should use custom background color', () => {
-        const result = highlightTextWithBg('hello', /hello/, CliBackgroundColor.Red);
+        const result = highlightTextWithBg(
+            'hello',
+            /hello/,
+            CliBackgroundColor.Red,
+        );
         expect(result).toContain(CliBackgroundColor.Red);
     });
 
@@ -269,7 +306,10 @@ describe('ObjectDescriber', () => {
     describe('getFunctionArguments', () => {
         it('should extract named arguments', () => {
             const fn = function (a: any, b: any) {};
-            expect(ObjectDescriber.getFunctionArguments(fn)).toEqual(['a', 'b']);
+            expect(ObjectDescriber.getFunctionArguments(fn)).toEqual([
+                'a',
+                'b',
+            ]);
         });
 
         it('should return empty array for no-arg functions', () => {
@@ -281,12 +321,16 @@ describe('ObjectDescriber', () => {
     describe('supportsDynamicArgs', () => {
         it('should return true when function uses arguments keyword', () => {
             // eslint-disable-next-line prefer-rest-params
-            const fn = function () { return arguments; };
+            const fn = function () {
+                return arguments;
+            };
             expect(ObjectDescriber.supportsDynamicArgs(fn)).toBeTrue();
         });
 
         it('should return false for normal functions', () => {
-            const fn = function (a: any) { return a; };
+            const fn = function (a: any) {
+                return a;
+            };
             expect(ObjectDescriber.supportsDynamicArgs(fn)).toBeFalse();
         });
     });
@@ -295,38 +339,52 @@ describe('ObjectDescriber', () => {
         it('should create processors for multi-arg functions', () => {
             const obj: Record<string, Function> = {};
             // Use regular functions so toString() is consistent across browsers
-            obj['add'] = function (value: any, b: any) { return Number(value) + Number(b); };
-            obj['multiply'] = function (value: any, factor: any) { return Number(value) * Number(factor); };
+            obj['add'] = function (value: any, b: any) {
+                return Number(value) + Number(b);
+            };
+            obj['multiply'] = function (value: any, factor: any) {
+                return Number(value) * Number(factor);
+            };
 
             const processors = ObjectDescriber.describe(obj);
             expect(processors.length).toBeGreaterThanOrEqual(2);
-            expect(processors.some(p => p.command === 'add')).toBeTrue();
-            expect(processors.some(p => p.command === 'multiply')).toBeTrue();
+            expect(processors.some((p) => p.command === 'add')).toBeTrue();
+            expect(processors.some((p) => p.command === 'multiply')).toBeTrue();
         });
 
         it('should create processors for single-arg functions', () => {
             const obj: Record<string, Function> = {};
-            obj['upper'] = function (value: any) { return String(value).toUpperCase(); };
+            obj['upper'] = function (value: any) {
+                return String(value).toUpperCase();
+            };
 
             const processors = ObjectDescriber.describe(obj);
-            expect(processors.some(p => p.command === 'upper')).toBeTrue();
+            expect(processors.some((p) => p.command === 'upper')).toBeTrue();
         });
 
         it('should skip functions with no arguments and no dynamic args', () => {
             const obj: Record<string, Function> = {};
-            obj['noArgs'] = function () { return 42; };
-            obj['hasArg'] = function (x: any) { return x; };
+            obj['noArgs'] = function () {
+                return 42;
+            };
+            obj['hasArg'] = function (x: any) {
+                return x;
+            };
 
             const processors = ObjectDescriber.describe(obj);
-            const commands = processors.map(p => p.command);
+            const commands = processors.map((p) => p.command);
             expect(commands).not.toContain('noArgs');
             expect(commands).toContain('hasArg');
         });
 
         it('should apply filter', () => {
             const obj: Record<string, Function> = {};
-            obj['keep'] = function (x: any) { return x; };
-            obj['skip'] = function (x: any) { return x; };
+            obj['keep'] = function (x: any) {
+                return x;
+            };
+            obj['skip'] = function (x: any) {
+                return x;
+            };
 
             const processors = ObjectDescriber.describe(obj, {
                 filter: ({ funcName }) => funcName === 'keep',
@@ -337,10 +395,14 @@ describe('ObjectDescriber', () => {
 
         it('should skip functions with "function" or "func" arguments', () => {
             const obj: Record<string, Function> = {};
-            obj['withCallback'] = function (value: any, func: any) { return func(value); };
+            obj['withCallback'] = function (value: any, func: any) {
+                return func(value);
+            };
 
             const processors = ObjectDescriber.describe(obj);
-            expect(processors.map(p => p.command)).not.toContain('withCallback');
+            expect(processors.map((p) => p.command)).not.toContain(
+                'withCallback',
+            );
         });
     });
 });
@@ -431,7 +493,7 @@ describe('CliModuleRegistry', () => {
         await registry.register(createModule('b'));
         const all = registry.getAll();
         expect(all.length).toBe(2);
-        expect(all.map(m => m.name)).toEqual(['a', 'b']);
+        expect(all.map((m) => m.name)).toEqual(['a', 'b']);
     });
 
     it('should call boot handlers on register', async () => {
@@ -450,8 +512,12 @@ describe('CliModuleRegistry', () => {
         let handler1Called = false;
         let handler2Called = false;
 
-        registry.onModuleBoot(async () => { handler1Called = true; });
-        registry.onModuleBoot(async () => { handler2Called = true; });
+        registry.onModuleBoot(async () => {
+            handler1Called = true;
+        });
+        registry.onModuleBoot(async () => {
+            handler2Called = true;
+        });
 
         await registry.register(createModule('test'));
 

@@ -96,10 +96,9 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const registry =
-            context.services.get<ICliCommandProcessorRegistry>(
-                CliProcessorsRegistry_TOKEN,
-            );
+        const registry = context.services.get<ICliCommandProcessorRegistry>(
+            CliProcessorsRegistry_TOKEN,
+        );
         const pluginCategories = resolveConfigurationCategories(registry);
         await this.showMainMenu(context, pluginCategories);
     }
@@ -115,28 +114,53 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
     writeDescription?(context: ICliExecutionContext): void {
         const { writer } = context;
 
-        writer.writeln('Manage system and plugin configuration interactively or via subcommands');
+        writer.writeln(
+            'Manage system and plugin configuration interactively or via subcommands',
+        );
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('configure', CliForegroundColor.Cyan)}                          Open interactive configuration menu`);
-        writer.writeln(`  ${writer.wrapInColor('configure list', CliForegroundColor.Cyan)}                     List all configuration options`);
-        writer.writeln(`  ${writer.wrapInColor('configure get <category.key>', CliForegroundColor.Cyan)}       Get a configuration value`);
-        writer.writeln(`  ${writer.wrapInColor('configure set <category.key> <value>', CliForegroundColor.Cyan)}  Set a configuration value`);
-        writer.writeln(`  ${writer.wrapInColor('configure reset [category]', CliForegroundColor.Cyan)}         Reset configuration to defaults`);
+        writer.writeln(
+            `  ${writer.wrapInColor('configure', CliForegroundColor.Cyan)}                          Open interactive configuration menu`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('configure list', CliForegroundColor.Cyan)}                     List all configuration options`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('configure get <category.key>', CliForegroundColor.Cyan)}       Get a configuration value`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('configure set <category.key> <value>', CliForegroundColor.Cyan)}  Set a configuration value`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('configure reset [category]', CliForegroundColor.Cyan)}         Reset configuration to defaults`,
+        );
         writer.writeln();
         writer.writeln('Examples:');
-        writer.writeln(`  configure get system.logLevel            ${writer.wrapInColor('# Get the current log level', CliForegroundColor.Green)}`);
-        writer.writeln(`  configure set system.logLevel Debug      ${writer.wrapInColor('# Set log level to Debug', CliForegroundColor.Green)}`);
-        writer.writeln(`  configure set system.welcomeMessage never ${writer.wrapInColor('# Disable welcome message', CliForegroundColor.Green)}`);
-        writer.writeln(`  configure reset system                   ${writer.wrapInColor('# Reset system config to defaults', CliForegroundColor.Green)}`);
-        writer.writeln(`  configure reset                          ${writer.wrapInColor('# Reset all configuration', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  configure get system.logLevel            ${writer.wrapInColor('# Get the current log level', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  configure set system.logLevel Debug      ${writer.wrapInColor('# Set log level to Debug', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  configure set system.welcomeMessage never ${writer.wrapInColor('# Disable welcome message', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  configure reset system                   ${writer.wrapInColor('# Reset system config to defaults', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  configure reset                          ${writer.wrapInColor('# Reset all configuration', CliForegroundColor.Green)}`,
+        );
     }
 
     // ── Interactive menus ───────────────────────────────────────────────
 
     private async showMainMenu(
         context: ICliExecutionContext,
-        pluginCategories: Map<string, { processorCommand: string; options: ICliConfigurationOption[] }>,
+        pluginCategories: Map<
+            string,
+            { processorCommand: string; options: ICliConfigurationOption[] }
+        >,
     ): Promise<void> {
         while (true) {
             const menuOptions: { label: string; value: string }[] = [
@@ -162,11 +186,21 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
             }
 
             if (selected === 'system') {
-                await this.showCategoryMenu(context, 'System', 'system', SYSTEM_OPTIONS);
+                await this.showCategoryMenu(
+                    context,
+                    'System',
+                    'system',
+                    SYSTEM_OPTIONS,
+                );
             } else {
                 const cat = pluginCategories.get(selected);
                 if (cat) {
-                    await this.showCategoryMenu(context, selected, selected, cat.options);
+                    await this.showCategoryMenu(
+                        context,
+                        selected,
+                        selected,
+                        cat.options,
+                    );
                 }
             }
         }
@@ -182,7 +216,12 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
             const menuOptions: { label: string; value: string }[] = [];
 
             for (const opt of options) {
-                const currentValue = this.getConfigValue(context, stateKey, opt.key, opt.defaultValue);
+                const currentValue = this.getConfigValue(
+                    context,
+                    stateKey,
+                    opt.key,
+                    opt.defaultValue,
+                );
                 const display = `${opt.label.padEnd(25)} [${currentValue}]`;
                 menuOptions.push({ label: display, value: opt.key });
             }
@@ -210,7 +249,12 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
         stateKey: string,
         option: ICliConfigurationOption,
     ): Promise<void> {
-        const currentValue = this.getConfigValue(context, stateKey, option.key, option.defaultValue);
+        const currentValue = this.getConfigValue(
+            context,
+            stateKey,
+            option.key,
+            option.defaultValue,
+        );
 
         context.writer.writeln();
         context.writer.writeln(
@@ -227,10 +271,16 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
             case 'select': {
                 if (!option.options) break;
                 const selectOptions = option.options.map((o) => ({
-                    label: o.value === currentValue ? `${o.label} (current)` : o.label,
+                    label:
+                        o.value === currentValue
+                            ? `${o.label} (current)`
+                            : o.label,
                     value: o.value,
                 }));
-                newValue = await context.reader.readSelect('Select a value:', selectOptions);
+                newValue = await context.reader.readSelect(
+                    'Select a value:',
+                    selectOptions,
+                );
                 break;
             }
             case 'boolean': {
@@ -243,7 +293,12 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
             case 'number': {
                 newValue = await context.reader.readNumber(
                     `${option.label}: `,
-                    { default: typeof currentValue === 'number' ? currentValue : undefined },
+                    {
+                        default:
+                            typeof currentValue === 'number'
+                                ? currentValue
+                                : undefined,
+                    },
                 );
                 break;
             }
@@ -321,7 +376,8 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
     private getAllOptions(
         registry: ICliCommandProcessorRegistry,
     ): { stateKey: string; option: ICliConfigurationOption }[] {
-        const result: { stateKey: string; option: ICliConfigurationOption }[] = [];
+        const result: { stateKey: string; option: ICliConfigurationOption }[] =
+            [];
 
         // System options first
         for (const option of SYSTEM_OPTIONS) {
@@ -362,7 +418,8 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
         return {
             command: 'list',
             aliases: ['ls'],
-            description: 'List all configuration options and their current values',
+            description:
+                'List all configuration options and their current values',
             processCommand: async (
                 _: CliProcessCommand,
                 context: ICliExecutionContext,
@@ -377,11 +434,17 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                 const output: Record<string, Record<string, any>> = {};
 
                 for (const { stateKey, option } of allOptions) {
-                    const value = this.getConfigValue(context, stateKey, option.key, option.defaultValue);
+                    const value = this.getConfigValue(
+                        context,
+                        stateKey,
+                        option.key,
+                        option.defaultValue,
+                    );
 
                     if (stateKey !== currentCategory) {
                         currentCategory = stateKey;
-                        const header = stateKey === 'system' ? 'System' : stateKey;
+                        const header =
+                            stateKey === 'system' ? 'System' : stateKey;
                         context.writer.writeln();
                         context.writer.writeln(
                             context.writer.wrapInColor(
@@ -419,7 +482,8 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
     private buildGetProcessor(): ICliCommandProcessor {
         return {
             command: 'get',
-            description: 'Get a configuration value (e.g. configure get system.logLevel)',
+            description:
+                'Get a configuration value (e.g. configure get system.logLevel)',
             valueRequired: true,
             processCommand: async (
                 command: CliProcessCommand,
@@ -472,7 +536,8 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
     private buildSetProcessor(): ICliCommandProcessor {
         return {
             command: 'set',
-            description: 'Set a configuration value (e.g. configure set system.logLevel Debug)',
+            description:
+                'Set a configuration value (e.g. configure set system.logLevel Debug)',
             valueRequired: true,
             processCommand: async (
                 command: CliProcessCommand,
@@ -550,7 +615,8 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
     private buildResetProcessor(): ICliCommandProcessor {
         return {
             command: 'reset',
-            description: 'Reset configuration to defaults (optionally for a specific category)',
+            description:
+                'Reset configuration to defaults (optionally for a specific category)',
             acceptsRawInput: true,
             processCommand: async (
                 command: CliProcessCommand,
@@ -561,7 +627,10 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                 if (category) {
                     // Reset a specific category
                     if (category === 'system') {
-                        const defaults = CliConfigureCommandProcessor.buildDefaults(SYSTEM_OPTIONS);
+                        const defaults =
+                            CliConfigureCommandProcessor.buildDefaults(
+                                SYSTEM_OPTIONS,
+                            );
                         const state = context.state.getState<ConfigureState>();
                         context.state.updateState({
                             system: defaults,
@@ -569,13 +638,16 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                         });
                         this.applySystemSettings(defaults, context);
                         await context.state.persist();
-                        context.writer.writeSuccess('System configuration reset to defaults');
+                        context.writer.writeSuccess(
+                            'System configuration reset to defaults',
+                        );
                     } else {
                         const registry =
                             context.services.get<ICliCommandProcessorRegistry>(
                                 CliProcessorsRegistry_TOKEN,
                             );
-                        const categories = resolveConfigurationCategories(registry);
+                        const categories =
+                            resolveConfigurationCategories(registry);
                         const cat = categories.get(category);
 
                         if (!cat) {
@@ -585,10 +657,16 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                             return;
                         }
 
-                        const defaults = CliConfigureCommandProcessor.buildDefaults(cat.options);
+                        const defaults =
+                            CliConfigureCommandProcessor.buildDefaults(
+                                cat.options,
+                            );
 
                         const state = context.state.getState<ConfigureState>();
-                        const updatedPlugins = { ...state.plugins, [category]: defaults };
+                        const updatedPlugins = {
+                            ...state.plugins,
+                            [category]: defaults,
+                        };
                         context.state.updateState({
                             system: state.system,
                             plugins: updatedPlugins,
@@ -614,10 +692,15 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
                     await context.state.persist();
 
                     // Re-apply system defaults
-                    const defaults = CliConfigureCommandProcessor.buildDefaults(SYSTEM_OPTIONS);
+                    const defaults =
+                        CliConfigureCommandProcessor.buildDefaults(
+                            SYSTEM_OPTIONS,
+                        );
                     this.applySystemSettings(defaults, context);
 
-                    context.writer.writeSuccess('All configuration reset to defaults');
+                    context.writer.writeSuccess(
+                        'All configuration reset to defaults',
+                    );
                 }
             },
         };
@@ -633,16 +716,25 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
             case 'number': {
                 const num = Number(rawValue);
                 if (isNaN(num)) {
-                    return { value: null, error: `Invalid number: ${rawValue}` };
+                    return {
+                        value: null,
+                        error: `Invalid number: ${rawValue}`,
+                    };
                 }
                 return { value: num };
             }
             case 'boolean':
-                return { value: ['true', '1', 'yes'].includes(rawValue.toLowerCase()) };
+                return {
+                    value: ['true', '1', 'yes'].includes(
+                        rawValue.toLowerCase(),
+                    ),
+                };
             case 'select':
                 if (option.options) {
                     const match = option.options.find(
-                        (o) => String(o.value).toLowerCase() === rawValue.toLowerCase(),
+                        (o) =>
+                            String(o.value).toLowerCase() ===
+                            rawValue.toLowerCase(),
                     );
                     if (!match) {
                         return {
@@ -658,10 +750,15 @@ export class CliConfigureCommandProcessor implements ICliCommandProcessor {
         }
     }
 
-    private static buildDefaults(options: ICliConfigurationOption[]): Record<string, any> {
-        return options.reduce((acc, opt) => {
-            acc[opt.key] = opt.defaultValue;
-            return acc;
-        }, {} as Record<string, any>);
+    private static buildDefaults(
+        options: ICliConfigurationOption[],
+    ): Record<string, any> {
+        return options.reduce(
+            (acc, opt) => {
+                acc[opt.key] = opt.defaultValue;
+                return acc;
+            },
+            {} as Record<string, any>,
+        );
     }
 }

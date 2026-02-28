@@ -213,7 +213,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             const parent = this.getNode(parentPath);
 
             if (!parent) {
-                throw new Error(`mkdir: ${parentPath}: No such file or directory`);
+                throw new Error(
+                    `mkdir: ${parentPath}: No such file or directory`,
+                );
             }
             if (parent.type !== 'directory') {
                 throw new Error(`mkdir: ${parentPath}: Not a directory`);
@@ -334,7 +336,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             throw new Error(`cp: ${src}: No such file or directory`);
         }
         if (srcNode.type === 'directory' && !recursive) {
-            throw new Error(`cp: -r not specified; omitting directory '${src}'`);
+            throw new Error(
+                `cp: -r not specified; omitting directory '${src}'`,
+            );
         }
 
         const destResolved = this.resolvePath(dest);
@@ -345,7 +349,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             if (!destNode.children) {
                 destNode.children = [];
             }
-            const existingIdx = destNode.children.findIndex((c) => c.name === clone.name);
+            const existingIdx = destNode.children.findIndex(
+                (c) => c.name === clone.name,
+            );
             if (existingIdx !== -1) {
                 destNode.children.splice(existingIdx, 1);
             }
@@ -366,7 +372,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             if (!parent.children) {
                 parent.children = [];
             }
-            const existingIdx = parent.children.findIndex((c) => c.name === newName);
+            const existingIdx = parent.children.findIndex(
+                (c) => c.name === newName,
+            );
             if (existingIdx !== -1) {
                 parent.children.splice(existingIdx, 1);
             }
@@ -397,13 +405,17 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             throw new Error(`mv: ${src}: No such file or directory`);
         }
 
-        const srcIndex = srcParent.children.findIndex((c) => c.name === srcNode.name);
+        const srcIndex = srcParent.children.findIndex(
+            (c) => c.name === srcNode.name,
+        );
 
         if (destNode && destNode.type === 'directory') {
             if (!destNode.children) {
                 destNode.children = [];
             }
-            const existingIdx = destNode.children.findIndex((c) => c.name === srcNode.name);
+            const existingIdx = destNode.children.findIndex(
+                (c) => c.name === srcNode.name,
+            );
             if (existingIdx !== -1) {
                 destNode.children.splice(existingIdx, 1);
             }
@@ -417,7 +429,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             const destParent = this.getNode(destParentPath);
 
             if (!destParent || destParent.type !== 'directory') {
-                throw new Error(`mv: ${destParentPath}: No such file or directory`);
+                throw new Error(
+                    `mv: ${destParentPath}: No such file or directory`,
+                );
             }
 
             srcParent.children.splice(srcIndex, 1);
@@ -425,7 +439,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
             if (!destParent.children) {
                 destParent.children = [];
             }
-            const existingIdx = destParent.children.findIndex((c) => c.name === newName);
+            const existingIdx = destParent.children.findIndex(
+                (c) => c.name === newName,
+            );
             if (existingIdx !== -1) {
                 destParent.children.splice(existingIdx, 1);
             }
@@ -492,7 +508,9 @@ export class IndexedDbFileSystemService implements IFileSystemService {
         if (node.type === 'file') {
             clone.content = node.content;
         } else {
-            clone.children = (node.children || []).map((c) => this.cloneNode(c));
+            clone.children = (node.children || []).map((c) =>
+                this.cloneNode(c),
+            );
         }
 
         return clone;

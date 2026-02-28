@@ -7,7 +7,11 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import { CliOptions, ICliCommandProcessor, ICliModule } from '@qodalis/cli-core';
+import {
+    CliOptions,
+    ICliCommandProcessor,
+    ICliModule,
+} from '@qodalis/cli-core';
 import { CliComponent } from '../cli/cli.component';
 import { CollapsableContentComponent } from '../collapsable-content/collapsable-content.component';
 
@@ -63,7 +67,8 @@ export class CliPanelComponent {
      */
     @Input() processors?: ICliCommandProcessor[];
 
-    @ViewChild(CollapsableContentComponent) collapsableContent!: CollapsableContentComponent;
+    @ViewChild(CollapsableContentComponent)
+    collapsableContent!: CollapsableContentComponent;
     @ViewChildren(CliComponent) cliComponents!: QueryList<CliComponent>;
 
     visible = true;
@@ -96,10 +101,7 @@ export class CliPanelComponent {
 
     private static readonly TAB_BAR_HEIGHT = 38;
 
-    constructor(
-        private readonly elementRef: ElementRef,
-    ) {}
-
+    constructor(private readonly elementRef: ElementRef) {}
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent): void {
@@ -252,7 +254,10 @@ export class CliPanelComponent {
         const sourceTab = this.findTab(this.contextMenu.tabId);
         this.closeContextMenu();
         if (sourceTab) {
-            const pane: TerminalPane = { id: this.nextPaneId++, widthPercent: 100 };
+            const pane: TerminalPane = {
+                id: this.nextPaneId++,
+                widthPercent: 100,
+            };
             const tab: TerminalTab = {
                 id: this.nextTabId++,
                 title: `${sourceTab.title} (copy)`,
@@ -307,7 +312,10 @@ export class CliPanelComponent {
         const paneIndex = tab.panes.findIndex((p) => p.id === targetPaneId);
         const insertIndex = paneIndex === -1 ? tab.panes.length : paneIndex + 1;
 
-        const newPane: TerminalPane = { id: this.nextPaneId++, widthPercent: 0 };
+        const newPane: TerminalPane = {
+            id: this.nextPaneId++,
+            widthPercent: 0,
+        };
         tab.panes.splice(insertIndex, 0, newPane);
 
         const evenWidth = 100 / tab.panes.length;
@@ -331,7 +339,10 @@ export class CliPanelComponent {
 
         tab.panes.splice(index, 1);
 
-        const totalRemaining = tab.panes.reduce((s, p) => s + p.widthPercent, 0);
+        const totalRemaining = tab.panes.reduce(
+            (s, p) => s + p.widthPercent,
+            0,
+        );
         if (totalRemaining > 0) {
             tab.panes.forEach((p) => {
                 p.widthPercent = (p.widthPercent / totalRemaining) * 100;
@@ -355,7 +366,11 @@ export class CliPanelComponent {
 
     // --- Pane resize ---
 
-    onPaneResizeStart(event: MouseEvent, tabId: number, dividerIndex: number): void {
+    onPaneResizeStart(
+        event: MouseEvent,
+        tabId: number,
+        dividerIndex: number,
+    ): void {
         event.preventDefault();
         const tab = this.findTab(tabId);
         if (!tab) return;
@@ -366,7 +381,9 @@ export class CliPanelComponent {
         this.paneResizeStartX = event.clientX;
         this.paneResizeStartWidths = tab.panes.map((p) => p.widthPercent);
 
-        const container = (event.target as HTMLElement).closest('.terminal-panes-container');
+        const container = (event.target as HTMLElement).closest(
+            '.terminal-panes-container',
+        );
         this.paneResizeContainerWidth = container ? container.clientWidth : 1;
 
         document.body.classList.add('cli-pane-resizing');
@@ -390,11 +407,17 @@ export class CliPanelComponent {
 
         if (leftWidth < minW) {
             leftWidth = minW;
-            rightWidth = this.paneResizeStartWidths[i] + this.paneResizeStartWidths[i + 1] - minW;
+            rightWidth =
+                this.paneResizeStartWidths[i] +
+                this.paneResizeStartWidths[i + 1] -
+                minW;
         }
         if (rightWidth < minW) {
             rightWidth = minW;
-            leftWidth = this.paneResizeStartWidths[i] + this.paneResizeStartWidths[i + 1] - minW;
+            leftWidth =
+                this.paneResizeStartWidths[i] +
+                this.paneResizeStartWidths[i + 1] -
+                minW;
         }
 
         tab.panes[i].widthPercent = leftWidth;

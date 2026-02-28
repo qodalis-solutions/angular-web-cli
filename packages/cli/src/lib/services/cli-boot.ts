@@ -111,7 +111,10 @@ export class CliBoot {
             try {
                 await module.onInit(context);
             } catch (e) {
-                console.error(`Error in onInit for module "${module.name}":`, e);
+                console.error(
+                    `Error in onInit for module "${module.name}":`,
+                    e,
+                );
             }
         }
 
@@ -257,7 +260,10 @@ export class CliBoot {
                     );
                 }
             } catch (e) {
-                console.error(`Error initializing processor "${p.command}":`, e);
+                console.error(
+                    `Error initializing processor "${p.command}":`,
+                    e,
+                );
             }
         }
     }

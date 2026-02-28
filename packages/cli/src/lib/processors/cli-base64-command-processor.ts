@@ -83,9 +83,7 @@ export class CliBase64CommandProcessor implements ICliCommandProcessor {
                         context.writer.writeln(decoded);
                         context.process.output(decoded);
                     } catch {
-                        context.writer.writeError(
-                            'Invalid Base64 string',
-                        );
+                        context.writer.writeError('Invalid Base64 string');
                         context.process.exit(-1);
                     }
                 },

@@ -33,7 +33,9 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const token = (command.value || command.data || '') as string;
+                    const token = (command.value ||
+                        command.data ||
+                        '') as string;
                     const { writer } = context;
 
                     const parts = token.split('.');
@@ -46,17 +48,27 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
                     }
 
                     try {
-                        const header = JSON.parse(this.base64UrlDecode(parts[0]));
-                        const payload = JSON.parse(this.base64UrlDecode(parts[1]));
+                        const header = JSON.parse(
+                            this.base64UrlDecode(parts[0]),
+                        );
+                        const payload = JSON.parse(
+                            this.base64UrlDecode(parts[1]),
+                        );
 
                         writer.writeln(
-                            writer.wrapInColor('Header:', CliForegroundColor.Yellow),
+                            writer.wrapInColor(
+                                'Header:',
+                                CliForegroundColor.Yellow,
+                            ),
                         );
                         writer.writeln(JSON.stringify(header, null, 2));
                         writer.writeln();
 
                         writer.writeln(
-                            writer.wrapInColor('Payload:', CliForegroundColor.Yellow),
+                            writer.wrapInColor(
+                                'Payload:',
+                                CliForegroundColor.Yellow,
+                            ),
                         );
                         writer.writeln(JSON.stringify(payload, null, 2));
                         writer.writeln();
@@ -66,9 +78,16 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
                             const expDate = new Date(payload.exp * 1000);
                             const isExpired = expDate.getTime() < Date.now();
                             writer.writeln(
-                                `${writer.wrapInColor('Expires:', CliForegroundColor.Yellow)} ${expDate.toLocaleString()} ${isExpired
-                                    ? writer.wrapInColor('(EXPIRED)', CliForegroundColor.Red)
-                                    : writer.wrapInColor('(valid)', CliForegroundColor.Green)
+                                `${writer.wrapInColor('Expires:', CliForegroundColor.Yellow)} ${expDate.toLocaleString()} ${
+                                    isExpired
+                                        ? writer.wrapInColor(
+                                              '(EXPIRED)',
+                                              CliForegroundColor.Red,
+                                          )
+                                        : writer.wrapInColor(
+                                              '(valid)',
+                                              CliForegroundColor.Green,
+                                          )
                                 }`,
                             );
                         }
@@ -82,8 +101,10 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
 
                         writer.writeln();
                         writer.writeln(
-                            writer.wrapInColor('Signature:', CliForegroundColor.Yellow) +
-                                ` ${parts[2].substring(0, 20)}...`,
+                            writer.wrapInColor(
+                                'Signature:',
+                                CliForegroundColor.Yellow,
+                            ) + ` ${parts[2].substring(0, 20)}...`,
                         );
 
                         context.process.output({ header, payload });
@@ -94,8 +115,12 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Decode a JWT token and display its header and payload');
-                    writer.writeln('Shows expiration status and issue date if present');
+                    writer.writeln(
+                        'Decode a JWT token and display its header and payload',
+                    );
+                    writer.writeln(
+                        'Shows expiration status and issue date if present',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -122,7 +147,9 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
             `  ${writer.wrapInColor('jwt decode <token>', CliForegroundColor.Cyan)}       Decode and display JWT contents`,
         );
         writer.writeln();
-        writer.writeln('📝 Shows: header, payload, expiration status, issue date');
+        writer.writeln(
+            '📝 Shows: header, payload, expiration status, issue date',
+        );
     }
 
     private base64UrlDecode(str: string): string {
@@ -133,7 +160,10 @@ export class CliJwtCommandProcessor implements ICliCommandProcessor {
         return decodeURIComponent(
             atob(str)
                 .split('')
-                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .map(
+                    (c) =>
+                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2),
+                )
                 .join(''),
         );
     }

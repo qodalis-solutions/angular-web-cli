@@ -5,7 +5,11 @@ import {
     ICliCommandProcessor,
     ICliExecutionContext,
 } from '@qodalis/cli-core';
-import { IFileSystemService, IFileSystemService_TOKEN, IFileNode } from '../interfaces';
+import {
+    IFileSystemService,
+    IFileSystemService_TOKEN,
+    IFileNode,
+} from '../interfaces';
 import { LIBRARY_VERSION } from '../version';
 
 export class CliLsCommandProcessor implements ICliCommandProcessor {
@@ -37,7 +41,9 @@ export class CliLsCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
+        const fs = context.services.get<IFileSystemService>(
+            IFileSystemService_TOKEN,
+        );
         const targetPath = command.value || fs.getCurrentDirectory();
         const showAll = command.args['all'] || command.args['a'];
         const longFormat = command.args['long'] || command.args['l'];
@@ -75,11 +81,16 @@ export class CliLsCommandProcessor implements ICliCommandProcessor {
         context.writer.writeln('Usage: ls [path] [--all] [--long]');
     }
 
-    private writeLongFormat(entries: IFileNode[], context: ICliExecutionContext): void {
+    private writeLongFormat(
+        entries: IFileNode[],
+        context: ICliExecutionContext,
+    ): void {
         const { writer } = context;
         for (const entry of entries) {
             const typeChar = entry.type === 'directory' ? 'd' : '-';
-            const perms = entry.permissions || (entry.type === 'directory' ? 'rwxr-xr-x' : 'rw-r--r--');
+            const perms =
+                entry.permissions ||
+                (entry.type === 'directory' ? 'rwxr-xr-x' : 'rw-r--r--');
             const size = entry.type === 'file' ? entry.size.toString() : '-';
             const date = new Date(entry.modifiedAt);
             const dateStr = date.toLocaleDateString('en-US', {
@@ -88,15 +99,21 @@ export class CliLsCommandProcessor implements ICliCommandProcessor {
                 hour: '2-digit',
                 minute: '2-digit',
             });
-            const name = entry.type === 'directory'
-                ? writer.wrapInColor(entry.name, CliForegroundColor.Cyan)
-                : entry.name;
+            const name =
+                entry.type === 'directory'
+                    ? writer.wrapInColor(entry.name, CliForegroundColor.Cyan)
+                    : entry.name;
 
-            writer.writeln(`${typeChar}${perms}  ${size.padStart(6)}  ${dateStr}  ${name}`);
+            writer.writeln(
+                `${typeChar}${perms}  ${size.padStart(6)}  ${dateStr}  ${name}`,
+            );
         }
     }
 
-    private writeShortFormat(entries: IFileNode[], context: ICliExecutionContext): void {
+    private writeShortFormat(
+        entries: IFileNode[],
+        context: ICliExecutionContext,
+    ): void {
         const { writer } = context;
         const names = entries.map((e) =>
             e.type === 'directory'

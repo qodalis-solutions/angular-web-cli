@@ -26,7 +26,11 @@ import { CliClipboard } from '../services/cli-clipboard';
 import { CliCommandHistory } from '../services/cli-command-history';
 import { CliExecutionProcess } from './cli-execution-process';
 import { CliStateStoreManager } from '../state/cli-state-store-manager';
-import { CliInputReader, ActiveInputRequest, CliInputReaderHost } from '../services/cli-input-reader';
+import {
+    CliInputReader,
+    ActiveInputRequest,
+    CliInputReaderHost,
+} from '../services/cli-input-reader';
 import { CliCompletionEngine } from '../completion/cli-completion-engine';
 import {
     CliLineBuffer,
@@ -48,7 +52,11 @@ export interface CliExecutionContextDeps {
 }
 
 export class CliExecutionContext
-    implements ICliExecutionContext, CliInputReaderHost, CommandLineModeHost, ReaderModeHost
+    implements
+        ICliExecutionContext,
+        CliInputReaderHost,
+        CommandLineModeHost,
+        ReaderModeHost
 {
     public userSession?: ICliUserSession;
 
@@ -284,12 +292,12 @@ export class CliExecutionContext
 
     public enterFullScreenMode(processor: ICliCommandProcessor): void {
         this.terminal.write('\x1b[?1049h'); // alternate screen buffer
-        this.terminal.write('\x1b[?25l');   // hide cursor
+        this.terminal.write('\x1b[?25l'); // hide cursor
         this.setContextProcessor(processor, true);
     }
 
     public exitFullScreenMode(): void {
-        this.terminal.write('\x1b[?25h');   // show cursor
+        this.terminal.write('\x1b[?25h'); // show cursor
         this.terminal.write('\x1b[?1049l'); // leave alternate screen buffer
         this.setContextProcessor(undefined);
         this.showPrompt();

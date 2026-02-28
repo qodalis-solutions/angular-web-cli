@@ -35,7 +35,9 @@ export class CliClipboardCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
                         await navigator.clipboard.writeText(text);
                         context.writer.writeSuccess('Copied to clipboard');

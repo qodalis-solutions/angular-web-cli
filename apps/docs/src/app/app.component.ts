@@ -85,7 +85,10 @@ export class AppComponent {
         }
     }
 
-    frameworkSnippets: Record<Framework, { imports: string; template: string }> = {
+    frameworkSnippets: Record<
+        Framework,
+        { imports: string; template: string }
+    > = {
         angular: {
             imports: `import { CliModule } from '@qodalis/angular-cli';
 import { guidModule } from '@qodalis/cli-guid';
@@ -149,7 +152,7 @@ import { filesModule } from '@qodalis/cli-files';`,
             icon: '\u25D0',
             title: 'Fully Themeable',
             description:
-                'CSS custom properties for every surface. Match your app\'s design system with zero friction.',
+                "CSS custom properties for every surface. Match your app's design system with zero friction.",
         },
         {
             icon: '\u21E5',
@@ -190,7 +193,13 @@ import { filesModule } from '@qodalis/cli-files';`,
         },
         {
             label: 'Utilities',
-            commands: ['guid generate', 'password generate', 'qr generate', 'string', 'text-to-image'],
+            commands: [
+                'guid generate',
+                'password generate',
+                'qr generate',
+                'string',
+                'text-to-image',
+            ],
         },
         {
             label: 'System',
@@ -206,7 +215,12 @@ import { filesModule } from '@qodalis/cli-files';`,
         },
         {
             label: 'Configuration',
-            commands: ['config set', 'config get', 'config list', 'config delete'],
+            commands: [
+                'config set',
+                'config get',
+                'config list',
+                'config delete',
+            ],
         },
     ];
 
@@ -242,19 +256,71 @@ import { filesModule } from '@qodalis/cli-files';`,
     ];
 
     plugins: PluginInfo[] = [
-        { name: 'GUID', command: 'guid generate', description: 'Generate and validate UUIDs' },
-        { name: 'Regex', command: 'regex test', description: 'Test and debug regular expressions' },
-        { name: 'QR Code', command: 'qr generate', description: 'Generate QR codes from text' },
-        { name: 'Speed Test', command: 'speed-test', description: 'Measure network performance' },
-        { name: 'cURL', command: 'curl', description: 'Make HTTP requests from the terminal' },
-        { name: 'Password', command: 'password generate', description: 'Generate secure passwords' },
-        { name: 'String', command: 'string', description: 'Encode, decode, and transform text' },
-        { name: 'Todo', command: 'todo', description: 'Manage tasks from the command line' },
-        { name: 'Storage', command: 'storage', description: 'Inspect browser local/session storage' },
-        { name: 'Text to Image', command: 'text-to-image', description: 'Render text as images' },
-        { name: 'Files', command: 'ls, cat, nano', description: 'Virtual filesystem with editor' },
-        { name: 'Yes/No', command: 'yesno', description: 'Interactive yes/no prompts' },
-        { name: 'Server Logs', command: 'logs', description: 'Stream and filter server logs' },
+        {
+            name: 'GUID',
+            command: 'guid generate',
+            description: 'Generate and validate UUIDs',
+        },
+        {
+            name: 'Regex',
+            command: 'regex test',
+            description: 'Test and debug regular expressions',
+        },
+        {
+            name: 'QR Code',
+            command: 'qr generate',
+            description: 'Generate QR codes from text',
+        },
+        {
+            name: 'Speed Test',
+            command: 'speed-test',
+            description: 'Measure network performance',
+        },
+        {
+            name: 'cURL',
+            command: 'curl',
+            description: 'Make HTTP requests from the terminal',
+        },
+        {
+            name: 'Password',
+            command: 'password generate',
+            description: 'Generate secure passwords',
+        },
+        {
+            name: 'String',
+            command: 'string',
+            description: 'Encode, decode, and transform text',
+        },
+        {
+            name: 'Todo',
+            command: 'todo',
+            description: 'Manage tasks from the command line',
+        },
+        {
+            name: 'Storage',
+            command: 'storage',
+            description: 'Inspect browser local/session storage',
+        },
+        {
+            name: 'Text to Image',
+            command: 'text-to-image',
+            description: 'Render text as images',
+        },
+        {
+            name: 'Files',
+            command: 'ls, cat, nano',
+            description: 'Virtual filesystem with editor',
+        },
+        {
+            name: 'Yes/No',
+            command: 'yesno',
+            description: 'Interactive yes/no prompts',
+        },
+        {
+            name: 'Server Logs',
+            command: 'logs',
+            description: 'Stream and filter server logs',
+        },
     ];
 
     copied = false;

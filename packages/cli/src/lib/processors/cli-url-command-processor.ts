@@ -33,7 +33,9 @@ export class CliUrlCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     const encoded = encodeURIComponent(text);
                     context.writer.writeln(encoded);
                     context.process.output(encoded);
@@ -63,7 +65,9 @@ export class CliUrlCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const text = (command.value || command.data || '') as string;
+                    const text = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
                         const decoded = decodeURIComponent(text);
                         context.writer.writeln(decoded);
@@ -97,7 +101,9 @@ export class CliUrlCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const input = (command.value || command.data || '') as string;
+                    const input = (command.value ||
+                        command.data ||
+                        '') as string;
                     try {
                         const url = new URL(input);
                         const parts: Record<string, string> = {

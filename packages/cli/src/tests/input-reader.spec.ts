@@ -1,4 +1,8 @@
-import { CliInputReader, ActiveInputRequest, CliInputReaderHost } from '../lib/services/cli-input-reader';
+import {
+    CliInputReader,
+    ActiveInputRequest,
+    CliInputReaderHost,
+} from '../lib/services/cli-input-reader';
 
 class MockHost implements CliInputReaderHost {
     activeInputRequest: ActiveInputRequest | null = null;
@@ -51,7 +55,9 @@ describe('CliInputReader', () => {
 
         it('should reject if another request is already active', async () => {
             reader.readLine('First: ');
-            await expectAsync(reader.readLine('Second: ')).toBeRejectedWithError('Another input request is already active');
+            await expectAsync(
+                reader.readLine('Second: '),
+            ).toBeRejectedWithError('Another input request is already active');
         });
 
         it('should resolve with value when resolve is called', async () => {
@@ -130,7 +136,9 @@ describe('CliInputReader', () => {
         });
 
         it('should reject with error for empty options', async () => {
-            await expectAsync(reader.readSelect('Pick:', [])).toBeRejectedWithError('readSelect requires at least one option');
+            await expectAsync(
+                reader.readSelect('Pick:', []),
+            ).toBeRejectedWithError('readSelect requires at least one option');
         });
 
         it('should write the prompt and render options', () => {
@@ -193,7 +201,11 @@ describe('CliInputReader', () => {
         });
 
         it('should reject with error for empty options', async () => {
-            await expectAsync(reader.readSelectInline('Pick:', [])).toBeRejectedWithError('readSelectInline requires at least one option');
+            await expectAsync(
+                reader.readSelectInline('Pick:', []),
+            ).toBeRejectedWithError(
+                'readSelectInline requires at least one option',
+            );
         });
 
         it('should write prompt and inline options on one line', () => {
@@ -246,7 +258,11 @@ describe('CliInputReader', () => {
         });
 
         it('should reject with error for empty options', async () => {
-            await expectAsync(reader.readMultiSelect('Select:', [])).toBeRejectedWithError('readMultiSelect requires at least one option');
+            await expectAsync(
+                reader.readMultiSelect('Select:', []),
+            ).toBeRejectedWithError(
+                'readMultiSelect requires at least one option',
+            );
         });
 
         it('should write prompt and render checkbox options', () => {

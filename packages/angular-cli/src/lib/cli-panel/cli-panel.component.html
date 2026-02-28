@@ -45,21 +45,47 @@
         class="terminal-instance"
         [hidden]="tab.id !== activeTabId"
       >
-        <div class="terminal-panes-container" [attr.data-tab-id]="tab.id"
-             [class.resizing]="paneResizing">
-          <ng-container *ngFor="let pane of tab.panes; let i = index; trackBy: trackByPaneId">
-            <div *ngIf="i > 0" class="pane-divider"
-                 (mousedown)="onPaneResizeStart($event, tab.id, i - 1)">
+        <div
+          class="terminal-panes-container"
+          [attr.data-tab-id]="tab.id"
+          [class.resizing]="paneResizing"
+        >
+          <ng-container
+            *ngFor="
+              let pane of tab.panes;
+              let i = index;
+              trackBy: trackByPaneId
+            "
+          >
+            <div
+              *ngIf="i > 0"
+              class="pane-divider"
+              (mousedown)="onPaneResizeStart($event, tab.id, i - 1)"
+            >
               <div class="pane-divider-grip"></div>
             </div>
-            <div class="terminal-pane"
-                 [class.active-pane]="pane.id === activePaneId && tab.id === activeTabId"
-                 [style.flex]="pane.widthPercent + ' 1 0'"
-                 (click)="onPaneClick(tab.id, pane.id)">
-              <button *ngIf="tab.panes.length > 1" class="pane-close-btn"
-                      (click)="closePane(tab.id, pane.id); $event.stopPropagation()"
-                      title="Close pane">&times;</button>
-              <cli [options]="options" [height]="terminalHeight" [modules]="modules" [processors]="processors" />
+            <div
+              class="terminal-pane"
+              [class.active-pane]="
+                pane.id === activePaneId && tab.id === activeTabId
+              "
+              [style.flex]="pane.widthPercent + ' 1 0'"
+              (click)="onPaneClick(tab.id, pane.id)"
+            >
+              <button
+                *ngIf="tab.panes.length > 1"
+                class="pane-close-btn"
+                (click)="closePane(tab.id, pane.id); $event.stopPropagation()"
+                title="Close pane"
+              >
+                &times;
+              </button>
+              <cli
+                [options]="options"
+                [height]="terminalHeight"
+                [modules]="modules"
+                [processors]="processors"
+              />
             </div>
           </ng-container>
         </div>
@@ -76,13 +102,29 @@
   [style.top.px]="contextMenu.y"
   (click)="$event.stopPropagation()"
 >
-  <button class="context-menu-item" (click)="contextMenuRename()">Rename</button>
-  <button class="context-menu-item" (click)="contextMenuDuplicate()">Duplicate</button>
-  <button class="context-menu-item" (click)="contextMenuSplitRight()">Split Right</button>
+  <button class="context-menu-item" (click)="contextMenuRename()">
+    Rename
+  </button>
+  <button class="context-menu-item" (click)="contextMenuDuplicate()">
+    Duplicate
+  </button>
+  <button class="context-menu-item" (click)="contextMenuSplitRight()">
+    Split Right
+  </button>
   <div class="context-menu-separator"></div>
   <button class="context-menu-item" (click)="contextMenuClose()">Close</button>
-  <button class="context-menu-item" (click)="contextMenuCloseOthers()" [disabled]="tabs.length <= 1">Close Others</button>
-  <button class="context-menu-item" (click)="contextMenuCloseToTheRight()">Close to the Right</button>
+  <button
+    class="context-menu-item"
+    (click)="contextMenuCloseOthers()"
+    [disabled]="tabs.length <= 1"
+  >
+    Close Others
+  </button>
+  <button class="context-menu-item" (click)="contextMenuCloseToTheRight()">
+    Close to the Right
+  </button>
   <div class="context-menu-separator"></div>
-  <button class="context-menu-item destructive" (click)="contextMenuCloseAll()">Close All</button>
+  <button class="context-menu-item destructive" (click)="contextMenuCloseAll()">
+    Close All
+  </button>
 </div>

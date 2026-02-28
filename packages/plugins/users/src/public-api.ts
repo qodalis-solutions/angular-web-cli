@@ -39,7 +39,10 @@ import { CliDefaultUsersStoreService } from './lib/services/cli-default-users-st
 import { CliDefaultUserSessionService } from './lib/services/cli-default-user-session.service';
 import { CliDefaultGroupsStoreService } from './lib/services/cli-default-groups-store.service';
 import { CliDefaultAuthService } from './lib/services/cli-default-auth.service';
-import { CliUsersModuleConfig, CliUsersModuleConfig_TOKEN } from './lib/models/users-module-config';
+import {
+    CliUsersModuleConfig,
+    CliUsersModuleConfig_TOKEN,
+} from './lib/models/users-module-config';
 import { firstValueFrom } from 'rxjs';
 
 import { LIBRARY_VERSION } from './lib/version';
@@ -70,8 +73,14 @@ export const usersModule: ICliUsersModule = {
         new CliWhoCommandProcessor(),
     ],
     services: [
-        { provide: ICliUsersStoreService_TOKEN, useValue: new CliDefaultUsersStoreService() },
-        { provide: ICliGroupsStoreService_TOKEN, useValue: new CliDefaultGroupsStoreService() },
+        {
+            provide: ICliUsersStoreService_TOKEN,
+            useValue: new CliDefaultUsersStoreService(),
+        },
+        {
+            provide: ICliGroupsStoreService_TOKEN,
+            useValue: new CliDefaultGroupsStoreService(),
+        },
     ],
 
     configure(config: CliUsersModuleConfig): ICliModule {
@@ -80,7 +89,9 @@ export const usersModule: ICliUsersModule = {
 
     async onInit(context) {
         const moduleConfig = (this.config || {}) as CliUsersModuleConfig;
-        const kvStore = context.services.get<ICliKeyValueStore>('cli-key-value-store');
+        const kvStore = context.services.get<ICliKeyValueStore>(
+            'cli-key-value-store',
+        );
 
         // Register module config so processors can access it
         context.services.set([
@@ -88,12 +99,19 @@ export const usersModule: ICliUsersModule = {
         ]);
 
         // Initialize users store
-        const usersStore = context.services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
+        const usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
         await (usersStore as CliDefaultUsersStoreService).initialize(kvStore);
 
         // Initialize groups store (depends on users store)
-        const groupsStore = context.services.get<ICliGroupsStoreService>(ICliGroupsStoreService_TOKEN);
-        await (groupsStore as CliDefaultGroupsStoreService).initialize(kvStore, usersStore);
+        const groupsStore = context.services.get<ICliGroupsStoreService>(
+            ICliGroupsStoreService_TOKEN,
+        );
+        await (groupsStore as CliDefaultGroupsStoreService).initialize(
+            kvStore,
+            usersStore,
+        );
 
         // Initialize session service
         const sessionService = new CliDefaultUserSessionService();
@@ -129,7 +147,9 @@ export const usersModule: ICliUsersModule = {
         } else {
             const restoredSession = await sessionService.restoreSession();
             if (!restoredSession) {
-                const rootUser = await firstValueFrom(usersStore.getUser('root'));
+                const rootUser = await firstValueFrom(
+                    usersStore.getUser('root'),
+                );
                 if (rootUser) {
                     await sessionService.setUserSession({
                         user: rootUser,
@@ -141,11 +161,12 @@ export const usersModule: ICliUsersModule = {
         }
 
         // Resolve display name formatter (default: user.name)
-        const formatDisplayName = moduleConfig.userDisplayFormatter
-            ?? ((user: ICliUser) => user.name);
+        const formatDisplayName =
+            moduleConfig.userDisplayFormatter ??
+            ((user: ICliUser) => user.name);
 
         // Subscribe session changes to execution context
-        sessionService.getUserSession().subscribe(session => {
+        sessionService.getUserSession().subscribe((session) => {
             if (session) {
                 context.userSession = {
                     ...session,
@@ -159,9 +180,15 @@ export const usersModule: ICliUsersModule = {
         const moduleConfig = (this.config || {}) as CliUsersModuleConfig;
         if (!moduleConfig.requirePasswordOnBoot) return;
 
-        const sessionService = context.services.get<ICliUserSessionService>(ICliUserSessionService_TOKEN);
-        const usersStore = context.services.get<ICliUsersStoreService>(ICliUsersStoreService_TOKEN);
-        const authService = context.services.get<ICliAuthService>(ICliAuthService_TOKEN);
+        const sessionService = context.services.get<ICliUserSessionService>(
+            ICliUserSessionService_TOKEN,
+        );
+        const usersStore = context.services.get<ICliUsersStoreService>(
+            ICliUsersStoreService_TOKEN,
+        );
+        const authService = context.services.get<ICliAuthService>(
+            ICliAuthService_TOKEN,
+        );
 
         while (!context.userSession) {
             const username = await context.reader.readLine('Username: ');
@@ -173,13 +200,16 @@ export const usersModule: ICliUsersModule = {
             }
 
             if (moduleConfig.requirePassword) {
-                const password = await context.reader.readPassword('Password: ');
+                const password =
+                    await context.reader.readPassword('Password: ');
                 if (password === null) continue;
 
                 try {
                     await authService.login(username, password);
                 } catch (e: any) {
-                    context.writer.writeError(e.message || 'Authentication failure');
+                    context.writer.writeError(
+                        e.message || 'Authentication failure',
+                    );
                 }
             } else {
                 const user = await firstValueFrom(usersStore.getUser(username));

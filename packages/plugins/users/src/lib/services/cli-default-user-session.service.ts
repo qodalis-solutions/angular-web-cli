@@ -8,7 +8,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 const SESSION_KEY = 'cli-session';
 
 export class CliDefaultUserSessionService implements ICliUserSessionService {
-    private sessionSubject = new BehaviorSubject<ICliUserSession | undefined>(undefined);
+    private sessionSubject = new BehaviorSubject<ICliUserSession | undefined>(
+        undefined,
+    );
     private kvStore!: ICliKeyValueStore;
 
     async initialize(kvStore: ICliKeyValueStore): Promise<void> {

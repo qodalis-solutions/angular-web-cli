@@ -33,7 +33,9 @@ export class CliArgsParser {
 
                 switch (parameter.type) {
                     case 'array': {
-                        const previousValue = Array.isArray(result[parameter.name])
+                        const previousValue = Array.isArray(
+                            result[parameter.name],
+                        )
                             ? result[parameter.name]
                             : [];
                         value = [...previousValue, arg.value];

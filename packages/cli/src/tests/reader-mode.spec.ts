@@ -106,9 +106,11 @@ function createMultiSelectRequest(
     return { request, resolvedValue };
 }
 
-function createNumberRequest(
-    numberOptions?: { min?: number; max?: number; default?: number },
-): { request: ActiveInputRequest; resolvedValue: Promise<number | null> } {
+function createNumberRequest(numberOptions?: {
+    min?: number;
+    max?: number;
+    default?: number;
+}): { request: ActiveInputRequest; resolvedValue: Promise<number | null> } {
     let resolvePromise: (value: number | null) => void;
     const resolvedValue = new Promise<number | null>((resolve) => {
         resolvePromise = resolve;
@@ -192,7 +194,10 @@ describe('ReaderMode', () => {
 
         it('should resolve with selected value on Enter', async () => {
             const onChange = jasmine.createSpy('onChange');
-            const { request, resolvedValue } = createSelectRequest(options, onChange);
+            const { request, resolvedValue } = createSelectRequest(
+                options,
+                onChange,
+            );
             request.selectedIndex = 1; // Option B
             host.setActiveInputRequest(request);
 
@@ -234,7 +239,10 @@ describe('ReaderMode', () => {
             const { request } = createSelectRequest(options, onChange);
             host.setActiveInputRequest(request);
 
-            const event = new KeyboardEvent('keydown', { code: 'KeyC', ctrlKey: true });
+            const event = new KeyboardEvent('keydown', {
+                code: 'KeyC',
+                ctrlKey: true,
+            });
             const result = mode.handleKeyEvent(event);
 
             expect(result).toBe(false);
@@ -338,7 +346,8 @@ describe('ReaderMode', () => {
         });
 
         it('should resolve with selected value on Enter', async () => {
-            const { request, resolvedValue } = createSelectInlineRequest(options);
+            const { request, resolvedValue } =
+                createSelectInlineRequest(options);
             request.selectedIndex = 1;
             host.setActiveInputRequest(request);
 
@@ -401,7 +410,10 @@ describe('ReaderMode', () => {
 
         it('should toggle item off with Space', async () => {
             const checkedIndices = new Set([0, 1]);
-            const { request } = createMultiSelectRequest(options, checkedIndices);
+            const { request } = createMultiSelectRequest(
+                options,
+                checkedIndices,
+            );
             host.setActiveInputRequest(request);
 
             await mode.handleInput(' '); // Space to untoggle index 0
@@ -412,7 +424,10 @@ describe('ReaderMode', () => {
 
         it('should resolve with array of checked values on Enter', async () => {
             const checkedIndices = new Set([0, 2]);
-            const { request, resolvedValue } = createMultiSelectRequest(options, checkedIndices);
+            const { request, resolvedValue } = createMultiSelectRequest(
+                options,
+                checkedIndices,
+            );
             host.setActiveInputRequest(request);
 
             await mode.handleInput('\r');
@@ -423,7 +438,8 @@ describe('ReaderMode', () => {
         });
 
         it('should resolve with empty array when nothing checked', async () => {
-            const { request, resolvedValue } = createMultiSelectRequest(options);
+            const { request, resolvedValue } =
+                createMultiSelectRequest(options);
             host.setActiveInputRequest(request);
 
             await mode.handleInput('\r');
@@ -493,7 +509,9 @@ describe('ReaderMode', () => {
         });
 
         it('should resolve with default value on Enter with empty buffer', async () => {
-            const { request, resolvedValue } = createNumberRequest({ default: 10 });
+            const { request, resolvedValue } = createNumberRequest({
+                default: 10,
+            });
             host.setActiveInputRequest(request);
 
             await mode.handleInput('\r');

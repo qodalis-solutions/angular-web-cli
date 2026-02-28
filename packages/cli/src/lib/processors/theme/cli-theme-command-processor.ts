@@ -38,9 +38,22 @@ function colorText(text: string, hex: string | undefined): string {
 
 /** The subset of ITheme color keys displayed as palette swatches. */
 const PALETTE_KEYS: (keyof ITheme)[] = [
-    'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
-    'brightBlack', 'brightRed', 'brightGreen', 'brightYellow',
-    'brightBlue', 'brightMagenta', 'brightCyan', 'brightWhite',
+    'black',
+    'red',
+    'green',
+    'yellow',
+    'blue',
+    'magenta',
+    'cyan',
+    'white',
+    'brightBlack',
+    'brightRed',
+    'brightGreen',
+    'brightYellow',
+    'brightBlue',
+    'brightMagenta',
+    'brightCyan',
+    'brightWhite',
 ];
 
 export class CliThemeCommandProcessor implements ICliCommandProcessor {
@@ -91,9 +104,9 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
                     for (const name of Object.keys(themes)) {
                         const t = themes[name];
                         const active = name === currentName ? ' (active)' : '';
-                        const swatches = PALETTE_KEYS
-                            .map((k) => colorSwatch(t[k] as string))
-                            .join('');
+                        const swatches = PALETTE_KEYS.map((k) =>
+                            colorSwatch(t[k] as string),
+                        ).join('');
                         const label = context.writer.wrapInColor(
                             name,
                             CliForegroundColor.Cyan,
@@ -193,7 +206,8 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
             },
             {
                 command: 'apply',
-                description: 'Apply a theme (interactive with live preview if no name given)',
+                description:
+                    'Apply a theme (interactive with live preview if no name given)',
                 acceptsRawInput: true,
                 processCommand: async (
                     command: CliProcessCommand,
@@ -228,7 +242,9 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
                             // Cancelled — restore original theme
                             context.terminal.options.theme = originalTheme;
                             this.applyStyles(context);
-                            context.writer.writeInfo('Theme selection cancelled');
+                            context.writer.writeInfo(
+                                'Theme selection cancelled',
+                            );
                             return;
                         }
                         themeName = selected;
@@ -285,9 +301,7 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
                     }
 
                     if (!this.themeOptions.includes(key)) {
-                        context.writer.writeError(
-                            `Unsupported key: ${key}`,
-                        );
+                        context.writer.writeError(`Unsupported key: ${key}`);
                         context.writer.writeln();
                         context.writer.writeInfo(
                             `Supported keys: ${this.themeOptions.join(', ')}`,
@@ -408,7 +422,14 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
         // Color palette
         writer.writeln('  Normal:');
         const normal: (keyof ITheme)[] = [
-            'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
+            'black',
+            'red',
+            'green',
+            'yellow',
+            'blue',
+            'magenta',
+            'cyan',
+            'white',
         ];
         let row = '    ';
         for (const key of normal) {
@@ -426,8 +447,14 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
         writer.writeln();
         writer.writeln('  Bright:');
         const bright: (keyof ITheme)[] = [
-            'brightBlack', 'brightRed', 'brightGreen', 'brightYellow',
-            'brightBlue', 'brightMagenta', 'brightCyan', 'brightWhite',
+            'brightBlack',
+            'brightRed',
+            'brightGreen',
+            'brightYellow',
+            'brightBlue',
+            'brightMagenta',
+            'brightCyan',
+            'brightWhite',
         ];
         row = '    ';
         for (const key of bright) {
@@ -439,7 +466,10 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
         for (const key of bright) {
             const val = theme[key] as string | undefined;
             // Show abbreviated label: "bk", "rd", "gr", "yl", "bl", "mg", "cy", "wh"
-            const label = String(key).replace('bright', '').slice(0, 2).toLowerCase();
+            const label = String(key)
+                .replace('bright', '')
+                .slice(0, 2)
+                .toLowerCase();
             row += colorText(label.padEnd(2), val) + ' ';
         }
         writer.writeln(row);
@@ -472,23 +502,49 @@ export class CliThemeCommandProcessor implements ICliCommandProcessor {
 
     writeDescription?(context: ICliExecutionContext): void {
         const { writer } = context;
-        writer.writeln('Customize the terminal appearance with themes and colors');
+        writer.writeln(
+            'Customize the terminal appearance with themes and colors',
+        );
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('theme list', CliForegroundColor.Cyan)}                     List themes with color previews`);
-        writer.writeln(`  ${writer.wrapInColor('theme apply', CliForegroundColor.Cyan)}                    Select a theme interactively`);
-        writer.writeln(`  ${writer.wrapInColor('theme apply <name>', CliForegroundColor.Cyan)}             Apply a theme by name`);
-        writer.writeln(`  ${writer.wrapInColor('theme preview <name>', CliForegroundColor.Cyan)}           Preview a theme without applying`);
-        writer.writeln(`  ${writer.wrapInColor('theme current', CliForegroundColor.Cyan)}                  Show active theme with swatches`);
-        writer.writeln(`  ${writer.wrapInColor('theme set <key> <value>', CliForegroundColor.Cyan)}        Set a theme variable`);
-        writer.writeln(`  ${writer.wrapInColor('theme save', CliForegroundColor.Cyan)}                     Save current settings`);
-        writer.writeln(`  ${writer.wrapInColor('theme reset', CliForegroundColor.Cyan)}                    Reset to default`);
+        writer.writeln(
+            `  ${writer.wrapInColor('theme list', CliForegroundColor.Cyan)}                     List themes with color previews`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme apply', CliForegroundColor.Cyan)}                    Select a theme interactively`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme apply <name>', CliForegroundColor.Cyan)}             Apply a theme by name`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme preview <name>', CliForegroundColor.Cyan)}           Preview a theme without applying`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme current', CliForegroundColor.Cyan)}                  Show active theme with swatches`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme set <key> <value>', CliForegroundColor.Cyan)}        Set a theme variable`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme save', CliForegroundColor.Cyan)}                     Save current settings`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('theme reset', CliForegroundColor.Cyan)}                    Reset to default`,
+        );
         writer.writeln();
         writer.writeln('Examples:');
-        writer.writeln(`  theme apply dracula              ${writer.wrapInColor('# Apply the Dracula theme', CliForegroundColor.Green)}`);
-        writer.writeln(`  theme preview nord               ${writer.wrapInColor('# Preview Nord palette', CliForegroundColor.Green)}`);
-        writer.writeln(`  theme set background #1a1a2e     ${writer.wrapInColor('# Change background color', CliForegroundColor.Green)}`);
-        writer.writeln(`  theme set foreground #e0e0e0     ${writer.wrapInColor('# Change text color', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  theme apply dracula              ${writer.wrapInColor('# Apply the Dracula theme', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  theme preview nord               ${writer.wrapInColor('# Preview Nord palette', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  theme set background #1a1a2e     ${writer.wrapInColor('# Change background color', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  theme set foreground #e0e0e0     ${writer.wrapInColor('# Change text color', CliForegroundColor.Green)}`,
+        );
         writer.writeln();
         writer.writeln(
             `Available options: ${writer.wrapInColor(this.themeOptions.join(', ') ?? '', CliForegroundColor.Blue)}`,

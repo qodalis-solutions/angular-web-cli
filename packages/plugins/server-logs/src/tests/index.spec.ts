@@ -55,31 +55,35 @@ describe('CliLogsCommandProcessor', () => {
         });
 
         it('should include "pattern" parameter', () => {
-            const param = processor.parameters!.find(p => p.name === 'pattern');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'pattern',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should include "level" parameter', () => {
-            const param = processor.parameters!.find(p => p.name === 'level');
+            const param = processor.parameters!.find((p) => p.name === 'level');
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should include "server" parameter', () => {
-            const param = processor.parameters!.find(p => p.name === 'server');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'server',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should include "hub" parameter', () => {
-            const param = processor.parameters!.find(p => p.name === 'hub');
+            const param = processor.parameters!.find((p) => p.name === 'hub');
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('should include "file" parameter', () => {
-            const param = processor.parameters!.find(p => p.name === 'file');
+            const param = processor.parameters!.find((p) => p.name === 'file');
             expect(param).toBeDefined();
             expect(param!.type).toBe('boolean');
         });
@@ -87,14 +91,21 @@ describe('CliLogsCommandProcessor', () => {
 
     describe('parameter validators', () => {
         it('"level" parameter should have a validator', () => {
-            const param = processor.parameters!.find(p => p.name === 'level');
+            const param = processor.parameters!.find((p) => p.name === 'level');
             expect(param!.validator).toBeDefined();
             expect(typeof param!.validator).toBe('function');
         });
 
         it('"level" validator should accept valid log levels', () => {
-            const param = processor.parameters!.find(p => p.name === 'level');
-            const validLevels = ['verbose', 'debug', 'information', 'warning', 'error', 'fatal'];
+            const param = processor.parameters!.find((p) => p.name === 'level');
+            const validLevels = [
+                'verbose',
+                'debug',
+                'information',
+                'warning',
+                'error',
+                'fatal',
+            ];
             for (const level of validLevels) {
                 const result = param!.validator!(level);
                 expect(result.valid)
@@ -104,38 +115,46 @@ describe('CliLogsCommandProcessor', () => {
         });
 
         it('"level" validator should reject invalid log levels', () => {
-            const param = processor.parameters!.find(p => p.name === 'level');
+            const param = processor.parameters!.find((p) => p.name === 'level');
             const result = param!.validator!('invalid-level');
             expect(result.valid).toBe(false);
             expect(result.message).toBeDefined();
         });
 
         it('"pattern" parameter should have a validator', () => {
-            const param = processor.parameters!.find(p => p.name === 'pattern');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'pattern',
+            );
             expect(param!.validator).toBeDefined();
             expect(typeof param!.validator).toBe('function');
         });
 
         it('"pattern" validator should accept valid regex patterns', () => {
-            const param = processor.parameters!.find(p => p.name === 'pattern');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'pattern',
+            );
             const result = param!.validator!('\\d+');
             expect(result.valid).toBe(true);
         });
 
         it('"pattern" validator should reject invalid regex patterns', () => {
-            const param = processor.parameters!.find(p => p.name === 'pattern');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'pattern',
+            );
             const result = param!.validator!('[invalid');
             expect(result.valid).toBe(false);
             expect(result.message).toBeDefined();
         });
 
         it('"server" parameter should not have a validator', () => {
-            const param = processor.parameters!.find(p => p.name === 'server');
+            const param = processor.parameters!.find(
+                (p) => p.name === 'server',
+            );
             expect(param!.validator).toBeUndefined();
         });
 
         it('"hub" parameter should not have a validator', () => {
-            const param = processor.parameters!.find(p => p.name === 'hub');
+            const param = processor.parameters!.find((p) => p.name === 'hub');
             expect(param!.validator).toBeUndefined();
         });
     });
@@ -147,27 +166,27 @@ describe('CliLogsCommandProcessor', () => {
         });
 
         it('should include "live" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'live');
+            const sub = processor.processors!.find((p) => p.command === 'live');
             expect(sub).toBeDefined();
         });
 
         it('"live" sub-processor should have a description', () => {
-            const sub = processor.processors!.find(p => p.command === 'live');
+            const sub = processor.processors!.find((p) => p.command === 'live');
             expect(sub!.description).toBeDefined();
         });
 
         it('"live" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'live');
+            const sub = processor.processors!.find((p) => p.command === 'live');
             expect(typeof sub!.processCommand).toBe('function');
         });
 
         it('"live" sub-processor should have writeDescription as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'live');
+            const sub = processor.processors!.find((p) => p.command === 'live');
             expect(typeof sub!.writeDescription).toBe('function');
         });
 
         it('"live" sub-processor should share the same parameters as the parent', () => {
-            const sub = processor.processors!.find(p => p.command === 'live');
+            const sub = processor.processors!.find((p) => p.command === 'live');
             expect(sub!.parameters).toBe(processor.parameters);
         });
     });

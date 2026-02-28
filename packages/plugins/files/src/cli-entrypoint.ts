@@ -1,4 +1,8 @@
-import { bootCliModule, ICliModule, ICliCompletionProvider_TOKEN } from '@qodalis/cli-core';
+import {
+    bootCliModule,
+    ICliModule,
+    ICliCompletionProvider_TOKEN,
+} from '@qodalis/cli-core';
 import { IFileSystemService_TOKEN } from './lib/interfaces';
 import { IFileSystemService } from './lib/interfaces';
 import { IndexedDbFileSystemService } from './lib/services';

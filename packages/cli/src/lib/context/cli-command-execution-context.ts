@@ -18,7 +18,10 @@ import {
 } from '@qodalis/cli-core';
 import { Terminal } from '@xterm/xterm';
 import { Subject } from 'rxjs';
-import { CliProcessorsRegistry_TOKEN, CliStateStoreManager_TOKEN } from '../tokens';
+import {
+    CliProcessorsRegistry_TOKEN,
+    CliStateStoreManager_TOKEN,
+} from '../tokens';
 import { ICliStateStoreManager } from '../state/cli-state-store-manager';
 
 export class CliCommandExecutionContext implements ICliExecutionContext {

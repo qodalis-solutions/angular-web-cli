@@ -30,8 +30,8 @@ export const initializeBrowserEnvironment = ({
         configurable: true,
         get() {
             console.warn(
-                'CLI: Angular decorators are not supported in UMD modules. '
-                + 'Use plain classes instead.'
+                'CLI: Angular decorators are not supported in UMD modules. ' +
+                    'Use plain classes instead.',
             );
             return { Injectable: () => () => {} };
         },

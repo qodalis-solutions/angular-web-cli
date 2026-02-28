@@ -60,9 +60,11 @@ describe('CliUsersModule', () => {
         'w',
     ];
 
-    expectedCommands.forEach(cmd => {
+    expectedCommands.forEach((cmd) => {
         it(`should contain a processor with command "${cmd}"`, () => {
-            const found = usersModule.processors!.find(p => p.command === cmd);
+            const found = usersModule.processors!.find(
+                (p) => p.command === cmd,
+            );
             expect(found).toBeDefined();
         });
     });
@@ -72,7 +74,9 @@ describe('CliUsersModule', () => {
     it('every processor should have metadata.sealed = true', () => {
         for (const processor of usersModule.processors!) {
             expect(processor.metadata?.sealed)
-                .withContext(`Processor "${processor.command}" should be sealed`)
+                .withContext(
+                    `Processor "${processor.command}" should be sealed`,
+                )
                 .toBe(true);
         }
     });
@@ -80,7 +84,9 @@ describe('CliUsersModule', () => {
     it('every processor should have metadata.module = "users"', () => {
         for (const processor of usersModule.processors!) {
             expect(processor.metadata?.module)
-                .withContext(`Processor "${processor.command}" should have module "users"`)
+                .withContext(
+                    `Processor "${processor.command}" should have module "users"`,
+                )
                 .toBe('users');
         }
     });
@@ -88,7 +94,9 @@ describe('CliUsersModule', () => {
     it('every processor should have metadata.icon = CliIcon.User', () => {
         for (const processor of usersModule.processors!) {
             expect(processor.metadata?.icon)
-                .withContext(`Processor "${processor.command}" should have User icon`)
+                .withContext(
+                    `Processor "${processor.command}" should have User icon`,
+                )
                 .toBe(CliIcon.User);
         }
     });
@@ -107,7 +115,9 @@ describe('CliUsersModule', () => {
         const config = { sessionTimeout: 5000 };
         const configured = usersModule.configure(config);
         expect(configured.name).toBe(usersModule.name);
-        expect(configured.processors?.length).toBe(usersModule.processors?.length);
+        expect(configured.processors?.length).toBe(
+            usersModule.processors?.length,
+        );
         expect(configured.services?.length).toBe(usersModule.services?.length);
     });
 

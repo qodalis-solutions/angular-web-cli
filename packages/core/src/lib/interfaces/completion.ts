@@ -42,5 +42,7 @@ export interface ICliCompletionProvider {
      * Return completion candidates for the current input context.
      * Return an empty array if this provider does not apply.
      */
-    getCompletions(context: ICliCompletionContext): string[] | Promise<string[]>;
+    getCompletions(
+        context: ICliCompletionContext,
+    ): string[] | Promise<string[]>;
 }

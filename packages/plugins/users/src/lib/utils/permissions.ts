@@ -16,13 +16,19 @@ export function requireAdmin(context: ICliExecutionContext): boolean {
 /**
  * Checks if the current user is the given user or is an admin.
  */
-export function requireSelfOrAdmin(context: ICliExecutionContext, targetUserId: string): boolean {
+export function requireSelfOrAdmin(
+    context: ICliExecutionContext,
+    targetUserId: string,
+): boolean {
     const session = context.userSession;
     if (!session) {
         context.writer.writeError('permission denied');
         return false;
     }
-    if (session.user.id === targetUserId || session.user.groups.includes('admin')) {
+    if (
+        session.user.id === targetUserId ||
+        session.user.groups.includes('admin')
+    ) {
         return true;
     }
     context.writer.writeError('permission denied');

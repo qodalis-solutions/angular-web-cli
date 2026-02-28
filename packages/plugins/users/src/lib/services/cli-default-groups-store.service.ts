@@ -14,7 +14,10 @@ export class CliDefaultGroupsStoreService implements ICliGroupsStoreService {
     private kvStore!: ICliKeyValueStore;
     private usersStore!: ICliUsersStoreService;
 
-    async initialize(kvStore: ICliKeyValueStore, usersStore: ICliUsersStoreService): Promise<void> {
+    async initialize(
+        kvStore: ICliKeyValueStore,
+        usersStore: ICliUsersStoreService,
+    ): Promise<void> {
         this.kvStore = kvStore;
         this.usersStore = usersStore;
 
@@ -38,15 +41,19 @@ export class CliDefaultGroupsStoreService implements ICliGroupsStoreService {
     }
 
     getGroup(id: string): Observable<ICliGroup | undefined> {
-        return this.groupsSubject.asObservable().pipe(
-            map(groups => groups.find(g => g.id === id || g.name === id)),
-        );
+        return this.groupsSubject
+            .asObservable()
+            .pipe(
+                map((groups) =>
+                    groups.find((g) => g.id === id || g.name === id),
+                ),
+            );
     }
 
     async createGroup(name: string, description?: string): Promise<ICliGroup> {
         const groups = this.groupsSubject.getValue();
 
-        if (groups.some(g => g.name === name)) {
+        if (groups.some((g) => g.name === name)) {
             throw new Error(`groupadd: group '${name}' already exists`);
         }
 
@@ -65,7 +72,7 @@ export class CliDefaultGroupsStoreService implements ICliGroupsStoreService {
 
     async deleteGroup(id: string): Promise<void> {
         const groups = this.groupsSubject.getValue();
-        const group = groups.find(g => g.id === id || g.name === id);
+        const group = groups.find((g) => g.id === id || g.name === id);
 
         if (!group) {
             throw new Error(`groupdel: group '${id}' does not exist`);
@@ -75,15 +82,17 @@ export class CliDefaultGroupsStoreService implements ICliGroupsStoreService {
             throw new Error(`groupdel: cannot delete the admin group`);
         }
 
-        const updated = groups.filter(g => g.id !== group.id);
+        const updated = groups.filter((g) => g.id !== group.id);
         this.groupsSubject.next(updated);
         await this.persist();
     }
 
     getGroupMembers(groupId: string): Observable<ICliUser[]> {
-        return this.usersStore.getUsers().pipe(
-            map(users => users.filter(u => u.groups.includes(groupId))),
-        );
+        return this.usersStore
+            .getUsers()
+            .pipe(
+                map((users) => users.filter((u) => u.groups.includes(groupId))),
+            );
     }
 
     private async persist(): Promise<void> {

@@ -11,7 +11,10 @@ import {
     ICliUsersStoreService,
 } from '@qodalis/cli-core';
 import { DefaultLibraryAuthor } from '@qodalis/cli-core';
-import { ICliAuthService_TOKEN, ICliUsersStoreService_TOKEN } from '@qodalis/cli-core';
+import {
+    ICliAuthService_TOKEN,
+    ICliUsersStoreService_TOKEN,
+} from '@qodalis/cli-core';
 import { requireAdmin } from '../utils/permissions';
 
 export class CliAddUserCommandProcessor implements ICliCommandProcessor {
@@ -132,7 +135,9 @@ export class CliAddUserCommandProcessor implements ICliCommandProcessor {
             return;
         }
 
-        const confirmPassword = await context.reader.readPassword('Retype new password: ');
+        const confirmPassword = await context.reader.readPassword(
+            'Retype new password: ',
+        );
         if (confirmPassword === null) {
             await this.usersStore.deleteUser(user.id);
             context.writer.writeError('Aborted');
@@ -161,11 +166,19 @@ export class CliAddUserCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Add a new user to the system');
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('adduser <name> --email=<email> [--groups=<groups>] [--home=<dir>] [--disabled]', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('adduser <name> --email=<email> [--groups=<groups>] [--home=<dir>] [--disabled]', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('Examples:');
-        writer.writeln(`  adduser John --email=john@example.com                   ${writer.wrapInColor('# Basic', CliForegroundColor.Green)}`);
-        writer.writeln(`  adduser Jane --email=jane@test.com --groups=admin,dev   ${writer.wrapInColor('# With groups', CliForegroundColor.Green)}`);
-        writer.writeln(`  adduser bot --email=bot@sys.local --disabled            ${writer.wrapInColor('# Disabled account', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  adduser John --email=john@example.com                   ${writer.wrapInColor('# Basic', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  adduser Jane --email=jane@test.com --groups=admin,dev   ${writer.wrapInColor('# With groups', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  adduser bot --email=bot@sys.local --disabled            ${writer.wrapInColor('# Disabled account', CliForegroundColor.Green)}`,
+        );
     }
 }

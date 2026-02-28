@@ -59,7 +59,7 @@ export class AppComponent {
             ],
         },
         servers: [
-            { name: 'local', url: '' },  // Empty URL = same origin (proxied via proxy.conf.json)
+            { name: 'local', url: '' }, // Empty URL = same origin (proxied via proxy.conf.json)
         ],
     };
 }

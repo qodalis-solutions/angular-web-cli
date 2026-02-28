@@ -97,7 +97,10 @@ export class CliCompletionEngine {
             const common = this.commonPrefix(candidates);
             if (common.length > ctx.token.length) {
                 // We can extend the current token
-                this.lastInput = input.slice(0, ctx.tokenStart) + common + input.slice(ctx.tokenStart + ctx.token.length);
+                this.lastInput =
+                    input.slice(0, ctx.tokenStart) +
+                    common +
+                    input.slice(ctx.tokenStart + ctx.token.length);
                 return {
                     action: 'complete',
                     replacement: common,

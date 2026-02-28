@@ -56,25 +56,27 @@ describe('CliTodoCommandProcessor', () => {
         });
 
         it('should include "ls" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'ls');
+            const sub = processor.processors!.find((p) => p.command === 'ls');
             expect(sub).toBeDefined();
             expect(sub!.description).toBeDefined();
         });
 
         it('should include "add" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'add');
+            const sub = processor.processors!.find((p) => p.command === 'add');
             expect(sub).toBeDefined();
             expect(sub!.description).toBeDefined();
         });
 
         it('should include "rm" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'rm');
+            const sub = processor.processors!.find((p) => p.command === 'rm');
             expect(sub).toBeDefined();
             expect(sub!.description).toBeDefined();
         });
 
         it('should include "complete" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'complete');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'complete',
+            );
             expect(sub).toBeDefined();
             expect(sub!.description).toBeDefined();
         });
@@ -82,7 +84,9 @@ describe('CliTodoCommandProcessor', () => {
         it('should have all sub-processors with processCommand as a function', () => {
             for (const sub of processor.processors!) {
                 expect(typeof sub.processCommand)
-                    .withContext(`Sub-processor "${sub.command}" should have processCommand as a function`)
+                    .withContext(
+                        `Sub-processor "${sub.command}" should have processCommand as a function`,
+                    )
                     .toBe('function');
             }
         });
@@ -90,34 +94,38 @@ describe('CliTodoCommandProcessor', () => {
 
     describe('sub-processor configuration', () => {
         it('"add" sub-processor should have valueRequired = true', () => {
-            const sub = processor.processors!.find(p => p.command === 'add');
+            const sub = processor.processors!.find((p) => p.command === 'add');
             expect(sub!.valueRequired).toBe(true);
         });
 
         it('"complete" sub-processor should have valueRequired = true', () => {
-            const sub = processor.processors!.find(p => p.command === 'complete');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'complete',
+            );
             expect(sub!.valueRequired).toBe(true);
         });
 
         it('"add" sub-processor should have acceptsRawInput = true', () => {
-            const sub = processor.processors!.find(p => p.command === 'add');
+            const sub = processor.processors!.find((p) => p.command === 'add');
             expect(sub!.acceptsRawInput).toBe(true);
         });
 
         it('"complete" sub-processor should have acceptsRawInput = true', () => {
-            const sub = processor.processors!.find(p => p.command === 'complete');
+            const sub = processor.processors!.find(
+                (p) => p.command === 'complete',
+            );
             expect(sub!.acceptsRawInput).toBe(true);
         });
 
         it('"rm" sub-processor should have acceptsRawInput = true', () => {
-            const sub = processor.processors!.find(p => p.command === 'rm');
+            const sub = processor.processors!.find((p) => p.command === 'rm');
             expect(sub!.acceptsRawInput).toBe(true);
         });
 
         it('"rm" sub-processor should have an "all" parameter', () => {
-            const sub = processor.processors!.find(p => p.command === 'rm');
+            const sub = processor.processors!.find((p) => p.command === 'rm');
             expect(sub!.parameters).toBeDefined();
-            const allParam = sub!.parameters!.find(p => p.name === 'all');
+            const allParam = sub!.parameters!.find((p) => p.name === 'all');
             expect(allParam).toBeDefined();
             expect(allParam!.type).toBe('boolean');
         });
@@ -130,7 +138,9 @@ describe('CliTodoCommandProcessor', () => {
 
         it('should have initialState with a todos property', () => {
             expect(processor.stateConfiguration!.initialState).toBeDefined();
-            expect(processor.stateConfiguration!.initialState['todos']).toBeDefined();
+            expect(
+                processor.stateConfiguration!.initialState['todos'],
+            ).toBeDefined();
         });
 
         it('should have todos initialized as an empty array', () => {

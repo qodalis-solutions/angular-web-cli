@@ -112,7 +112,11 @@ export class CapturingTerminalWriter implements ICliTerminalWriter {
 
     writeList(
         items: string[],
-        options?: { ordered?: boolean; prefix?: string; color?: CliForegroundColor },
+        options?: {
+            ordered?: boolean;
+            prefix?: string;
+            color?: CliForegroundColor;
+        },
     ): void {
         this.inner.writeList(items, options);
     }
@@ -169,10 +173,7 @@ export class CapturingTerminalWriter implements ICliTerminalWriter {
         }
 
         if (this._lines.length > 0) {
-            const text = this._lines
-                .join('\n')
-                .replace(/\r\n/g, '\n')
-                .trim();
+            const text = this._lines.join('\n').replace(/\r\n/g, '\n').trim();
             return text || undefined;
         }
 

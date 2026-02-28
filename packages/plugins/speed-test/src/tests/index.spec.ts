@@ -46,38 +46,40 @@ describe('CliSpeedTestCommandProcessor', () => {
         });
 
         it('should include "run" sub-processor', () => {
-            const sub = processor.processors!.find(p => p.command === 'run');
+            const sub = processor.processors!.find((p) => p.command === 'run');
             expect(sub).toBeDefined();
         });
 
         it('"run" sub-processor should have a description', () => {
-            const sub = processor.processors!.find(p => p.command === 'run');
+            const sub = processor.processors!.find((p) => p.command === 'run');
             expect(sub!.description).toBeDefined();
             expect(sub!.description!.length).toBeGreaterThan(0);
         });
 
         it('"run" sub-processor should have parameters defined', () => {
-            const sub = processor.processors!.find(p => p.command === 'run');
+            const sub = processor.processors!.find((p) => p.command === 'run');
             expect(sub!.parameters).toBeDefined();
             expect(sub!.parameters!.length).toBeGreaterThanOrEqual(2);
         });
 
         it('"run" should have a "download-url" parameter of type string', () => {
-            const sub = processor.processors!.find(p => p.command === 'run');
-            const param = sub!.parameters!.find(p => p.name === 'download-url');
+            const sub = processor.processors!.find((p) => p.command === 'run');
+            const param = sub!.parameters!.find(
+                (p) => p.name === 'download-url',
+            );
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('"run" should have an "upload-url" parameter of type string', () => {
-            const sub = processor.processors!.find(p => p.command === 'run');
-            const param = sub!.parameters!.find(p => p.name === 'upload-url');
+            const sub = processor.processors!.find((p) => p.command === 'run');
+            const param = sub!.parameters!.find((p) => p.name === 'upload-url');
             expect(param).toBeDefined();
             expect(param!.type).toBe('string');
         });
 
         it('"run" sub-processor should have processCommand as a function', () => {
-            const sub = processor.processors!.find(p => p.command === 'run');
+            const sub = processor.processors!.find((p) => p.command === 'run');
             expect(typeof sub!.processCommand).toBe('function');
         });
     });

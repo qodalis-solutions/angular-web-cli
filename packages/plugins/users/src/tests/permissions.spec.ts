@@ -11,7 +11,6 @@ function createMockContext(userSession?: any): ICliExecutionContext {
 }
 
 describe('Permission helpers', () => {
-
     // ---------- requireAdmin ----------
 
     describe('requireAdmin', () => {
@@ -48,14 +47,18 @@ describe('Permission helpers', () => {
             });
 
             expect(requireAdmin(context)).toBe(false);
-            expect(context.writer.writeError).toHaveBeenCalledWith('permission denied');
+            expect(context.writer.writeError).toHaveBeenCalledWith(
+                'permission denied',
+            );
         });
 
         it('should return false when no session', () => {
             const context = createMockContext(undefined);
 
             expect(requireAdmin(context)).toBe(false);
-            expect(context.writer.writeError).toHaveBeenCalledWith('permission denied');
+            expect(context.writer.writeError).toHaveBeenCalledWith(
+                'permission denied',
+            );
         });
 
         it('should return false for user with empty groups', () => {
@@ -73,7 +76,9 @@ describe('Permission helpers', () => {
             });
 
             expect(requireAdmin(context)).toBe(false);
-            expect(context.writer.writeError).toHaveBeenCalledWith('permission denied');
+            expect(context.writer.writeError).toHaveBeenCalledWith(
+                'permission denied',
+            );
         });
     });
 
@@ -132,14 +137,18 @@ describe('Permission helpers', () => {
             });
 
             expect(requireSelfOrAdmin(context, 'u2')).toBe(false);
-            expect(context.writer.writeError).toHaveBeenCalledWith('permission denied');
+            expect(context.writer.writeError).toHaveBeenCalledWith(
+                'permission denied',
+            );
         });
 
         it('should return false when no session', () => {
             const context = createMockContext(undefined);
 
             expect(requireSelfOrAdmin(context, 'u1')).toBe(false);
-            expect(context.writer.writeError).toHaveBeenCalledWith('permission denied');
+            expect(context.writer.writeError).toHaveBeenCalledWith(
+                'permission denied',
+            );
         });
     });
 });

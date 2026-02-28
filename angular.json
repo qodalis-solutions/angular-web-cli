@@ -57,7 +57,9 @@
             "outputPath": "dist/demo-angular",
             "index": "apps/demo-angular/src/index.html",
             "main": "apps/demo-angular/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "apps/demo-angular/tsconfig.app.json",
             "inlineStyleLanguage": "sass",
             "assets": [],
@@ -128,7 +130,9 @@
             "outputPath": "dist/docs",
             "index": "apps/docs/src/index.html",
             "main": "apps/docs/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "apps/docs/tsconfig.app.json",
             "inlineStyleLanguage": "sass",
             "assets": [
@@ -192,18 +196,284 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "apps/docs/tsconfig.spec.json",
             "inlineStyleLanguage": "sass",
             "assets": [
               "apps/docs/src/favicon.ico",
               "apps/docs/src/assets"
             ],
-            "styles": ["apps/docs/src/styles.sass"],
+            "styles": [
+              "apps/docs/src/styles.sass"
+            ],
             "scripts": []
           }
         }
       }
+    },
+    "core": {
+      "projectType": "library",
+      "root": "packages/core",
+      "sourceRoot": "packages/core/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/core/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "cli": {
+      "projectType": "library",
+      "root": "packages/cli",
+      "sourceRoot": "packages/cli/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/cli/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "guid": {
+      "projectType": "library",
+      "root": "packages/plugins/guid",
+      "sourceRoot": "packages/plugins/guid/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/guid/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "regex": {
+      "projectType": "library",
+      "root": "packages/plugins/regex",
+      "sourceRoot": "packages/plugins/regex/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/regex/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "text-to-image": {
+      "projectType": "library",
+      "root": "packages/plugins/text-to-image",
+      "sourceRoot": "packages/plugins/text-to-image/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/text-to-image/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "speed-test": {
+      "projectType": "library",
+      "root": "packages/plugins/speed-test",
+      "sourceRoot": "packages/plugins/speed-test/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/speed-test/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "browser-storage": {
+      "projectType": "library",
+      "root": "packages/plugins/browser-storage",
+      "sourceRoot": "packages/plugins/browser-storage/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/browser-storage/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "string": {
+      "projectType": "library",
+      "root": "packages/plugins/string",
+      "sourceRoot": "packages/plugins/string/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/string/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "todo": {
+      "projectType": "library",
+      "root": "packages/plugins/todo",
+      "sourceRoot": "packages/plugins/todo/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/todo/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "curl": {
+      "projectType": "library",
+      "root": "packages/plugins/curl",
+      "sourceRoot": "packages/plugins/curl/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/curl/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "password-generator": {
+      "projectType": "library",
+      "root": "packages/plugins/password-generator",
+      "sourceRoot": "packages/plugins/password-generator/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/password-generator/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "server-logs": {
+      "projectType": "library",
+      "root": "packages/plugins/server-logs",
+      "sourceRoot": "packages/plugins/server-logs/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/server-logs/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "qr": {
+      "projectType": "library",
+      "root": "packages/plugins/qr",
+      "sourceRoot": "packages/plugins/qr/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/qr/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "users": {
+      "projectType": "library",
+      "root": "packages/plugins/users",
+      "sourceRoot": "packages/plugins/users/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/users/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "yesno": {
+      "projectType": "library",
+      "root": "packages/plugins/yesno",
+      "sourceRoot": "packages/plugins/yesno/src",
+      "architect": {
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "packages/plugins/yesno/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "files": {
+      "projectType": "library",
+      "root": "packages/plugins/files",
+      "sourceRoot": "packages/plugins/files/src",
+      "architect": {}
     }
   },
   "cli": {

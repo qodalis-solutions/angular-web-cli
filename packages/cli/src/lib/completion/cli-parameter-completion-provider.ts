@@ -27,9 +27,7 @@ export class CliParameterCompletionProvider implements ICliCompletionProvider {
 
         // Find the processor for the command
         const mainCommand = tokens[0];
-        const chainCommands = tokens
-            .slice(1)
-            .filter((t) => !t.startsWith('-'));
+        const chainCommands = tokens.slice(1).filter((t) => !t.startsWith('-'));
 
         const processor = this.registry.findProcessorInCollection(
             mainCommand,

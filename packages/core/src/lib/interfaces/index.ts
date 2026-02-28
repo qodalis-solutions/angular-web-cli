@@ -120,7 +120,11 @@ export interface ICliTerminalWriter {
      */
     writeList(
         items: string[],
-        options?: { ordered?: boolean; prefix?: string; color?: CliForegroundColor },
+        options?: {
+            ordered?: boolean;
+            prefix?: string;
+            color?: CliForegroundColor;
+        },
     ): void;
 
     /**

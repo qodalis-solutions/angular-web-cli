@@ -4,9 +4,7 @@ import {
     ICliCommandProcessorRegistry,
 } from '@qodalis/cli-core';
 
-export class CliCommandProcessorRegistry
-    implements ICliCommandProcessorRegistry
-{
+export class CliCommandProcessorRegistry implements ICliCommandProcessorRegistry {
     public readonly processors: ICliCommandProcessor[] = [];
 
     constructor(initialProcessors?: ICliCommandProcessor[]) {
@@ -49,7 +47,10 @@ export class CliCommandProcessorRegistry
         const existingProcessor = this.getProcessorByName(processor.command);
 
         if (existingProcessor) {
-            if (existingProcessor.metadata?.sealed && !existingProcessor.originalProcessor) {
+            if (
+                existingProcessor.metadata?.sealed &&
+                !existingProcessor.originalProcessor
+            ) {
                 console.warn(
                     `Processor with command: ${processor.command} is sealed and cannot be removed.`,
                 );
@@ -99,9 +100,7 @@ export class CliCommandProcessorRegistry
         const processor = processors.find(
             (p) =>
                 p.command.toLowerCase() === lowerCommand ||
-                p.aliases?.some(
-                    (a) => a.toLowerCase() === lowerCommand,
-                ),
+                p.aliases?.some((a) => a.toLowerCase() === lowerCommand),
         );
 
         if (!processor) {

@@ -45,7 +45,8 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
                     {
                         name: 'count',
                         aliases: ['n'],
-                        description: 'How many numbers to generate (default: 1)',
+                        description:
+                            'How many numbers to generate (default: 1)',
                         type: 'number',
                         required: false,
                     },
@@ -56,7 +57,11 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
                 ) => {
                     const min = parseInt(command.args['min']) || 0;
                     const max = parseInt(command.args['max']) || 100;
-                    const count = Math.min(parseInt(command.args['count'] || command.args['n']) || 1, 100);
+                    const count = Math.min(
+                        parseInt(command.args['count'] || command.args['n']) ||
+                            1,
+                        100,
+                    );
 
                     const results: number[] = [];
                     for (let i = 0; i < count; i++) {
@@ -67,7 +72,9 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
 
                     const output = results.join(', ');
                     context.writer.writeln(output);
-                    context.process.output(results.length === 1 ? results[0] : results);
+                    context.process.output(
+                        results.length === 1 ? results[0] : results,
+                    );
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
@@ -115,7 +122,8 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
                     context: ICliExecutionContext,
                 ) => {
                     const length = Math.min(
-                        parseInt(command.args['length'] || command.args['l']) || 16,
+                        parseInt(command.args['length'] || command.args['l']) ||
+                            16,
                         1024,
                     );
                     const charset = command.args['charset'] || 'alphanumeric';
@@ -148,7 +156,9 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Generate a cryptographically random string');
+                    writer.writeln(
+                        'Generate a cryptographically random string',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -173,7 +183,9 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
                 },
                 writeDescription: (context: ICliExecutionContext) => {
                     const { writer } = context;
-                    writer.writeln('Generate a cryptographically random UUID v4');
+                    writer.writeln(
+                        'Generate a cryptographically random UUID v4',
+                    );
                     writer.writeln();
                     writer.writeln('📋 Usage:');
                     writer.writeln(
@@ -211,9 +223,10 @@ export class CliRandomCommandProcessor implements ICliCommandProcessor {
                     command: CliProcessCommand,
                     context: ICliExecutionContext,
                 ) => {
-                    const sides = parseInt(command.args['sides'] || command.args['s']) || 6;
-                    const result =
-                        Math.floor(Math.random() * sides) + 1;
+                    const sides =
+                        parseInt(command.args['sides'] || command.args['s']) ||
+                        6;
+                    const result = Math.floor(Math.random() * sides) + 1;
                     context.writer.writeln(`🎲 ${result}`);
                     context.process.output(result);
                 },

@@ -6,9 +6,7 @@ import { NanoEditorBuffer } from './nano-editor-buffer';
  * Uses alternate screen buffer to preserve scroll history.
  */
 export class NanoEditorRenderer {
-    constructor(
-        private readonly terminal: Terminal,
-    ) {}
+    constructor(private readonly terminal: Terminal) {}
 
     /** Enter alternate screen buffer and hide default cursor. */
     enterAlternateScreen(): void {
@@ -28,7 +26,11 @@ export class NanoEditorRenderer {
     }
 
     /** Full redraw of the editor screen. */
-    render(buffer: NanoEditorBuffer, fileName: string, statusMessage?: string): void {
+    render(
+        buffer: NanoEditorBuffer,
+        fileName: string,
+        statusMessage?: string,
+    ): void {
         const { rows, cols } = this.terminal;
 
         buffer.ensureVisible(this.contentHeight);
@@ -128,20 +130,30 @@ export class NanoEditorRenderer {
         this.terminal.write(output);
     }
 
-    private renderTitleBar(fileName: string, dirty: boolean, cols: number): string {
+    private renderTitleBar(
+        fileName: string,
+        dirty: boolean,
+        cols: number,
+    ): string {
         const title = `  CLI Nano  ${fileName || 'New Buffer'}${dirty ? ' (modified)' : ''}`;
         const padded = title.padEnd(cols);
         return `\x1b[7m${padded}\x1b[0m`;
     }
 
     private renderShortcutBar(cols: number): string {
-        const shortcuts = '^G Help  ^O Write Out  ^W Where Is  ^K Cut     ^C Cur Pos';
+        const shortcuts =
+            '^G Help  ^O Write Out  ^W Where Is  ^K Cut     ^C Cur Pos';
         const padded = shortcuts.padEnd(cols);
         return `\x1b[7m${padded}\x1b[0m`;
     }
 
-    private renderStatusBar(statusMessage: string | undefined, cols: number): string {
-        const text = statusMessage || '^X Exit  ^R Read File  ^\\  Replace   ^U Paste   ^S Save';
+    private renderStatusBar(
+        statusMessage: string | undefined,
+        cols: number,
+    ): string {
+        const text =
+            statusMessage ||
+            '^X Exit  ^R Read File  ^\\  Replace   ^U Paste   ^S Save';
         const padded = text.padEnd(cols);
         return `\x1b[7m${padded}\x1b[0m`;
     }

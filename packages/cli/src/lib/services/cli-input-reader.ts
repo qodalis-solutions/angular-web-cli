@@ -1,6 +1,17 @@
-import { ICliInputReader, CliSelectOption, CliMultiSelectOption } from '@qodalis/cli-core';
+import {
+    ICliInputReader,
+    CliSelectOption,
+    CliMultiSelectOption,
+} from '@qodalis/cli-core';
 
-export type ActiveInputRequestType = 'line' | 'password' | 'confirm' | 'select' | 'select-inline' | 'multi-select' | 'number';
+export type ActiveInputRequestType =
+    | 'line'
+    | 'password'
+    | 'confirm'
+    | 'select'
+    | 'select-inline'
+    | 'multi-select'
+    | 'number';
 
 export interface ActiveInputRequest {
     type: ActiveInputRequestType;
@@ -33,7 +44,10 @@ export class CliInputReader implements ICliInputReader {
         return this.createInputRequest('password', prompt);
     }
 
-    readConfirm(prompt: string, defaultValue: boolean = false): Promise<boolean | null> {
+    readConfirm(
+        prompt: string,
+        defaultValue: boolean = false,
+    ): Promise<boolean | null> {
         const hint = defaultValue ? '(Y/n)' : '(y/N)';
         const displayPrompt = `${prompt} ${hint}: `;
 
@@ -61,7 +75,9 @@ export class CliInputReader implements ICliInputReader {
         onChange?: (value: string) => void,
     ): Promise<string | null> {
         if (!options || options.length === 0) {
-            return Promise.reject(new Error('readSelect requires at least one option'));
+            return Promise.reject(
+                new Error('readSelect requires at least one option'),
+            );
         }
 
         return new Promise<string | null>((resolve) => {
@@ -95,7 +111,9 @@ export class CliInputReader implements ICliInputReader {
         onChange?: (value: string) => void,
     ): Promise<string | null> {
         if (!options || options.length === 0) {
-            return Promise.reject(new Error('readSelectInline requires at least one option'));
+            return Promise.reject(
+                new Error('readSelectInline requires at least one option'),
+            );
         }
 
         return new Promise<string | null>((resolve) => {
@@ -128,7 +146,9 @@ export class CliInputReader implements ICliInputReader {
         options: CliMultiSelectOption[],
     ): Promise<string[] | null> {
         if (!options || options.length === 0) {
-            return Promise.reject(new Error('readMultiSelect requires at least one option'));
+            return Promise.reject(
+                new Error('readMultiSelect requires at least one option'),
+            );
         }
 
         return new Promise<string[] | null>((resolve) => {
@@ -174,8 +194,10 @@ export class CliInputReader implements ICliInputReader {
             let displayPrompt = prompt;
             const hints: string[] = [];
             if (options?.min !== undefined || options?.max !== undefined) {
-                const minStr = options?.min !== undefined ? String(options.min) : '';
-                const maxStr = options?.max !== undefined ? String(options.max) : '';
+                const minStr =
+                    options?.min !== undefined ? String(options.min) : '';
+                const maxStr =
+                    options?.max !== undefined ? String(options.max) : '';
                 if (minStr && maxStr) {
                     hints.push(`${minStr}-${maxStr}`);
                 } else if (minStr) {
@@ -206,15 +228,23 @@ export class CliInputReader implements ICliInputReader {
         });
     }
 
-    renderSelectOptions(options: CliSelectOption[], selectedIndex: number): void {
+    renderSelectOptions(
+        options: CliSelectOption[],
+        selectedIndex: number,
+    ): void {
         for (let i = 0; i < options.length; i++) {
             const prefix = i === selectedIndex ? '  \x1b[36m> ' : '    ';
             const suffix = i === selectedIndex ? '\x1b[0m' : '';
-            this.host.writeToTerminal(`${prefix}${options[i].label}${suffix}\r\n`);
+            this.host.writeToTerminal(
+                `${prefix}${options[i].label}${suffix}\r\n`,
+            );
         }
     }
 
-    renderInlineSelectOptions(options: CliSelectOption[], selectedIndex: number): string {
+    renderInlineSelectOptions(
+        options: CliSelectOption[],
+        selectedIndex: number,
+    ): string {
         return options
             .map((opt, i) => {
                 if (i === selectedIndex) {
@@ -225,16 +255,28 @@ export class CliInputReader implements ICliInputReader {
             .join('');
     }
 
-    renderMultiSelectOptions(options: CliSelectOption[], selectedIndex: number, checkedIndices: Set<number>): void {
+    renderMultiSelectOptions(
+        options: CliSelectOption[],
+        selectedIndex: number,
+        checkedIndices: Set<number>,
+    ): void {
         for (let i = 0; i < options.length; i++) {
             const checkbox = checkedIndices.has(i) ? '[x]' : '[ ]';
-            const prefix = i === selectedIndex ? `  \x1b[36m> ${checkbox} ` : `    ${checkbox} `;
+            const prefix =
+                i === selectedIndex
+                    ? `  \x1b[36m> ${checkbox} `
+                    : `    ${checkbox} `;
             const suffix = i === selectedIndex ? '\x1b[0m' : '';
-            this.host.writeToTerminal(`${prefix}${options[i].label}${suffix}\r\n`);
+            this.host.writeToTerminal(
+                `${prefix}${options[i].label}${suffix}\r\n`,
+            );
         }
     }
 
-    private createInputRequest(type: 'line' | 'password', prompt: string): Promise<string | null> {
+    private createInputRequest(
+        type: 'line' | 'password',
+        prompt: string,
+    ): Promise<string | null> {
         return new Promise<string | null>((resolve) => {
             if (this.host.activeInputRequest) {
                 throw new Error('Another input request is already active');

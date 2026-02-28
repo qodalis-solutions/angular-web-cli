@@ -105,7 +105,11 @@ export class CliTerminalWriter implements ICliTerminalWriter {
 
     public writeList(
         items: string[],
-        options?: { ordered?: boolean; prefix?: string; color?: CliForegroundColor },
+        options?: {
+            ordered?: boolean;
+            prefix?: string;
+            color?: CliForegroundColor;
+        },
     ): void {
         const { ordered, prefix, color } = options || {};
         items.forEach((item, i) => {
@@ -119,13 +123,17 @@ export class CliTerminalWriter implements ICliTerminalWriter {
         entries: Record<string, string> | [string, string][],
         options?: { separator?: string; keyColor?: CliForegroundColor },
     ): void {
-        const pairs = Array.isArray(entries) ? entries : Object.entries(entries);
+        const pairs = Array.isArray(entries)
+            ? entries
+            : Object.entries(entries);
         const maxKeyLen = Math.max(...pairs.map(([k]) => k.length));
         const sep = options?.separator ?? ':';
         const keyColor = options?.keyColor ?? CliForegroundColor.Yellow;
         for (const [key, value] of pairs) {
             const paddedKey = key.padEnd(maxKeyLen);
-            this.writeln(`  ${this.wrapInColor(paddedKey, keyColor)} ${sep} ${value}`);
+            this.writeln(
+                `  ${this.wrapInColor(paddedKey, keyColor)} ${sep} ${value}`,
+            );
         }
     }
 

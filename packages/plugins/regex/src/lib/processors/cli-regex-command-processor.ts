@@ -69,11 +69,17 @@ export class CliRegexCommandProcessor implements ICliCommandProcessor {
         writer.writeln(this.description);
         writer.writeln();
         writer.writeln('📋 Usage:');
-        writer.writeln(`  ${writer.wrapInColor('regex match <pattern> <text>', CliForegroundColor.Cyan)}`);
+        writer.writeln(
+            `  ${writer.wrapInColor('regex match <pattern> <text>', CliForegroundColor.Cyan)}`,
+        );
         writer.writeln();
         writer.writeln('📝 Examples:');
-        writer.writeln(`  regex match "\\d+" "abc123def"        ${writer.wrapInColor('# Match numbers', CliForegroundColor.Green)}`);
-        writer.writeln(`  regex match "hello" "hello world"    ${writer.wrapInColor('# Match text', CliForegroundColor.Green)}`);
+        writer.writeln(
+            `  regex match "\\d+" "abc123def"        ${writer.wrapInColor('# Match numbers', CliForegroundColor.Green)}`,
+        );
+        writer.writeln(
+            `  regex match "hello" "hello world"    ${writer.wrapInColor('# Match text', CliForegroundColor.Green)}`,
+        );
         writer.writeln();
         writer.writeln('💡 Matches are highlighted in the output');
     }

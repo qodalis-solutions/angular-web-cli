@@ -19,7 +19,9 @@ export class CliMvCommandProcessor implements ICliCommandProcessor {
         command: CliProcessCommand,
         context: ICliExecutionContext,
     ): Promise<void> {
-        const fs = context.services.get<IFileSystemService>(IFileSystemService_TOKEN);
+        const fs = context.services.get<IFileSystemService>(
+            IFileSystemService_TOKEN,
+        );
 
         const parts = this.parseArgs(command);
 
@@ -43,9 +45,9 @@ export class CliMvCommandProcessor implements ICliCommandProcessor {
     private parseArgs(command: CliProcessCommand): string[] {
         const raw = command.rawCommand;
         const afterCmd = raw.substring(raw.indexOf('mv') + 2).trim();
-        const tokens = afterCmd.split(/\s+/).filter(
-            (t) => t && !t.startsWith('--') && !t.startsWith('-'),
-        );
+        const tokens = afterCmd
+            .split(/\s+/)
+            .filter((t) => t && !t.startsWith('--') && !t.startsWith('-'));
         return tokens;
     }
 }

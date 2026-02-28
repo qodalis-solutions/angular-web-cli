@@ -78,10 +78,18 @@ export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
             context.writer.writeln('User information:');
             context.writer.writeln(`  Name:      ${user.name}`);
             context.writer.writeln(`  Email:     ${user.email}`);
-            context.writer.writeln(`  Groups:    ${user.groups.join(', ') || '(none)'}`);
-            context.writer.writeln(`  Home:      ${user.homeDir || '(not set)'}`);
-            context.writer.writeln(`  Created:   ${new Date(user.createdAt).toLocaleString()}`);
-            context.writer.writeln(`  Login:     ${new Date(fullSession.loginTime).toLocaleString()}`);
+            context.writer.writeln(
+                `  Groups:    ${user.groups.join(', ') || '(none)'}`,
+            );
+            context.writer.writeln(
+                `  Home:      ${user.homeDir || '(not set)'}`,
+            );
+            context.writer.writeln(
+                `  Created:   ${new Date(user.createdAt).toLocaleString()}`,
+            );
+            context.writer.writeln(
+                `  Login:     ${new Date(fullSession.loginTime).toLocaleString()}`,
+            );
         } else {
             context.writer.writeln(session.user.email);
         }
@@ -92,7 +100,11 @@ export class CliWhoamiCommandProcessor implements ICliCommandProcessor {
         writer.writeln('Display the current logged-in user information');
         writer.writeln();
         writer.writeln('Usage:');
-        writer.writeln(`  ${writer.wrapInColor('whoami', CliForegroundColor.Cyan)}                 Show current user email`);
-        writer.writeln(`  ${writer.wrapInColor('whoami --info', CliForegroundColor.Cyan)}           Show detailed user information`);
+        writer.writeln(
+            `  ${writer.wrapInColor('whoami', CliForegroundColor.Cyan)}                 Show current user email`,
+        );
+        writer.writeln(
+            `  ${writer.wrapInColor('whoami --info', CliForegroundColor.Cyan)}           Show detailed user information`,
+        );
     }
 }

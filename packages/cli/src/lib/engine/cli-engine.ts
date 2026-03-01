@@ -64,6 +64,8 @@ export class CliEngine {
     private resizeObserver?: ResizeObserver;
     private resizeListener?: () => void;
     private wheelListener?: (e: WheelEvent) => void;
+    private resizeVersion = 0;
+    private resizeScheduled = false;
     private bootService?: CliBoot;
 
     constructor(
@@ -272,6 +274,8 @@ export class CliEngine {
         if (this.wheelListener) {
             this.container.removeEventListener('wheel', this.wheelListener);
         }
+        this.resizeVersion = -1;
+        this.resizeScheduled = false;
         this.resizeObserver?.disconnect();
         this.terminal?.dispose();
     }
@@ -437,9 +441,33 @@ export class CliEngine {
             const oldCols = this.terminal.cols;
             this.fitAddon.fit();
             if (this.executionContext && oldCols !== this.terminal.cols) {
-                this.executionContext.handleTerminalResize();
+                this.resizeVersion++;
+                if (!this.resizeScheduled) {
+                    this.resizeScheduled = true;
+                    this.deferResizeFix();
+                }
             }
         }
+    }
+
+    /**
+     * Chain write callbacks until the resize version stabilises.
+     * Only the very last callback (version match) applies the fix,
+     * so intermediate resize events cannot leave stale artefacts.
+     */
+    private deferResizeFix(): void {
+        if (this.resizeVersion < 0) return; // destroyed
+        const version = this.resizeVersion;
+        this.terminal.write('', () => {
+            if (this.resizeVersion < 0) return; // destroyed during wait
+            if (this.resizeVersion !== version) {
+                // Another resize happened — keep deferring
+                this.deferResizeFix();
+                return;
+            }
+            this.resizeScheduled = false;
+            this.executionContext?.handleTerminalResize();
+        });
     }
 
     /**

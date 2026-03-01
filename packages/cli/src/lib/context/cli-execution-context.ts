@@ -286,6 +286,38 @@ export class CliExecutionContext
         );
     }
 
+    /**
+     * Redraw the prompt after a terminal resize.
+     * Called by CliEngine.safeFit() when terminal columns change.
+     * No-op when progress indicators, raw mode, or input requests are active.
+     *
+     * Uses the buffer's `isWrapped` flags to walk backwards from the cursor
+     * and find the first visual line of the current logical line.  This tells
+     * us exactly how many rows the prompt (+ user input) spans after xterm
+     * reflow, so we can clear them all — including reflow artefacts that the
+     * simple `ceil(contentLength / cols)` calculation would miss.
+     */
+    handleTerminalResize(): void {
+        if (
+            this.isProgressRunning() ||
+            this.isRawModeActive() ||
+            this._activeInputRequest
+        ) {
+            return;
+        }
+
+        const buf = this.terminal.buffer.active;
+        let startRow = buf.cursorY;
+        while (startRow > 0) {
+            const line = buf.getLine(buf.baseY + startRow);
+            if (!line?.isWrapped) break;
+            startRow--;
+        }
+
+        const linesToClear = buf.cursorY - startRow + 1;
+        this.refreshCurrentLine(linesToClear * this.terminal.cols);
+    }
+
     public isRawModeActive(): boolean {
         return !!this.contextProcessor?.onData;
     }

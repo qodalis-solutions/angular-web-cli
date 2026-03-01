@@ -46,8 +46,12 @@ export class CliTerminalLineRenderer {
      * (number of columns the prompt occupies).
      */
     renderPrompt(options: PromptOptions): number {
-        this.terminal.write(this.getPromptString(options));
-        return this.terminal.buffer.active.cursorX;
+        const promptString = this.getPromptString(options);
+        this.terminal.write(promptString);
+        // Calculate visible length by stripping ANSI escape codes.
+        // terminal.write() is async so cursorX is unreliable here.
+        // eslint-disable-next-line no-control-regex
+        return promptString.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '').length;
     }
 
     /**
@@ -70,14 +74,14 @@ export class CliTerminalLineRenderer {
 
         let output = '';
 
-        // 1. Clear lines
-        for (let i = 0; i < lines; i++) {
-            output += '\x1b[2K';
-            if (i < lines - 1) {
-                output += '\x1b[A';
-            }
+        // 1. Move cursor up to the first line of content, then clear
+        //    everything from there to end of screen. Using \x1b[J instead
+        //    of clearing individual lines avoids stale artifacts left by
+        //    xterm reflow (e.g. after browser zoom changes).
+        for (let i = 1; i < lines; i++) {
+            output += '\x1b[A';
         }
-        output += '\r';
+        output += '\r\x1b[J';
 
         // 2. Prompt
         output += promptString;

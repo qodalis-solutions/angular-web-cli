@@ -1,0 +1,46 @@
+{
+  "name": "@qodalis/cli-server-logs",
+  "version": "2.0.1",
+  "description": "@qodalis/cli extension for streaming and viewing server logs via SignalR.",
+  "author": "Nicolae Lupei, Qodalis Solutions",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qodalis-solutions/web-cli"
+  },
+  "homepage": "https://qodalis.com",
+  "keywords": [
+    "cli",
+    "qodalis",
+    "terminal",
+    "server-logs",
+    "logging",
+    "signalr",
+    "real-time"
+  ],
+  "umd": "./umd/index.js",
+  "unpkg": "./umd/index.js",
+  "dependencies": {
+    "@qodalis/cli-core": "workspace:*",
+    "@microsoft/signalr": "^8.0.7"
+  },
+  "sideEffects": false,
+  "cliDependencies": [
+    {
+      "name": "signalR",
+      "globalName": "signalR",
+      "version": "8.0.7",
+      "url": "https://unpkg.com/@microsoft/signalr@8.0.7/dist/browser/signalr.js"
+    }
+  ],
+  "main": "./public-api.js",
+  "module": "./public-api.mjs",
+  "types": "./public-api.d.ts",
+  "exports": {
+    ".": {
+      "types": "./public-api.d.ts",
+      "import": "./public-api.mjs",
+      "require": "./public-api.js"
+    }
+  }
+}

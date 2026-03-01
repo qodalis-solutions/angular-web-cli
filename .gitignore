@@ -8,7 +8,6 @@
 
 # Node
 /node_modules
-projects/cli/node_modules
 npm-debug.log
 yarn-error.log
 **/node_modules
@@ -30,6 +29,9 @@ yarn-error.log
 !.vscode/extensions.json
 .history/*
 
+# Nx
+.nx/
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/
@@ -46,3 +48,13 @@ Thumbs.db
 # Deployment artifacts
 /deploy
 /typedoc-output
+
+# Lock files (using pnpm)
+package-lock.json
+
+# Worktrees
+.worktrees/
+
+# Framework wrapper local builds
+packages/react-cli/dist
+packages/vue-cli/dist

@@ -1,0 +1,181 @@
+import {
+    CliProcessCommand,
+    CliServerConfig,
+    CliServerResponse,
+    CliServerCommandDescriptor,
+} from '@qodalis/cli-core';
+
+export class CliServerConnection {
+    private _connected = false;
+    private _commands: CliServerCommandDescriptor[] = [];
+    private _eventSocket: WebSocket | null = null;
+
+    onDisconnect?: () => void;
+
+    constructor(private readonly _config: CliServerConfig) {}
+
+    get config(): CliServerConfig {
+        return this._config;
+    }
+
+    get connected(): boolean {
+        return this._connected;
+    }
+
+    get commands(): CliServerCommandDescriptor[] {
+        return this._commands;
+    }
+
+    async connect(): Promise<void> {
+        try {
+            this._commands = await this.fetchCommands();
+            this._connected = true;
+            this.connectEventSocket();
+        } catch {
+            this._connected = false;
+            this._commands = [];
+        }
+    }
+
+    disconnect(): void {
+        this._connected = false;
+        this._commands = [];
+        this.closeEventSocket();
+    }
+
+    async fetchCommands(): Promise<CliServerCommandDescriptor[]> {
+        const url = `${this.normalizeUrl(this._config.url)}/api/cli/commands`;
+        const response = await this.httpFetch(url);
+
+        if (!response.ok) {
+            throw new Error(
+                `Server ${this._config.name} returned ${response.status}`,
+            );
+        }
+
+        return response.json();
+    }
+
+    async execute(command: CliProcessCommand): Promise<CliServerResponse> {
+        const url = `${this.normalizeUrl(this._config.url)}/api/cli/execute`;
+        const response = await this.httpFetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(command),
+        });
+
+        if (!response.ok) {
+            return {
+                exitCode: 1,
+                outputs: [
+                    {
+                        type: 'text',
+                        value: `Server error: ${response.status} ${response.statusText}`,
+                        style: 'error',
+                    },
+                ],
+            };
+        }
+
+        return response.json();
+    }
+
+    async ping(): Promise<boolean> {
+        try {
+            const url = `${this.normalizeUrl(this._config.url)}/api/cli/version`;
+            const response = await this.httpFetch(url);
+            return response.ok;
+        } catch {
+            return false;
+        }
+    }
+
+    private connectEventSocket(): void {
+        try {
+            const baseUrl = this.normalizeUrl(this._config.url);
+            const wsUrl = this.toWebSocketUrl(baseUrl) + '/ws/cli/events';
+            this._eventSocket = new WebSocket(wsUrl);
+
+            this._eventSocket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'disconnect') {
+                        this.handleServerDisconnect();
+                    }
+                } catch {
+                    // Ignore malformed messages
+                }
+            };
+
+            this._eventSocket.onclose = () => {
+                if (this._connected) {
+                    this.handleServerDisconnect();
+                }
+            };
+
+            this._eventSocket.onerror = () => {
+                // onclose will fire after onerror
+            };
+        } catch {
+            // WebSocket not available or URL invalid — fall back to no events
+        }
+    }
+
+    private handleServerDisconnect(): void {
+        this._connected = false;
+        this._commands = [];
+        this.closeEventSocket();
+        this.onDisconnect?.();
+    }
+
+    private closeEventSocket(): void {
+        if (this._eventSocket) {
+            this._eventSocket.onclose = null;
+            this._eventSocket.onmessage = null;
+            this._eventSocket.onerror = null;
+            if (
+                this._eventSocket.readyState === WebSocket.OPEN ||
+                this._eventSocket.readyState === WebSocket.CONNECTING
+            ) {
+                this._eventSocket.close();
+            }
+            this._eventSocket = null;
+        }
+    }
+
+    private httpFetch(url: string, init?: RequestInit): Promise<Response> {
+        const timeout = this._config.timeout ?? 30000;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeout);
+
+        const headers: Record<string, string> = {
+            ...(this._config.headers ?? {}),
+            ...((init?.headers as Record<string, string>) ?? {}),
+        };
+
+        return fetch(url, {
+            ...init,
+            headers,
+            signal: controller.signal,
+        }).finally(() => clearTimeout(timer));
+    }
+
+    private normalizeUrl(url: string): string {
+        return url.endsWith('/') ? url.slice(0, -1) : url;
+    }
+
+    private toWebSocketUrl(httpUrl: string): string {
+        if (!httpUrl || httpUrl.startsWith('/')) {
+            // Relative URL — derive from current location
+            const protocol =
+                typeof location !== 'undefined' &&
+                location.protocol === 'https:'
+                    ? 'wss:'
+                    : 'ws:';
+            const host =
+                typeof location !== 'undefined' ? location.host : 'localhost';
+            return `${protocol}//${host}`;
+        }
+        return httpUrl.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
+    }
+}
